@@ -12,12 +12,12 @@ class RisalahController extends Controller
     public function index(Kursus $kursus)
     {
         $risalahs = $kursus->risalahs()->latest()->get();
-        return view('instruktur.risalah.index', compact('kursus', 'risalahs'));
+        return view('instruktur::instruktur.risalah.index', compact('kursus', 'risalahs'));
     }
 
     public function create(Kursus $kursus)
     {
-        return view('instruktur.risalah.create', compact('kursus'));
+        return view('instruktur::instruktur.risalah.create', compact('kursus'));
     }
 
     public function store(Request $request, Kursus $kursus)
@@ -26,12 +26,17 @@ class RisalahController extends Controller
             'nama' => 'required'
         ]);
 
+        $instruktur = auth()->user()->instruktur;
+
         $risalah = Risalah::create([
             'kursus_id' => $kursus->id,
-            'nama' => $request->nama
+            'instruktur_id' => $instruktur->id,
+            'pertemuan_ke' => $request->pertemuan_ke ?? $kursus->risalahs()->count() + 1,
+            'tgl_pertemuan' => now(),
+            'materi' => $request->nama
         ]);
 
-        return redirect()->route('instruktur.risalah.index', $kursus->id)
+        return redirect("/instruktur/kursus/{$kursus->id}/risalah")
             ->with('success', 'Risalah dibuat');
     }
 }

@@ -48,7 +48,7 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/dashboard', [\Modules\Kursus\Http\Controllers\Admin\DashboardController::class, 'index']);
+        Route::get('/dashboard', [\Modules\Kursus\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/pembayaran', [\Modules\Pembayaran\Http\Controllers\Admin\PembayaranController::class, 'index']);
         Route::post('/pembayaran/{id}/verifikasi', [\Modules\Pembayaran\Http\Controllers\Admin\PembayaranController::class, 'verifikasi']);
@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:admin'])
             ->parameters(['kursus' => 'kursus']);
 
         Route::resource('/program', \Modules\Program\Http\Controllers\Admin\ProgramController::class);
+        Route::get('/program/{program}/levels', [\Modules\Program\Http\Controllers\Admin\ProgramController::class, 'getLevels']);
 
         Route::resource('/level', \Modules\Level\Http\Controllers\Admin\LevelController::class);
 
@@ -107,11 +108,11 @@ Route::middleware(['auth', 'role:peserta'])
 
         Route::get('/dashboard', [\Modules\Peserta\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/kursus', [\Modules\Peserta\Http\Controllers\KursusController::class, 'index']);
-        Route::post('/kursus/{kursus}/daftar', [\Modules\Peserta\Http\Controllers\KursusController::class, 'daftar']);
+        Route::get('/kursus', [\Modules\Peserta\Http\Controllers\KursusController::class, 'index'])->name('kursus.index');
+        Route::post('/kursus/{kursus}/daftar', [\Modules\Peserta\Http\Controllers\KursusController::class, 'daftar'])->name('kursus.daftar');
 
-        Route::get('/pendaftaran', [\Modules\Peserta\Http\Controllers\PendaftaranController::class, 'index']);
-        Route::post('/bayar/{id}', [\Modules\Peserta\Http\Controllers\PembayaranController::class, 'store']);
+        Route::get('/pendaftaran', [\Modules\Peserta\Http\Controllers\PendaftaranController::class, 'index'])->name('pendaftaran.index');
+        Route::post('/bayar/{id}', [\Modules\Peserta\Http\Controllers\PembayaranController::class, 'store'])->name('bayar');
 
-        Route::get('/riwayat-pembayaran', [\Modules\Peserta\Http\Controllers\RiwayatController::class, 'index']);
+        Route::get('/riwayat-pembayaran', [\Modules\Peserta\Http\Controllers\RiwayatController::class, 'index'])->name('riwayat.index');
     });

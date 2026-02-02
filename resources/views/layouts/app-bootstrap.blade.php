@@ -126,7 +126,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url('/peserta/riwayat') }}">
+                                    <a class="nav-link" href="{{ url('/peserta/riwayat-pembayaran') }}">
                                         <i class="bi bi-clock-history me-1"></i>Riwayat
                                     </a>
                                 </li>

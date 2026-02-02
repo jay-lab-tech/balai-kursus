@@ -24,7 +24,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Nama</label>
-                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                    <input type="text" name="nama" class="form-control" value="{{ old('nama') }}" required>
                 </div>
 
                 <div class="mb-3">
@@ -33,13 +33,18 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Nomor Peserta</label>
-                    <input type="text" name="nomor_peserta" class="form-control" value="{{ old('nomor_peserta') }}">
+                    <input type="text" name="nomor_peserta" class="form-control" value="{{ old('nomor_peserta') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">No HP</label>
-                    <input type="text" name="no_hp" class="form-control" value="{{ old('no_hp') }}">
+                    <input type="text" name="no_hp" class="form-control" value="{{ old('no_hp') }}" required>
                 </div>
 
                 <div class="mb-3">

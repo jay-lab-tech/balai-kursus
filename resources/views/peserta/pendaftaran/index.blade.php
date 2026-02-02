@@ -69,25 +69,42 @@
 
                 <hr class="my-3">
 
-                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-credit-card me-2 text-primary"></i>Bayar Angsuran</h6>
-                <form action="/peserta/bayar/{{ $p->id }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="jumlah" class="form-label fw-500">Jumlah Bayar</label>
-                            <input type="number" class="form-control" id="jumlah" name="jumlah" placeholder="Masukkan jumlah bayar" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="bukti" class="form-label fw-500">Bukti Pembayaran</label>
-                            <input type="file" class="form-control" id="bukti" name="bukti" required>
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-upload me-2"></i>Upload Bukti Pembayaran
-                            </button>
-                        </div>
+                @if($p->isLunas())
+                    <div class="alert alert-success" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <strong>Pembayaran Lunas!</strong> Anda sudah menyelesaikan semua pembayaran untuk kursus ini.
                     </div>
-                </form>
+                @else
+                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-credit-card me-2 text-primary"></i>Bayar Angsuran</h6>
+                    <form action="{{ route('peserta.bayar', $p->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="jumlah" class="form-label fw-500">Jumlah Bayar</label>
+                                <small class="text-muted d-block mb-2">Maksimal: Rp {{ number_format($p->sisa()) }}</small>
+                                <input type="number" class="form-control @error('jumlah') is-invalid @enderror" 
+                                       id="jumlah" name="jumlah" placeholder="Masukkan jumlah bayar" 
+                                       max="{{ $p->sisa() }}" min="1000" step="1000" required>
+                                @error('jumlah')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="bukti" class="form-label fw-500">Bukti Pembayaran</label>
+                                <input type="file" class="form-control @error('bukti') is-invalid @enderror" 
+                                       id="bukti" name="bukti" accept="image/*" required>
+                                @error('bukti')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload me-2"></i>Upload Bukti Pembayaran
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                @endif
             </div>
         </div>
     @empty
