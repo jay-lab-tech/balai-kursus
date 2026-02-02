@@ -1,0 +1,11 @@
+{
+    "name": "Instruktur",
+    "alias": "instruktur",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Instruktur\\Providers\\InstrukturServiceProvider"
+    ],
+    "files": []
+}

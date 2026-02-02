@@ -1,0 +1,11 @@
+{
+    "Kursus": true,
+    "Peserta": true,
+    "Instruktur": true,
+    "Pembayaran": true,
+    "Pendaftaran": true,
+    "Program": true,
+    "Level": true,
+    "Absensi": true,
+    "Risalah": true
+}

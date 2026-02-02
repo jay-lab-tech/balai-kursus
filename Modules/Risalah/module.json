@@ -1,0 +1,11 @@
+{
+    "name": "Risalah",
+    "alias": "risalah",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Risalah\\Providers\\RisalahServiceProvider"
+    ],
+    "files": []
+}
