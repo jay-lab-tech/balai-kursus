@@ -22,13 +22,13 @@ class AbsensiController extends Controller
             ->withCount(['pendaftarans as peserta_count', 'risalahs as risalah_count'])
             ->get();
 
-        return view('instruktur.absensi.index', compact('kursus'));
+        return view('instruktur::instruktur.absensi.index', compact('kursus'));
     }
 
     public function show(Kursus $kursus)
     {
         $risalah = $kursus->risalahs()->latest()->get();
-        return view('instruktur.absensi.show', compact('kursus', 'risalah'));
+        return view('instruktur::instruktur.absensi.show', compact('kursus', 'risalah'));
     }
 
     public function absensi(Risalah $risalah)
@@ -38,7 +38,7 @@ class AbsensiController extends Controller
             ->with('peserta.user')
             ->get();
 
-        return view('instruktur.absensi.form', compact('risalah', 'pendaftaran'));
+        return view('instruktur::instruktur.absensi.form', compact('risalah', 'pendaftaran'));
     }
 
     public function store(Request $request, Risalah $risalah)

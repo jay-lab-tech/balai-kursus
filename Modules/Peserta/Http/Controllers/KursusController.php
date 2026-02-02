@@ -51,7 +51,7 @@ class KursusController extends Controller
                 'status' => 'pending'
             ]);
 
-            if ($kursus->pendaftaran()->count() >= $kursus->kuota) {
+            if ($kursus->pendaftarans()->count() >= $kursus->kuota) {
                 return back()->with('error', 'Kuota Penuh');
             }
         });

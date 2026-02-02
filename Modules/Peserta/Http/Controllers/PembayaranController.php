@@ -11,28 +11,34 @@ class PembayaranController extends Controller
 {
     public function store(Request $request, $id)
     {
-        
-
         $request->validate([
             'jumlah' => 'required|numeric|min:1000',
             'bukti' => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
-        $path = $request->file('bukti')->store('bukti', 'public');
-
         $pendaftaran = Pendaftaran::findOrFail($id);
 
         if ($pendaftaran->peserta_id != auth()->user()->peserta->id) {
             abort(403);
-        } 
-
-        if ($pendaftaran->status == 'lunas') {
-            return back()->with('error', 'Pembayaran sudah lunas');
         }
 
+        // Cek apakah sudah lunas
+        if ($pendaftaran->isLunas()) {
+            return back()->with('error', 'Pembayaran sudah lunas, tidak bisa membayar lagi');
+        }
+
+        // Cek apakah ada pembayaran yang masih pending
         if ($pendaftaran->pembayarans()->where('status', 'pending')->exists()) {
-            return back()->with('error','Masih ada pembayaran yang di pending');
+            return back()->with('error', 'Masih ada pembayaran yang di pending');
         }
+
+        // Cek apakah jumlah pembayaran tidak melebihi sisa
+        $sisa = $pendaftaran->sisa();
+        if ($request->jumlah > $sisa) {
+            return back()->with('error', "Jumlah pembayaran tidak boleh melebihi sisa Rp " . number_format($sisa));
+        }
+
+        $path = $request->file('bukti')->store('bukti', 'public');
 
         $angsuran = $pendaftaran->pembayarans()->count() + 1;
 

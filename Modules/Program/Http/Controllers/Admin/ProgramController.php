@@ -51,4 +51,9 @@ class ProgramController extends Controller
         $program->delete();
         return back()->with('success', 'Program dihapus');
     }
+
+    public function getLevels(Program $program)
+    {
+        return response()->json($program->levels);
+    }
 }

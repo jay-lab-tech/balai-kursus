@@ -32,9 +32,6 @@
                             <label for="level_id" class="form-label fw-500">Level</label>
                             <select class="form-select" id="level_id" name="level_id" required>
                                 <option value="">-- Pilih Level --</option>
-                                @foreach($level as $l)
-                                    <option value="{{ $l->id }}">{{ $l->nama }}</option>
-                                @endforeach
                             </select>
                         </div>
 
@@ -68,4 +65,34 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const programSelect = document.getElementById('program_id');
+    const levelSelect = document.getElementById('level_id');
+
+    // Handle program change
+    programSelect.addEventListener('change', function() {
+        const programId = this.value;
+        
+        // Reset level dropdown
+        levelSelect.innerHTML = '<option value="">-- Pilih Level --</option>';
+        
+        if (programId) {
+            // Fetch levels for selected program
+            fetch(`/admin/program/${programId}/levels`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(level => {
+                        const option = document.createElement('option');
+                        option.value = level.id;
+                        option.textContent = level.nama;
+                        levelSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+});
+</script>
 @endsection

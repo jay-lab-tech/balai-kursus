@@ -1,65 +1,59 @@
-@extends('layouts.app-bootstrap')
-
-@section('title', 'Risalah - ' . ($kursus->nama_kursus ?? $kursus->nama ?? 'Instruktur'))
+@extends('instruktur::layouts.master')
 
 @section('content')
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h5 class="mb-0"><i class="bi bi-file-earmark"></i> {{ $kursus->nama_kursus ?? $kursus->nama }}</h5>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="bi bi-file-earmark me-2"></i>{{ $kursus->nama }}
+            </h2>
             <small class="text-muted">Daftar Pertemuan & Risalah</small>
         </div>
-        <a href="{{ url('/instruktur/kursus/'.$kursus->id.'/risalah/create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Tambah Pertemuan
+        <a href="/instruktur/kursus/{{ $kursus->id }}/risalah/create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Tambah Pertemuan
         </a>
     </div>
-    <div class="card-body">
-        @if(count($risalah) > 0)
+
+    @if($risalahs && count($risalahs) > 0)
+        <div class="card border-0 shadow-sm">
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
+                <table class="table table-hover mb-0">
+                    <thead style="background-color: #f8f9fa;">
                         <tr>
-                            <th>Pertemuan</th>
-                            <th>Tanggal</th>
-                            <th>Topik</th>
-                            <th>Peserta Hadir</th>
-                            <th>Aksi</th>
+                            <th class="fw-bold text-muted border-0">Pertemuan</th>
+                            <th class="fw-bold text-muted border-0">Tanggal</th>
+                            <th class="fw-bold text-muted border-0">Materi</th>
+                            <th class="fw-bold text-muted border-0">Peserta Hadir</th>
+                            <th class="fw-bold text-muted border-0">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($risalah as $r)
+                        @foreach($risalahs as $r)
                         <tr>
-                            <td><strong>Pertemuan {{ $r->pertemuan_ke }}</strong></td>
-                            <td>{{ $r->tgl_pertemuan ? date('d/m/Y', strtotime($r->tgl_pertemuan)) : '-' }}</td>
-                            <td>{{ Str::limit($r->topik ?? '-', 30) }}</td>
-                            <td>
+                            <td class="fw-bold border-0">Pertemuan {{ $r->pertemuan_ke }}</td>
+                            <td class="border-0">{{ $r->tgl_pertemuan ? \Carbon\Carbon::parse($r->tgl_pertemuan)->format('d/m/Y') : '-' }}</td>
+                            <td class="border-0">{{ Str::limit($r->materi ?? '-', 40) }}</td>
+                            <td class="border-0">
                                 <span class="badge bg-info">
-                                    {{ $r->absensi_count ?? 0 }} / {{ $r->peserta_count ?? 0 }}
+                                    {{ $r->absensis()->count() ?? 0 }}
                                 </span>
                             </td>
-                            <td>
-                                <a href="{{ url('/instruktur/risalah/'.$r->id.'/absensi') }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-clipboard-check"></i> Absensi
+                            <td class="border-0">
+                                <a href="/instruktur/risalah/{{ $r->id }}/absensi" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-clipboard-check me-1"></i>Absensi
                                 </a>
-                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#detailModal{{ $r->id }}">
-                                    <i class="bi bi-eye"></i> Detail
-                                </button>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-        @else
-            <div class="text-center py-5">
-                <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
-                <h5 class="mt-3">Belum ada pertemuan</h5>
-                <p class="text-muted">Mulai buat pertemuan dan risalah untuk kursus ini</p>
-                <a href="{{ url('/instruktur/kursus/'.$kursus->id.'/risalah/create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Buat Pertemuan Pertama
-                </a>
-            </div>
-        @endif
-    </div>
+        </div>
+    @else
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Belum ada risalah.</strong> Klik tombol "Tambah Pertemuan" untuk membuat risalah baru.
+        </div>
+    @endif
 </div>
 @endsection

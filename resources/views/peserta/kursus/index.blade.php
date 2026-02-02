@@ -25,7 +25,7 @@
                             <strong>Rp {{ number_format($k->harga) }}</strong>
                         </div>
 
-                        <form method="POST" action="/peserta/daftar/{{ $k->id }}" class="mt-auto">
+                        <form method="POST" action="{{ route('peserta.kursus.daftar', $k->id) }}" class="mt-auto">
                             @csrf
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bi bi-check-circle me-2"></i>Daftar Kursus
