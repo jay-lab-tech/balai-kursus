@@ -22,8 +22,8 @@
                         <th class="fw-bold text-muted border-0">No</th>
                         <th class="fw-bold text-muted border-0">Nama Program</th>
                         <th class="fw-bold text-muted border-0">Jumlah Level</th>
-                        <th class="fw-bold text-muted border-0">Jumlah Kursus</th>
-                        <th class="fw-bold text-muted border-0">Aksi</th>
+                        <th class="fw-bold text-muted border-0 text-nowrap" style="white-space:nowrap;">Jumlah Kursus</th>
+                        <th class="fw-bold text-muted border-0 text-nowrap" style="width:1%; white-space:nowrap;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,16 +32,22 @@
                     <tr style="transition: background-color 0.2s ease;">
                         <td class="border-0 text-muted">{{ $loop->iteration }}</td>
                         <td class="border-0 fw-500">{{ $p->nama }}</td>
-                        <td class="border-0 badge bg-info">{{ $p->levels->count() }}</td>
-                        <td class="border-0 badge bg-success">{{ $p->kursuses->count() }}</td>
                         <td class="border-0">
-                            <a href="{{ route('admin.program.edit', $p->id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Edit</a>
+                            <span class="badge bg-info me-1">{{ $p->levels->count() }}</span>
+                        </td>
+                        <td class="border-0 text-nowrap" style="white-space:nowrap;">
+                            <span class="badge bg-success me-2">{{ $p->kursuses->count() }}</span>
+                        </td>
+                        <td class="border-0 text-end">
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('admin.program.edit', $p->id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Edit</a>
 
-                            <form action="{{ route('admin.program.destroy', $p->id) }}" method="POST" style="display:inline">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus program?')"><i class="bi bi-trash"></i> Hapus</button>
-                            </form>
+                                <form action="{{ route('admin.program.destroy', $p->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus program?')"><i class="bi bi-trash"></i> Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
