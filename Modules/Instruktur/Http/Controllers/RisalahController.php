@@ -15,28 +15,31 @@ class RisalahController extends Controller
         return view('instruktur::instruktur.risalah.index', compact('kursus', 'risalahs'));
     }
 
-    public function create(Kursus $kursus)
+    public function edit(Risalah $risalah)
     {
-        return view('instruktur::instruktur.risalah.create', compact('kursus'));
+        // ensure the logged instruktur owns the kursus
+        $instruktur = auth()->user()->instruktur;
+        if (!$instruktur || $instruktur->id !== $risalah->instruktur_id) {
+            abort(403);
+        }
+
+        return view('instruktur::instruktur.risalah.edit', compact('risalah'));
     }
 
-    public function store(Request $request, Kursus $kursus)
+    public function update(Request $request, Risalah $risalah)
     {
-        $request->validate([
-            'nama' => 'required'
-        ]);
-
         $instruktur = auth()->user()->instruktur;
+        if (!$instruktur || $instruktur->id !== $risalah->instruktur_id) {
+            abort(403);
+        }
 
-        $risalah = Risalah::create([
-            'kursus_id' => $kursus->id,
-            'instruktur_id' => $instruktur->id,
-            'pertemuan_ke' => $request->pertemuan_ke ?? $kursus->risalahs()->count() + 1,
-            'tgl_pertemuan' => now(),
-            'materi' => $request->nama
+        $request->validate([
+            'materi' => 'required|string',
+            'catatan' => 'nullable|string'
         ]);
 
-        return redirect("/instruktur/kursus/{$kursus->id}/risalah")
-            ->with('success', 'Risalah dibuat');
+        $risalah->update($request->only(['materi','catatan']));
+
+        return redirect("/instruktur/kursus/{$risalah->kursus_id}/risalah")->with('success', 'Risalah diperbarui');
     }
 }

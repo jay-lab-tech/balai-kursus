@@ -11,6 +11,7 @@ use App\Models\Pendaftaran;
 use App\Models\Pembayaran;
 use App\Models\Risalah;
 use App\Models\Absensi;
+use App\Models\Jadwal;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -60,6 +61,22 @@ class DatabaseSeeder extends Seeder
                 'status' => $this->getRandomStatus()
             ]);
             $kursusList[] = $kursus;
+        }
+
+        // Create sample jadwals for each kursus (3 per kursus)
+        foreach ($kursusList as $kursus) {
+            // start from next monday as base
+            $base = now();
+            for ($d = 1; $d <= 3; $d++) {
+                Jadwal::create([
+                    'kursus_id' => $kursus->id,
+                    'pertemuan_ke' => $d,
+                    'tgl_pertemuan' => $base->copy()->addWeeks($d - 1)->toDateString(),
+                    'jam_mulai' => '09:00:00',
+                    'jam_selesai' => '11:00:00',
+                    'created_by' => 1
+                ]);
+            }
         }
 
         // Create 15 Peserta (Students) with registrations and payments

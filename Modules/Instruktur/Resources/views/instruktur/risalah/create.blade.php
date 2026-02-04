@@ -36,6 +36,17 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="jadwal_id" class="form-label fw-bold">Pilih Jadwal (opsional)</label>
+                            <select name="jadwal_id" id="jadwal_id" class="form-select">
+                                <option value="">-- Pilih jadwal yang dibuat admin --</option>
+                                @foreach($kursus->jadwals as $jadwal)
+                                    <option value="{{ $jadwal->id }}">Pertemuan {{ $jadwal->pertemuan_ke ?? '-' }} - {{ $jadwal->tgl_pertemuan->format('d M Y') }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Jika dipilih, tanggal risalah akan mengikuti jadwal.</small>
+                        </div>
+
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle me-2"></i>Buat Risalah

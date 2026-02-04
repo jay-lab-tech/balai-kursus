@@ -18,6 +18,12 @@ class KursusController extends Controller
         return view('peserta.kursus.index', compact('kursus'));
     }
 
+    public function show(\App\Models\Kursus $kursus)
+    {
+        $kursus->load('program','level','instruktur','jadwals');
+        return view('peserta.kursus.show', compact('kursus'));
+    }
+
     public function daftar(Kursus $kursus)
     {
         $peserta = Auth::user()->peserta;

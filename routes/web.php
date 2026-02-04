@@ -58,6 +58,22 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('/kursus', \Modules\Kursus\Http\Controllers\Admin\KursusController::class)
             ->parameters(['kursus' => 'kursus']);
 
+        Route::get('/kursus/{kursus}/risalah', [\Modules\Kursus\Http\Controllers\Admin\KursusController::class, 'risalahs']);
+        Route::get('/kursus/{kursus}/absensi', [\Modules\Kursus\Http\Controllers\Admin\KursusController::class, 'absensi']);
+
+        // Jadwal management (admin)
+        Route::get('/kursus/{kursus}/jadwal', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'index']);
+        Route::get('/kursus/{kursus}/jadwal/create', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'create']);
+        Route::post('/kursus/{kursus}/jadwal', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'store']);
+        Route::get('/kursus/{kursus}/jadwal/{jadwal}/edit', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'edit']);
+        Route::put('/kursus/{kursus}/jadwal/{jadwal}', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'update']);
+        Route::delete('/kursus/{kursus}/jadwal/{jadwal}', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'destroy']);
+
+        // Global admin listings (jadwal/risalah/absensi)
+        Route::get('/jadwal', [\Modules\Kursus\Http\Controllers\Admin\JadwalController::class, 'indexAll']);
+        Route::get('/risalah', [\Modules\Kursus\Http\Controllers\Admin\KursusController::class, 'allRisalahs']);
+        Route::get('/absensi', [\Modules\Kursus\Http\Controllers\Admin\KursusController::class, 'allAbsensis']);
+
         Route::resource('/program', \Modules\Program\Http\Controllers\Admin\ProgramController::class);
         Route::get('/program/{program}/levels', [\Modules\Program\Http\Controllers\Admin\ProgramController::class, 'getLevels']);
 
@@ -91,8 +107,11 @@ Route::middleware(['auth', 'role:instruktur'])
         Route::post('/risalah/{risalah}/absensi', [\Modules\Instruktur\Http\Controllers\AbsensiController::class, 'store']);
 
         Route::get('/kursus/{kursus}/risalah', [\Modules\Instruktur\Http\Controllers\RisalahController::class, 'index']);
-        Route::get('/kursus/{kursus}/risalah/create', [\Modules\Instruktur\Http\Controllers\RisalahController::class, 'create']);
-        Route::post('/kursus/{kursus}/risalah', [\Modules\Instruktur\Http\Controllers\RisalahController::class, 'store']);
+        Route::get('/risalah/{risalah}/edit', [\Modules\Instruktur\Http\Controllers\RisalahController::class, 'edit']);
+        Route::put('/risalah/{risalah}', [\Modules\Instruktur\Http\Controllers\RisalahController::class, 'update']);
+
+        // Jadwal view (read-only) for instruktur
+        Route::get('/jadwal', [\Modules\Instruktur\Http\Controllers\AbsensiController::class, 'jadwal']);
     });
 
 
@@ -109,6 +128,7 @@ Route::middleware(['auth', 'role:peserta'])
         Route::get('/dashboard', [\Modules\Peserta\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/kursus', [\Modules\Peserta\Http\Controllers\KursusController::class, 'index'])->name('kursus.index');
+        Route::get('/kursus/{kursus}', [\Modules\Peserta\Http\Controllers\KursusController::class, 'show'])->name('kursus.show');
         Route::post('/kursus/{kursus}/daftar', [\Modules\Peserta\Http\Controllers\KursusController::class, 'daftar'])->name('kursus.daftar');
 
         Route::get('/pendaftaran', [\Modules\Peserta\Http\Controllers\PendaftaranController::class, 'index'])->name('pendaftaran.index');

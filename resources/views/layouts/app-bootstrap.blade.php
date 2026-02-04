@@ -146,11 +146,18 @@
                                         <li><a class="dropdown-item" href="{{ url('/admin/level') }}"><i class="bi bi-pyramid me-2"></i>Level</a></li>
                                         <li><a class="dropdown-item" href="{{ url('/admin/kursus') }}"><i class="bi bi-bookmark me-2"></i>Kursus</a></li>
                                         <li><a class="dropdown-item" href="{{ url('/admin/instruktur') }}"><i class="bi bi-mortarboard me-2"></i>Instruktur</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ url('/admin/jadwal') }}"><i class="bi bi-calendar-event me-2"></i>Jadwal (admin)</a></li>
                                     </ul>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url('/admin/pembayaran') }}">
                                         <i class="bi bi-cash-coin me-1"></i>Pembayaran
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('/admin/risalah') }}">
+                                        <i class="bi bi-journal-text me-1"></i>Risalah & Absensi
                                     </a>
                                 </li>
                             @elseif(Auth::user()->role === 'instruktur')
@@ -162,11 +169,6 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url('/instruktur/kursus') }}">
                                         <i class="bi bi-book me-1"></i>Kursus
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url('/instruktur/risalah') }}">
-                                        <i class="bi bi-file-earmark me-1"></i>Risalah
                                     </a>
                                 </li>
                             @endif

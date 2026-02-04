@@ -27,12 +27,22 @@ class AbsensiController extends Controller
 
     public function show(Kursus $kursus)
     {
+        $instruktur = auth()->user()->instruktur;
+        if (!$instruktur || $kursus->instruktur_id !== $instruktur->id) {
+            abort(403);
+        }
+
         $risalah = $kursus->risalahs()->latest()->get();
         return view('instruktur::instruktur.absensi.show', compact('kursus', 'risalah'));
     }
 
     public function absensi(Risalah $risalah)
     {
+        $instruktur = auth()->user()->instruktur;
+        if (!$instruktur || $risalah->instruktur_id !== $instruktur->id) {
+            abort(403);
+        }
+
         $pendaftaran = $risalah->kursus
             ->pendaftarans()
             ->with('peserta.user')
@@ -43,6 +53,11 @@ class AbsensiController extends Controller
 
     public function store(Request $request, Risalah $risalah)
     {
+        $instruktur = auth()->user()->instruktur;
+        if (!$instruktur || $risalah->instruktur_id !== $instruktur->id) {
+            abort(403);
+        }
+
         foreach ($request->absen as $pendaftaran_id => $status) {
             Absensi::updateOrCreate(
                 [

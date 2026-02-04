@@ -41,4 +41,9 @@ class Kursus extends Model
     public function risalahs() {
         return $this->hasMany(Risalah::class);
     }
+
+    public function jadwals()
+    {
+        return $this->hasMany(\App\Models\Jadwal::class);
+    }
 }

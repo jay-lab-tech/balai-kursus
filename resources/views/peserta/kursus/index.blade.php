@@ -25,12 +25,32 @@
                             <strong>Rp {{ number_format($k->harga) }}</strong>
                         </div>
 
-                        <form method="POST" action="{{ route('peserta.kursus.daftar', $k->id) }}" class="mt-auto">
-                            @csrf
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-check-circle me-2"></i>Daftar Kursus
-                            </button>
-                        </form>
+                        <div class="mt-auto d-grid gap-2">
+                            <a href="{{ route('peserta.kursus.show', $k->id) }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-eye me-2"></i>Detail
+                            </a>
+
+                            @php
+                                $peserta = auth()->user()->peserta ?? null;
+                                $sudahDaftar = false;
+                                if ($peserta) {
+                                    $sudahDaftar = $peserta->pendaftarans()->where('kursus_id', $k->id)->exists();
+                                }
+                            @endphp
+
+                            @if($sudahDaftar)
+                                <button class="btn btn-success w-100" disabled>
+                                    <i class="bi bi-check-circle me-2"></i>Sudah Daftar
+                                </button>
+                            @else
+                                <form method="POST" action="{{ route('peserta.kursus.daftar', $k->id) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-check-circle me-2"></i>Daftar Kursus
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

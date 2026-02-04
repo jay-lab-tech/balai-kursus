@@ -16,6 +16,11 @@ use Illuminate\Http\Request;
 
 class KursusController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('role:admin');
+    }
     public function index()
     {
         $kursus = Kursus::with('program', 'level', 'instruktur')->get();
@@ -75,5 +80,31 @@ class KursusController extends Controller
             ->get();
 
         return view('kursus::admin.kursus.peserta', compact('kursus', 'peserta'));
+    }
+
+    public function risalahs(Kursus $kursus)
+    {
+        $risalahs = $kursus->risalahs()->with('instruktur','absensis')->get();
+        return view('kursus::admin.kursus.risalah', compact('kursus','risalahs'));
+    }
+
+    public function absensi(Kursus $kursus)
+    {
+        $absensis = $kursus->risalahs()->with('absensis.pendaftaran.peserta.user')->get()->pluck('absensis')->flatten();
+        return view('kursus::admin.kursus.absensi', compact('kursus','absensis'));
+    }
+
+    // Global view: all risalahs across kursus
+    public function allRisalahs()
+    {
+        $risalahs = \App\Models\Risalah::with('kursus','instruktur')->latest()->get();
+        return view('kursus::admin.kursus.all_risalah', compact('risalahs'));
+    }
+
+    // Global view: all absensi across kursus
+    public function allAbsensis()
+    {
+        $absensis = \App\Models\Absensi::with('risalah','pendaftaran.peserta.user')->latest()->get();
+        return view('kursus::admin.kursus.all_absensi', compact('absensis'));
     }
 }

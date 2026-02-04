@@ -11,11 +11,7 @@
         </a>
     </div>
 
-    <div class="mb-4">
-        <a href="/instruktur/kursus/{{ $kursus->id }}/risalah/create" class="btn btn-primary btn-lg">
-            <i class="bi bi-plus-circle me-2"></i>Tambah Pertemuan
-        </a>
-    </div>
+    {{-- Admin membuat pertemuan; instruktur tidak dapat menambah pertemuan --}}
 
     @forelse($risalah as $r)
         <div class="card border-0 shadow-sm mb-4" style="transition: all 0.3s ease; border-left: 4px solid #667eea;">
@@ -32,6 +28,9 @@
                         </small>
                     </div>
                     <div class="col-md-4 text-end">
+                        <a href="/instruktur/risalah/{{ $r->id }}/edit" class="btn btn-sm btn-secondary me-1">
+                            <i class="bi bi-pencil-square me-1"></i>Edit
+                        </a>
                         <a href="/instruktur/risalah/{{ $r->id }}/absensi" class="btn btn-sm btn-primary">
                             <i class="bi bi-pencil me-2"></i>Isi Absensi
                         </a>
@@ -82,7 +81,7 @@
     @empty
         <div class="alert alert-info alert-dismissible fade show" role="alert">
             <i class="bi bi-info-circle me-2"></i>
-            <strong>Informasi:</strong> Belum ada pertemuan. Silakan tambah pertemuan terlebih dahulu.
+            <strong>Informasi:</strong> Belum ada pertemuan. Hubungi admin untuk menambahkan pertemuan.
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endforelse

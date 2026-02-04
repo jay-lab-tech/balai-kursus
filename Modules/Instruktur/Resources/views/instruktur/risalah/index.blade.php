@@ -9,9 +9,7 @@
             </h2>
             <small class="text-muted">Daftar Pertemuan & Risalah</small>
         </div>
-        <a href="/instruktur/kursus/{{ $kursus->id }}/risalah/create" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-2"></i>Tambah Pertemuan
-        </a>
+        {{-- Admin membuat pertemuan; instruktur tidak dapat menambah pertemuan --}}
     </div>
 
     @if($risalahs && count($risalahs) > 0)
@@ -39,6 +37,9 @@
                                 </span>
                             </td>
                             <td class="border-0">
+                                <a href="/instruktur/risalah/{{ $r->id }}/edit" class="btn btn-sm btn-secondary me-1">
+                                    <i class="bi bi-file-earmark me-1"></i>Risalah
+                                </a>
                                 <a href="/instruktur/risalah/{{ $r->id }}/absensi" class="btn btn-sm btn-primary">
                                     <i class="bi bi-clipboard-check me-1"></i>Absensi
                                 </a>
@@ -52,7 +53,7 @@
     @else
         <div class="alert alert-info" role="alert">
             <i class="bi bi-info-circle me-2"></i>
-            <strong>Belum ada risalah.</strong> Klik tombol "Tambah Pertemuan" untuk membuat risalah baru.
+            <strong>Belum ada risalah.</strong> Hubungi admin untuk menambahkan pertemuan.
         </div>
     @endif
 </div>

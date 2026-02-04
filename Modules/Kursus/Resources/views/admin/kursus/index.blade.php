@@ -44,6 +44,7 @@
 								</form>
 
 								<a href="{{ route('admin.kursus.peserta', $k->id) }}" class="btn btn-sm btn-info"><i class="bi bi-people"></i> Peserta</a>
+								<a href="/admin/kursus/{{ $k->id }}/jadwal" class="btn btn-sm btn-secondary"><i class="bi bi-calendar-event"></i> Manage Jadwal</a>
 							</td>
 						</tr>
 					@endforeach

@@ -2,79 +2,135 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-house me-2"></i>Dashboard Peserta</h2>
-        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-            @csrf
-            <button type="submit" class="btn btn-danger btn-sm">
-                <i class="bi bi-box-arrow-right me-2"></i>Logout
-            </button>
-        </form>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark mb-0">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard Peserta
+            </h2>
+        </div>
     </div>
 
-    @forelse($pendaftarans as $p)
-        <div class="card border-0 shadow-sm mb-4" style="transition: all 0.3s ease; border-left: 4px solid #667eea;">
-            <div class="card-body p-4">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-book me-2 text-primary"></i>{{ $p->kursus->nama }}</h5>
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <small class="text-muted d-block">Total Biaya</small>
-                                <p class="mb-0 fw-bold">Rp {{ number_format($p->total_bayar) }}</p>
-                            </div>
+    @php
+        $peserta = auth()->user()->peserta;
+        $pendaftarans = $peserta->pendaftarans ?? [];
+        $totalKursus = count($pendaftarans);
+        $totalBayar = collect($pendaftarans)->sum('terbayar');
+    @endphp
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Kursus Diikuti</small>
+                            <h4 class="fw-bold text-dark mb-0">{{ $totalKursus }}</h4>
+                        </div>
+                        <i class="bi bi-book text-primary" style="font-size: 2rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Total Terbayar</small>
+                            <h6 class="fw-bold text-dark mb-0">Rp {{ number_format($totalBayar) }}</h6>
+                        </div>
+                        <i class="bi bi-cash-coin text-success" style="font-size: 2rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Nama Peserta</small>
+                            <h6 class="fw-bold text-dark mb-0">{{ $peserta->nama_peserta }}</h6>
+                        </div>
+                        <i class="bi bi-person-circle text-warning" style="font-size: 2rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <small class="text-muted d-block mb-1">Aksi Cepat</small>
+                            <a href="{{ url('/peserta/kursus') }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Lihat Kursus
+                            </a>
+                        </div>
+                        <i class="bi bi-arrow-right text-info" style="font-size: 2rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kursus yang Diikuti -->
+    <div class="row">
+        <div class="col-12">
+            <h5 class="fw-bold text-dark mb-3">Kursus yang Sedang Diikuti</h5>
+        </div>
+    </div>
+
+    @if(count($pendaftarans) > 0)
+        <div class="row g-4">
+            @foreach($pendaftarans as $p)
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold text-dark mb-2">{{ $p->kursus->nama }}</h6>
+                        <small class="text-muted d-block mb-3">
+                            <i class="bi bi-collection me-1"></i>{{ $p->kursus->program->nama }} | 
+                            <i class="bi bi-bookmark me-1"></i>{{ $p->kursus->level->nama }}
+                        </small>
+                        
+                        <div class="row text-center mb-3">
                             <div class="col-6">
                                 <small class="text-muted d-block">Terbayar</small>
-                                <p class="mb-0 fw-bold text-success">Rp {{ number_format($p->terbayar) }}</p>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted d-block">Sisa Pembayaran</small>
-                                <p class="mb-0 fw-bold text-danger">Rp {{ number_format($p->sisa()) }}</p>
+                                <h6 class="fw-bold text-success">Rp {{ number_format($p->terbayar) }}</h6>
                             </div>
                             <div class="col-6">
                                 <small class="text-muted d-block">Status</small>
                                 @if($p->isLunas())
-                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>LUNAS</span>
+                                    <span class="badge bg-success"><i class="bi bi-check me-1"></i>LUNAS</span>
                                 @else
-                                    <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle me-1"></i>BELUM LUNAS</span>
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>BELUM</span>
                                 @endif
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="progress mb-2" style="height: 30px; border-radius: 10px; overflow: hidden;">
-                            <div class="progress-bar" role="progressbar"
-                                 style="width: {{ $p->progress() }}%; background: linear-gradient(90deg, #667eea, #764ba2); font-weight: 600;"
-                                 aria-valuenow="{{ $p->progress() }}" aria-valuemin="0" aria-valuemax="100">
-                                <small class="text-white">{{ $p->progress() }}%</small>
-                            </div>
-                        </div>
-                        <small class="text-muted d-block text-center">Progress Pembayaran</small>
+                        <a href="/peserta/kursus/{{ $p->kursus->id }}" class="btn btn-sm btn-primary w-100 mb-2">
+                            <i class="bi bi-arrow-right me-1"></i>Lihat Detail
+                        </a>
+                        
+                        @if(!$p->isLunas())
+                            <a href="{{ url('/peserta/pendaftaran') }}" class="btn btn-sm btn-outline-success w-100">
+                                <i class="bi bi-credit-card me-1"></i>Bayar
+                            </a>
+                        @endif
                     </div>
                 </div>
-
-                @if(!$p->isLunas())
-                    <hr class="my-3">
-                    <a href="{{ url('/peserta/pendaftaran') }}" class="btn btn-primary">
-                        <i class="bi bi-credit-card me-2"></i>Bayar Sekarang
-                    </a>
-                @endif
             </div>
+            @endforeach
         </div>
-    @empty
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
+    @else
+        <div class="alert alert-info" role="alert">
             <i class="bi bi-info-circle me-2"></i>
-            <strong>Informasi:</strong> Belum ada kursus yang diikuti. Silakan daftar ke kursus terlebih dahulu.
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <strong>Belum ada kursus.</strong> <a href="/peserta/kursus">Daftar kursus sekarang</a>
         </div>
-    @endforelse
+    @endif
 </div>
-
-<style>
-    .card:hover {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-        transform: translateY(-2px);
-    }
-</style>
 @endsection
