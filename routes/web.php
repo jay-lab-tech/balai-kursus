@@ -43,7 +43,7 @@ Route::get('/redirect', function () {
 | ADMIN
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])
+Route::middleware(['auth'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -120,7 +120,7 @@ Route::middleware(['auth', 'role:instruktur'])
 | PESERTA
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:peserta'])
+Route::middleware(['auth'])
     ->prefix('peserta')
     ->name('peserta.')
     ->group(function () {
@@ -133,6 +133,9 @@ Route::middleware(['auth', 'role:peserta'])
 
         Route::get('/pendaftaran', [\Modules\Peserta\Http\Controllers\PendaftaranController::class, 'index'])->name('pendaftaran.index');
         Route::post('/bayar/{id}', [\Modules\Peserta\Http\Controllers\PembayaranController::class, 'store'])->name('bayar');
+        Route::post('/pembayaran-online/{pendaftaran}', [App\Http\Controllers\PaymentController::class, 'createPaymentForPendaftaran'])->name('pembayaran-online');
+        Route::get('/pembayaran-success/{orderId}', [App\Http\Controllers\PaymentController::class, 'paymentSuccess'])->name('pembayaran-success');
+        Route::get('/pembayaran-failed/{orderId}', [App\Http\Controllers\PaymentController::class, 'paymentFailed'])->name('pembayaran-failed');
 
         Route::get('/riwayat-pembayaran', [\Modules\Peserta\Http\Controllers\RiwayatController::class, 'index'])->name('riwayat.index');
     });

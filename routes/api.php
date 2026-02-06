@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Payment Routes
+Route::prefix('payment')->group(function () {
+    Route::post('/create', [PaymentController::class, 'createPayment'])->name('payment.create');
+    Route::post('/notification', [PaymentController::class, 'notification'])->name('payment.notification');
+    Route::get('/status/{orderId}', [PaymentController::class, 'checkStatus'])->name('payment.status');
 });

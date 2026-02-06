@@ -15,9 +15,26 @@ class CheckRole
      */
     public function handle($request, Closure $next, ...$roles)
     {
-        if (!in_array(auth()->user()->role, $roles)) {
-            abort(403);
+        // Ensure user is authenticated before checking role
+        if (!auth()->check()) {
+            \Log::warning('CheckRole: unauthenticated access attempt', ['path' => $request->path()]);
+            abort(401, 'Unauthenticated');
         }
+
+        $user = auth()->user();
+        $userRole = $user->role ?? null;
+
+        if (!in_array($userRole, $roles)) {
+            \Log::warning('CheckRole: access denied', [
+                'user_id' => $user->id ?? null,
+                'user_role' => $userRole,
+                'required_roles' => $roles,
+                'path' => $request->path(),
+            ]);
+
+            abort(403, 'Forbidden: insufficient role');
+        }
+
         return $next($request);
     }
 }

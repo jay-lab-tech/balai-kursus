@@ -32,6 +32,11 @@ class Pendaftaran extends Model
         return $this->hasMany(Pembayaran::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function absensis()
     {
         return $this->hasMany(Absensi::class);
