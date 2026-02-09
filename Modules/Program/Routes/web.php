@@ -1,16 +1,18 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Program Module Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
-Route::prefix('program')->group(function() {
-    Route::get('/', 'ProgramController@index');
-});
+// Admin Routes for Program Management
+Route::middleware(['auth'])
+    ->prefix('admin/program')
+    ->name('admin.program.')
+    ->group(function () {
+        Route::resource('/', 'Admin\ProgramController');
+        Route::get('{program}/levels', 'Admin\ProgramController@getLevels')->name('admin.program.getLevels');
+    });

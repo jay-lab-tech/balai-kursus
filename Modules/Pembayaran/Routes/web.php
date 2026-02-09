@@ -1,16 +1,18 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Pembayaran Module Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
-Route::prefix('pembayaran')->group(function() {
-    Route::get('/', 'PembayaranController@index');
-});
+// Admin Routes for Pembayaran Management
+Route::middleware(['auth'])
+    ->prefix('admin/pembayaran')
+    ->name('admin.pembayaran.')
+    ->group(function () {
+        Route::get('/', 'Admin\PembayaranController@index')->name('index');
+        Route::post('{id}/verifikasi', 'Admin\PembayaranController@verifikasi')->name('verifikasi');
+    });

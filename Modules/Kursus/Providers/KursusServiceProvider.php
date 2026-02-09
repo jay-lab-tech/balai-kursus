@@ -3,7 +3,6 @@
 namespace Modules\Kursus\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 
 class KursusServiceProvider extends ServiceProvider
 {

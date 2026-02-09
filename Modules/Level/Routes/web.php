@@ -1,16 +1,16 @@
 <?php
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Level Module Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
-Route::prefix('level')->group(function() {
-    Route::get('/', 'LevelController@index');
-});
+// Admin Routes for Level Management
+Route::middleware(['auth'])
+    ->prefix('admin/level')
+    ->name('admin.level.')
+    ->group(function () {
+        Route::resource('/', 'Admin\LevelController');
+    });
