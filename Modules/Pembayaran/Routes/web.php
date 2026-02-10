@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Admin Routes for Pembayaran Management
-Route::middleware(['auth'])
-    ->prefix('admin/pembayaran')
-    ->name('admin.pembayaran.')
-    ->group(function () {
-        Route::get('/', 'Admin\PembayaranController@index')->name('index');
-        Route::post('{id}/verifikasi', 'Admin\PembayaranController@verifikasi')->name('verifikasi');
-    });
+// DISABLED: Manual payment/verification removed - only online payment via Midtrans
+// Route::middleware(['auth'])
+//     ->prefix('admin/pembayaran')
+//     ->name('admin.pembayaran.')
+//     ->group(function () {
+//         Route::get('/', 'Admin\PembayaranController@index')->name('index');
+//         Route::post('{id}/verifikasi', 'Admin\PembayaranController@verifikasi')->name('verifikasi');
+//     });

@@ -27,7 +27,7 @@
 
 	@foreach($kursus as $k)
 						<tr style="transition: background-color 0.2s ease;">
-							<td class="border-0 text-muted">{{ $loop->iteration }}</td>
+							<td class="border-0 text-muted">{{ $kursus->firstItem() + $loop->index }}</td>
 							<td class="border-0 fw-500">{{ $k->nama }}</td>
 							<td class="border-0">{{ $k->program->nama }}</td>
 							<td class="border-0">{{ $k->level->nama }}</td>
@@ -51,6 +51,11 @@
 					</tbody>
 				</table>
 			</div>
+			@if($kursus->hasPages())
+				<div class="card-footer">
+					{{ $kursus->links('pagination::bootstrap-5') }}
+				</div>
+			@endif
 		</div>
 	</div>
 </div>

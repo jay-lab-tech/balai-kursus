@@ -147,17 +147,25 @@
                                         <li><a class="dropdown-item" href="{{ url('/admin/kursus') }}"><i class="bi bi-bookmark me-2"></i>Kursus</a></li>
                                         <li><a class="dropdown-item" href="{{ url('/admin/instruktur') }}"><i class="bi bi-mortarboard me-2"></i>Instruktur</a></li>
                                         <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ url('/admin/lokasi') }}"><i class="bi bi-geo-alt me-2"></i>Lokasi</a></li>
+                                        <li><a class="dropdown-item" href="{{ url('/admin/kelas') }}"><i class="bi bi-building me-2"></i>Kelas</a></li>
+                                        <li><a class="dropdown-item" href="{{ url('/admin/hari') }}"><i class="bi bi-calendar3 me-2"></i>Hari</a></li>
                                         <li><a class="dropdown-item" href="{{ url('/admin/jadwal') }}"><i class="bi bi-calendar-event me-2"></i>Jadwal (admin)</a></li>
                                     </ul>
                                 </li>
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a class="nav-link" href="{{ url('/admin/pembayaran') }}">
                                         <i class="bi bi-cash-coin me-1"></i>Pembayaran
                                     </a>
-                                </li>
+                                </li> --}}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url('/admin/risalah') }}">
                                         <i class="bi bi-journal-text me-1"></i>Risalah & Absensi
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('/admin/score') }}">
+                                        <i class="bi bi-file-check me-1"></i>Nilai Peserta
                                     </a>
                                 </li>
                             @elseif(Auth::user()->role === 'instruktur')

@@ -18,8 +18,8 @@ class Kursus extends Model
     use HasFactory;
 
     protected $fillable = [
-        'program_id','level_id','instruktur_id',
-        'nama','harga','kuota','status'
+        'program_id','level_id','instruktur_id','instruktur_id_2',
+        'nama','periode','harga','harga_upi','kuota','status'
     ];
 
     public function program() {
@@ -32,6 +32,10 @@ class Kursus extends Model
 
     public function instruktur() {
         return $this->belongsTo(Instruktur::class);
+    }
+
+    public function instruktur2() {
+        return $this->belongsTo(Instruktur::class, 'instruktur_id_2');
     }
 
     public function pendaftarans() {

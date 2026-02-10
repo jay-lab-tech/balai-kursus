@@ -46,13 +46,43 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="instruktur_id_2" class="form-label fw-500">Instruktur Kedua (Opsional)</label>
+                            <select class="form-select" id="instruktur_id_2" name="instruktur_id_2">
+                                <option value="">-- Pilih Instruktur --</option>
+                                @foreach($instruktur as $i)
+                                    <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="periode" class="form-label fw-500">Periode</label>
+                            <input type="text" class="form-control" id="periode" name="periode" placeholder="Contoh: Februari 2026">
+                        </div>
+
+                        <div class="mb-3">
                             <label for="harga" class="form-label fw-500">Harga</label>
                             <input type="number" class="form-control" id="harga" name="harga" required>
                         </div>
 
                         <div class="mb-3">
+                            <label for="harga_upi" class="form-label fw-500">Harga UPI (Opsional)</label>
+                            <input type="number" class="form-control" id="harga_upi" name="harga_upi">
+                        </div>
+
+                        <div class="mb-3">
                             <label for="kuota" class="form-label fw-500">Kuota</label>
                             <input type="number" class="form-control" id="kuota" name="kuota" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label fw-500">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="">-- Pilih Status --</option>
+                                <option value="buka">Buka</option>
+                                <option value="tutup">Tutup</option>
+                                <option value="berjalan">Berjalan</option>
+                            </select>
                         </div>
 
                         <div class="d-flex gap-2">

@@ -23,7 +23,9 @@ class KursusController extends Controller
     }
     public function index()
     {
-        $kursus = Kursus::with('program', 'level', 'instruktur')->get();
+        $kursus = Kursus::with('program', 'level', 'instruktur', 'instruktur2')
+            ->latest('id')
+            ->paginate(15);
         return view('kursus::admin.kursus.index', compact('kursus'));
     }
 
@@ -42,8 +44,21 @@ class KursusController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'program_id' => 'required|exists:programs,id',
+            'level_id' => 'required|exists:levels,id',
+            'instruktur_id' => 'required|exists:instrukturs,id',
+            'instruktur_id_2' => 'nullable|exists:instrukturs,id',
+            'nama' => 'required|string',
+            'periode' => 'nullable|string',
+            'harga' => 'required|numeric',
+            'harga_upi' => 'nullable|numeric',
+            'kuota' => 'required|integer',
+            'status' => 'required|in:buka,tutup,berjalan'
+        ]);
+        
         Kursus::create($request->all());
-        return redirect('/admin/kursus');
+        return redirect('/admin/kursus')->with('success', 'Kursus berhasil ditambahkan');
     }
 
     public function edit(Kursus $kursus)
@@ -62,8 +77,21 @@ class KursusController extends Controller
 
     public function update(Request $request, Kursus $kursus)
     {
+        $request->validate([
+            'program_id' => 'required|exists:programs,id',
+            'level_id' => 'required|exists:levels,id',
+            'instruktur_id' => 'required|exists:instrukturs,id',
+            'instruktur_id_2' => 'nullable|exists:instrukturs,id',
+            'nama' => 'required|string',
+            'periode' => 'nullable|string',
+            'harga' => 'required|numeric',
+            'harga_upi' => 'nullable|numeric',
+            'kuota' => 'required|integer',
+            'status' => 'required|in:buka,tutup,berjalan'
+        ]);
+        
         $kursus->update($request->all());
-        return redirect('/admin/kursus')->with('success', 'Berhasil update');
+        return redirect('/admin/kursus')->with('success', 'Kursus berhasil diperbarui');
     }
 
 
@@ -77,7 +105,8 @@ class KursusController extends Controller
     {
         $peserta = $kursus->pendaftarans()
             ->with('peserta.user')
-            ->get();
+            ->latest('id')
+            ->paginate(15);
 
         return view('kursus::admin.kursus.peserta', compact('kursus', 'peserta'));
     }

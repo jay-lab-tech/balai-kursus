@@ -36,4 +36,13 @@ Route::middleware(['auth'])
         Route::get('/jadwal', 'Admin\JadwalController@indexAll')->name('jadwal.all');
         Route::get('/risalah', 'Admin\KursusController@allRisalahs')->name('risalah.all');
         Route::get('/absensi', 'Admin\KursusController@allAbsensis')->name('absensi.all');
+
+        // Score Routes
+        Route::resource('/score', 'Admin\ScoreController')->except(['show']);
+        Route::get('/score/{score}', 'Admin\ScoreController@show')->name('score.show');
+
+        // Master Data Routes
+        Route::resource('/lokasi', 'Admin\LokasiController');
+        Route::resource('/kelas', 'Admin\KelaController');
+        Route::resource('/hari', 'Admin\HariController')->except(['show']);
     });

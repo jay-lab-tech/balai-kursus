@@ -86,92 +86,33 @@
                         <strong>Pembayaran Lunas!</strong> Anda sudah menyelesaikan semua pembayaran untuk kursus ini.
                     </div>
                 @else
-                    <div class="row g-3">
-                        <!-- Payment Method Tabs -->
-                        <div class="col-12">
-                            <ul class="nav nav-tabs" id="paymentTabs{{ $p->id }}" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="online-tab{{ $p->id }}" data-bs-toggle="tab" 
-                                            data-bs-target="#online{{ $p->id }}" type="button" role="tab">
-                                        <i class="bi bi-credit-card me-2"></i>Pembayaran Online
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="manual-tab{{ $p->id }}" data-bs-toggle="tab" 
-                                            data-bs-target="#manual{{ $p->id }}" type="button" role="tab">
-                                        <i class="bi bi-upload me-2"></i>Upload Bukti
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="tab-content" id="paymentTabsContent{{ $p->id }}">
-                        <!-- Online Payment Tab -->
-                        <div class="tab-pane fade show active" id="online{{ $p->id }}" role="tabpanel">
-                            <div class="mt-4 card border-0 bg-light p-4">
-                                <p class="text-muted mb-3">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    Bayar menggunakan berbagai metode pembayaran (kartu kredit, transfer bank, e-wallet, dll)
-                                </p>
-                                
-                                <div class="mb-3">
-                                    <label for="amountOnline{{ $p->id }}" class="form-label fw-500">Nominal Pembayaran</label>
-                                    <small class="text-muted d-block mb-2">
-                                        Sisa Pembayaran: Rp {{ number_format($p->sisa()) }}
-                                    </small>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="number" class="form-control" id="amountOnline{{ $p->id }}" 
-                                               placeholder="Masukkan nominal" max="{{ $p->sisa() }}" 
-                                               min="1000" step="1000" value="{{ $p->sisa() }}">
-                                    </div>
-                                    <small class="text-muted d-block mt-2">
-                                        Minimal: Rp 1.000 | Maksimal: Rp {{ number_format($p->sisa()) }}
-                                    </small>
-                                </div>
-
-                                <button type="button" class="btn btn-success w-100" 
-                                        onclick="processOnlinePayment('{{ $p->id }}')">
-                                    <i class="bi bi-credit-card me-2"></i>Lanjutkan ke Pembayaran
-                                </button>
+                    <!-- Online Payment Only -->
+                    <div class="card border-0 bg-light p-4">
+                        <p class="text-muted mb-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Bayar menggunakan berbagai metode pembayaran (kartu kredit, transfer bank, e-wallet, dll)
+                        </p>
+                        
+                        <div class="mb-3">
+                            <label for="amountOnline{{ $p->id }}" class="form-label fw-500">Nominal Pembayaran</label>
+                            <small class="text-muted d-block mb-2">
+                                Sisa Pembayaran: Rp {{ number_format($p->sisa()) }}
+                            </small>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" class="form-control" id="amountOnline{{ $p->id }}" 
+                                       placeholder="Masukkan nominal" max="{{ $p->sisa() }}" 
+                                       min="1000" step="1000" value="{{ $p->sisa() }}">
                             </div>
+                            <small class="text-muted d-block mt-2">
+                                Minimal: Rp 1.000 | Maksimal: Rp {{ number_format($p->sisa()) }}
+                            </small>
                         </div>
 
-                        <!-- Manual Payment Tab -->
-                        <div class="tab-pane fade" id="manual{{ $p->id }}" role="tabpanel">
-                            <div class="mt-4">
-                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-receipt me-2 text-primary"></i>Bayar Angsuran</h6>
-                                <form action="{{ route('peserta.bayar', $p->id) }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label for="jumlah" class="form-label fw-500">Jumlah Bayar</label>
-                                            <small class="text-muted d-block mb-2">Maksimal: Rp {{ number_format($p->sisa()) }}</small>
-                                            <input type="number" class="form-control @error('jumlah') is-invalid @enderror" 
-                                                   id="jumlah" name="jumlah" placeholder="Masukkan jumlah bayar" 
-                                                   max="{{ $p->sisa() }}" min="1000" step="1000" required>
-                                            @error('jumlah')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="bukti" class="form-label fw-500">Bukti Pembayaran</label>
-                                            <input type="file" class="form-control @error('bukti') is-invalid @enderror" 
-                                                   id="bukti" name="bukti" accept="image/*" required>
-                                            @error('bukti')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-12">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="bi bi-upload me-2"></i>Upload Bukti Pembayaran
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        <button type="button" class="btn btn-success w-100" 
+                                onclick="processOnlinePayment('{{ $p->id }}')">
+                            <i class="bi bi-credit-card me-2"></i>Lanjutkan ke Pembayaran Online
+                        </button>
                     </div>
                 @endif
             </div>

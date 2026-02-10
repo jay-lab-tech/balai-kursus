@@ -5,6 +5,9 @@ namespace Modules\Kursus\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use App\Models\Kursus;
+use App\Models\Lokasi;
+use App\Models\Kela;
+use App\Models\Hari;
 use Illuminate\Http\Request;
 
 class JadwalController extends Controller
@@ -19,20 +22,28 @@ class JadwalController extends Controller
     }
     public function index(Kursus $kursus)
     {
-        $jadwals = $kursus->jadwals()->latest()->get();
+        $jadwals = $kursus->jadwals()
+            ->with('lokasi', 'kela', 'hari')
+            ->latest('id')
+            ->paginate(15);
         return view('kursus::admin.jadwal.index', compact('kursus', 'jadwals'));
     }
 
     // Global jadwal list across all kursus
     public function indexAll()
     {
-        $jadwals = Jadwal::with('kursus')->latest()->get();
+        $jadwals = Jadwal::with('kursus', 'lokasi', 'kela', 'hari')
+            ->latest('id')
+            ->paginate(15);
         return view('kursus::admin.jadwal.all', compact('jadwals'));
     }
 
     public function create(Kursus $kursus)
     {
-        return view('kursus::admin.jadwal.create', compact('kursus'));
+        $lokasis = Lokasi::all();
+        $kelas = Kela::all();
+        $haris = Hari::all();
+        return view('kursus::admin.jadwal.create', compact('kursus', 'lokasis', 'kelas', 'haris'));
     }
 
     public function store(Request $request, Kursus $kursus)
@@ -41,7 +52,10 @@ class JadwalController extends Controller
             'pertemuan_ke' => 'nullable|integer',
             'tgl_pertemuan' => 'required|date',
             'jam_mulai' => 'nullable',
-            'jam_selesai' => 'nullable'
+            'jam_selesai' => 'nullable',
+            'lokasi_id' => 'required|exists:lokasis,id',
+            'kela_id' => 'required|exists:kelas,id',
+            'hari_id' => 'required|exists:haris,id'
         ]);
 
         Jadwal::create([
@@ -50,6 +64,9 @@ class JadwalController extends Controller
             'tgl_pertemuan' => $request->tgl_pertemuan,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
+            'lokasi_id' => $request->lokasi_id,
+            'kela_id' => $request->kela_id,
+            'hari_id' => $request->hari_id,
             'created_by' => auth()->id()
         ]);
 
@@ -74,7 +91,10 @@ class JadwalController extends Controller
 
     public function edit(Kursus $kursus, Jadwal $jadwal)
     {
-        return view('kursus::admin.jadwal.edit', compact('kursus', 'jadwal'));
+        $lokasis = Lokasi::all();
+        $kelas = Kela::all();
+        $haris = Hari::all();
+        return view('kursus::admin.jadwal.edit', compact('kursus', 'jadwal', 'lokasis', 'kelas', 'haris'));
     }
 
     public function update(Request $request, Kursus $kursus, Jadwal $jadwal)
@@ -82,9 +102,12 @@ class JadwalController extends Controller
         $request->validate([
             'pertemuan_ke' => 'nullable|integer',
             'tgl_pertemuan' => 'required|date',
+            'lokasi_id' => 'required|exists:lokasis,id',
+            'kela_id' => 'required|exists:kelas,id',
+            'hari_id' => 'required|exists:haris,id'
         ]);
 
-        $jadwal->update($request->only(['pertemuan_ke','tgl_pertemuan','jam_mulai','jam_selesai']));
+        $jadwal->update($request->only(['pertemuan_ke','tgl_pertemuan','jam_mulai','jam_selesai','lokasi_id','kela_id','hari_id']));
 
         return redirect("/admin/kursus/{$kursus->id}/jadwal")->with('success', 'Jadwal diperbarui');
     }

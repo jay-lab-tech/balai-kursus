@@ -10,6 +10,7 @@ class Pendaftaran extends Model
     use HasFactory;
 
     protected $fillable = [
+        'nomor',
         'peserta_id',
         'kursus_id',
         'status_pembayaran',
@@ -40,6 +41,11 @@ class Pendaftaran extends Model
     public function absensis()
     {
         return $this->hasMany(Absensi::class);
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
 
     public function isLunas()

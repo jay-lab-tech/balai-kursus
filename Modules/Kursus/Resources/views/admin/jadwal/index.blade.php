@@ -15,6 +15,9 @@
                         <th>Pertemuan</th>
                         <th>Tanggal</th>
                         <th>Waktu</th>
+                        <th>Lokasi</th>
+                        <th>Kelas</th>
+                        <th>Hari</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -24,6 +27,9 @@
                             <td>{{ $jadwal->pertemuan_ke ?? '-' }}</td>
                             <td>{{ $jadwal->tgl_pertemuan->format('d M Y') }}</td>
                             <td>{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
+                            <td>{{ $jadwal->lokasi->nama ?? '-' }}</td>
+                            <td>{{ $jadwal->kela->nama ?? '-' }}</td>
+                            <td>{{ $jadwal->hari->nama ?? '-' }}</td>
                             <td>
                                 <a href="/admin/kursus/{{ $kursus->id }}/jadwal/{{ $jadwal->id }}/edit" class="btn btn-sm btn-secondary">Edit</a>
                                 <form action="/admin/kursus/{{ $kursus->id }}/jadwal/{{ $jadwal->id }}" method="POST" class="d-inline">
@@ -35,10 +41,15 @@
                         </tr>
                     @endforeach
                     @if($jadwals->isEmpty())
-                        <tr><td colspan="4">Belum ada jadwal.</td></tr>
+                        <tr><td colspan="7">Belum ada jadwal.</td></tr>
                     @endif
                 </tbody>
             </table>
+            @if($jadwals->hasPages())
+                <nav>
+                    {{ $jadwals->links('pagination::bootstrap-5') }}
+                </nav>
+            @endif
         </div>
     </div>
 </div>
