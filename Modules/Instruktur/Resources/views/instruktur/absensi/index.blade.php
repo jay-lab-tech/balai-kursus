@@ -55,7 +55,7 @@
             <div class="text-center py-5">
                 <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
                 <h5 class="mt-3 text-dark">Belum ada kursus</h5>
-                <p class="text-muted">Hubungi admin untuk mendapatkan kursus</p>
+                <p class="text-muted">Hubungi Admin untuk mendapatkan kursus</p>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
