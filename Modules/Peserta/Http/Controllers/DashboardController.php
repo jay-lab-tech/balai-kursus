@@ -15,6 +15,6 @@ class DashboardController extends Controller
             ->where('peserta_id', $peserta->id)
             ->get();
         
-        return view('peserta.dashboard.index', compact('pendaftarans'));
+        return view('peserta::dashboard.index', compact('pendaftarans'));
     }
 }

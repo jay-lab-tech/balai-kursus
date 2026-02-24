@@ -116,6 +116,11 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('/peserta/kursus/saya') }}">
+                                        <i class="bi bi-bookmark-check me-1"></i>Kursus Saya
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ url('/peserta/kursus') }}">
                                         <i class="bi bi-book me-1"></i>Kursus
                                     </a>

@@ -19,8 +19,11 @@ Route::middleware(['auth'])
         // Kursus Routes
         Route::prefix('kursus')->name('kursus.')->group(function () {
             Route::get('/', 'KursusController@index')->name('index');
-            Route::get('{kursus}', 'KursusController@show')->name('show');
+            Route::get('saya', 'KursusController@kursusSaya')->name('saya');
             Route::post('{kursus}/daftar', 'KursusController@daftar')->name('daftar');
+            Route::get('{kursus}/detail', 'KursusController@showDetail')->name('detail');
+            Route::get('{kursus}/risalah', 'KursusController@showRisalah')->name('risalah');
+            Route::get('{kursus}', 'KursusController@show')->name('show');
         });
 
         // Pendaftaran Routes

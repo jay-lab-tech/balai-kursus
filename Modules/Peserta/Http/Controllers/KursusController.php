@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Kursus;
 use App\Models\Pendaftaran;
 use App\Models\Pembayaran;
+use App\Models\Risalah;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -15,13 +16,74 @@ class KursusController extends Controller
     public function index()
     {
         $kursus = \App\Models\Kursus::with('program', 'level', 'instruktur')->get();
-        return view('peserta.kursus.index', compact('kursus'));
+        return view('peserta::kursus.index', compact('kursus'));
+    }
+
+    public function kursusSaya()
+    {
+        $peserta = Auth::user()->peserta;
+        
+        if (!$peserta) {
+            abort(403, 'Bukan peserta');
+        }
+
+        // Get kursus yang diikuti peserta
+        $pendaftarans = Pendaftaran::with('kursus.program', 'kursus.level', 'kursus.instruktur')
+            ->where('peserta_id', $peserta->id)
+            ->get();
+
+        return view('peserta::kursus.kursus-saya', compact('pendaftarans'));
+    }
+
+    public function showDetail(Kursus $kursus)
+    {
+        $peserta = Auth::user()->peserta;
+        
+        if (!$peserta) {
+            abort(403, 'Bukan peserta');
+        }
+
+        $pendaftaran = Pendaftaran::where('peserta_id', $peserta->id)
+            ->where('kursus_id', $kursus->id)
+            ->first();
+
+        if (!$pendaftaran) {
+            abort(403, 'Anda tidak terdaftar di kursus ini');
+        }
+
+        // Get pertemuan (risalah) untuk kursus ini
+        $risalahs = $kursus->risalahs()->orderBy('pertemuan_ke')->get();
+
+        return view('peserta::kursus.detail', compact('kursus', 'risalahs', 'pendaftaran'));
     }
 
     public function show(\App\Models\Kursus $kursus)
     {
         $kursus->load('program','level','instruktur','jadwals');
-        return view('peserta.kursus.show', compact('kursus'));
+        return view('peserta::kursus.show', compact('kursus'));
+    }
+
+    public function showRisalah(Kursus $kursus)
+    {
+        // Check if user is registered in this course
+        $peserta = Auth::user()->peserta;
+        
+        if (!$peserta) {
+            abort(403, 'Bukan peserta');
+        }
+
+        $pendaftaran = Pendaftaran::where('peserta_id', $peserta->id)
+            ->where('kursus_id', $kursus->id)
+            ->first();
+
+        if (!$pendaftaran) {
+            abort(403, 'Anda tidak terdaftar di kursus ini');
+        }
+
+        // Get risalah for this course  
+        $risalahs = $kursus->risalahs()->latest('pertemuan_ke')->get();
+
+        return view('peserta::kursus.risalah', compact('kursus', 'risalahs'));
     }
 
     public function daftar(Kursus $kursus)

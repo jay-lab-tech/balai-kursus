@@ -57,12 +57,17 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('peserta.kursus.daftar', $k->id) }}" method="POST" class="d-grid">
-                        @csrf
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle me-2"></i>Daftar Kursus
-                        </button>
-                    </form>
+                    <div class="d-grid gap-2">
+                        <a href="/peserta/kursus/{{ $k->id }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye me-2"></i>Lihat Detail
+                        </a>
+                        <form action="{{ route('peserta.kursus.daftar', $k->id) }}" method="POST" class="d-grid">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Daftar Kursus
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
