@@ -6,9 +6,14 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-dark mb-0"><i class="bi bi-book me-2"></i>{{ $kursus->nama }}</h2>
-        <a href="/instruktur/kursus" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Kembali
-        </a>
+        <div>
+            <a href="{{ route('instruktur.nilai.index', $kursus) }}" class="btn btn-success me-2">
+                <i class="bi bi-star me-2"></i>Kelola Nilai
+            </a>
+            <a href="/instruktur/kursus" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Kembali
+            </a>
+        </div>
     </div>
 
     {{-- Admin membuat pertemuan; instruktur tidak dapat menambah pertemuan --}}

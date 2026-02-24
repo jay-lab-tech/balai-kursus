@@ -31,9 +31,12 @@
     </div>
     @endif
 
+    <div class="mb-3">
+        <input type="text" id="filterInputPesertaKursus" placeholder="Cari nama kursus, program, level, instruktur..." class="form-control" />
+    </div>
     <div class="row">
         @forelse($kursus as $k)
-        <div class="col-md-6 col-lg-4 mb-4">
+        <div class="col-md-6 col-lg-4 mb-4 peserta-kursus-item">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title fw-bold text-primary">{{ $k->nama }}</h5>
@@ -79,5 +82,18 @@
         </div>
         @endforelse
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterInput = document.getElementById('filterInputPesertaKursus');
+        filterInput.addEventListener('input', function() {
+            const filter = filterInput.value.toLowerCase();
+            const items = document.querySelectorAll('.peserta-kursus-item');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    });
+    </script>
 </div>
 @endsection

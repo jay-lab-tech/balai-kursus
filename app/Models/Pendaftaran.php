@@ -48,6 +48,11 @@ class Pendaftaran extends Model
         return $this->hasMany(Score::class);
     }
 
+    public function score()
+    {
+        return $this->hasOne(Score::class);
+    }
+
     public function isLunas()
     {
         return $this->terbayar >= $this->total_bayar;

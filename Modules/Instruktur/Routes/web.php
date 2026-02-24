@@ -34,6 +34,12 @@ Route::middleware(['auth', 'role:instruktur'])
             Route::put('{risalah}', 'RisalahController@update')->name('update');
         });
 
+        // Nilai Routes
+        Route::prefix('kursus/{kursus}')->name('nilai.')->group(function () {
+              Route::get('/nilai', 'NilaiController@index')->name('index');
+        });
+           Route::resource('nilai', 'NilaiController')->except(['index', 'create', 'edit']);
+
         // Jadwal (Read-only)
         Route::get('/jadwal', 'AbsensiController@jadwal')->name('jadwal.index');
     });

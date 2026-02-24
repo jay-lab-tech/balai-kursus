@@ -16,6 +16,9 @@
     </div>
     @endif
 
+    <div class="mb-3">
+        <input type="text" id="filterInputAdminPeserta" placeholder="Cari nama, email, nomor peserta, instansi..." class="form-control" />
+    </div>
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover mb-0">
@@ -30,7 +33,7 @@
                         <th class="fw-bold text-muted border-0">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="adminPesertaTableBody">
 
                 @foreach($pesertas as $p)
                 <tr style="transition: background-color 0.2s ease;">
@@ -53,6 +56,19 @@
                 </tbody>
             </table>
         </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterInput = document.getElementById('filterInputAdminPeserta');
+            filterInput.addEventListener('input', function() {
+                const filter = filterInput.value.toLowerCase();
+                const rows = document.querySelectorAll('#adminPesertaTableBody tr');
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        });
+        </script>
     </div>
 </div>
 
