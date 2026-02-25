@@ -19,12 +19,63 @@ class ScoreController extends Controller
     /**
      * Display all scores across all kursus
      */
-    public function index()
+    public function index(Request $request)
     {
-        $scores = Score::with('pendaftaran.peserta.user', 'pendaftaran.kursus', 'evaluator')
-            ->latest('scores.id')
-            ->paginate(15);
-        return view('kursus::admin.score.index', compact('scores'));
+        $q = $request->get('q');
+        $sortBy = $request->get('sort_by');
+        $sortDir = strtolower($request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        $query = Score::with('pendaftaran.peserta.user', 'pendaftaran.kursus', 'evaluator');
+
+        if ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('pendaftaran.peserta.user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%");
+                })
+                ->orWhereHas('pendaftaran.kursus', function ($k) use ($q) {
+                    $k->where('nama', 'like', "%{$q}%");
+                })
+                ->orWhereHas('pendaftaran.peserta', function ($p) use ($q) {
+                    $p->where('nomor_peserta', 'like', "%{$q}%");
+                });
+            });
+        }
+
+        // Whitelist sortable columns and apply ordering safely.
+        $allowed = ['participant', 'kursus', 'final_score', 'evaluated_at', 'status'];
+
+        if (in_array($sortBy, $allowed)) {
+            switch ($sortBy) {
+                case 'participant':
+                    $query = $query->select('scores.*')
+                        ->join('pendaftarans', 'scores.pendaftaran_id', '=', 'pendaftarans.id')
+                        ->join('pesertas', 'pendaftarans.peserta_id', '=', 'pesertas.id')
+                        ->join('users', 'pesertas.user_id', '=', 'users.id')
+                        ->orderBy('users.name', $sortDir);
+                    break;
+                case 'kursus':
+                    $query = $query->select('scores.*')
+                        ->join('pendaftarans', 'scores.pendaftaran_id', '=', 'pendaftarans.id')
+                        ->join('kursus', 'pendaftarans.kursus_id', '=', 'kursus.id')
+                        ->orderBy('kursus.nama', $sortDir);
+                    break;
+                case 'final_score':
+                    $query = $query->orderBy('final_score', $sortDir);
+                    break;
+                case 'evaluated_at':
+                    $query = $query->orderBy('evaluated_at', $sortDir);
+                    break;
+                case 'status':
+                    $query = $query->orderBy('status', $sortDir);
+                    break;
+            }
+        } else {
+            $query = $query->latest('scores.id');
+        }
+
+        $scores = $query->paginate(15)->appends($request->only('q', 'sort_by', 'sort_dir'));
+
+        return view('kursus::admin.score.index', compact('scores', 'q', 'sortBy', 'sortDir'));
     }
 
     /**

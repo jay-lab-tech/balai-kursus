@@ -4,9 +4,37 @@
 <div class="container-fluid py-4">
     <div class="mb-4 d-flex justify-content-between align-items-center">
         <h2 class="fw-bold text-dark mb-0"><i class="bi bi-list me-2"></i>Daftar Nilai Peserta</h2>
-        <a href="{{ route('admin.score.create') }}" class="btn btn-primary btn-lg">
-            <i class="bi bi-plus-circle me-2"></i>Tambah Nilai
-        </a>
+
+        <div class="d-flex align-items-center">
+            <form method="GET" action="{{ route('admin.score.index') }}" class="me-3 d-flex">
+                <div class="input-group me-2">
+                    <input type="search" name="q" class="form-control" placeholder="Cari peserta, kursus atau nomor" value="{{ old('q', $q ?? '') }}">
+                    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+
+            <div class="dropdown me-3">
+                <input type="hidden" name="q" value="{{ request()->get('q') }}">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sortir
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.score.index', array_merge(request()->all(), ['sort_by' => 'final_score', 'sort_dir' => 'desc'])) }}">Nilai Tertinggi</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.score.index', array_merge(request()->all(), ['sort_by' => 'final_score', 'sort_dir' => 'asc'])) }}">Nilai Terendah</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.score.index', array_merge(request()->all(), ['sort_by' => 'status', 'sort_dir' => 'desc'])) }}">Status</a>
+                    </li>
+                </ul>
+            </div>
+
+            <a href="{{ route('admin.score.create') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Tambah Nilai
+            </a>
+        </div>
     </div>
     @if($scores->count())
         <div class="table-responsive">
