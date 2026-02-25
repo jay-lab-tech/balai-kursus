@@ -17,7 +17,24 @@ class NilaiController extends Controller
         if (!$instruktur || ($kursus->instruktur_id !== $instruktur->id && $kursus->instruktur_id_2 !== $instruktur->id)) {
             abort(403);
         }
-        $pendaftarans = $kursus->pendaftarans()->with('peserta.user', 'score')->get();
+        $query = $kursus->pendaftarans()->with('peserta.user', 'score');
+        if ($search = request('search')) {
+            $query->whereHas('peserta.user', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+        if ($filter = request('filter')) {
+            if ($filter == 'lulus') {
+                $query->whereHas('score', function($q) {
+                    $q->where('final_score', '>=', 60);
+                });
+            } elseif ($filter == 'tidak_lulus') {
+                $query->whereHas('score', function($q) {
+                    $q->where('final_score', '<', 60);
+                });
+            }
+        }
+        $pendaftarans = $query->get();
         return view('instruktur::instruktur.nilai.index', compact('kursus', 'pendaftarans'));
     }
 

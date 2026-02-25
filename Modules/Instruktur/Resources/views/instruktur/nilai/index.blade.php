@@ -11,6 +11,15 @@
         </div>
 
         <div class="overflow-x-auto">
+            <form method="GET" action="" class="mb-4 flex flex-wrap gap-2">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama peserta..." class="border rounded px-3 py-2" />
+                <select name="filter" class="border rounded px-3 py-2">
+                    <option value="">Semua</option>
+                    <option value="lulus" {{ request('filter')=='lulus' ? 'selected' : '' }}>Lulus</option>
+                    <option value="tidak_lulus" {{ request('filter')=='tidak_lulus' ? 'selected' : '' }}>Tidak Lulus</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Cari/Filter</button>
+            </form>
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-50">
                     <tr>

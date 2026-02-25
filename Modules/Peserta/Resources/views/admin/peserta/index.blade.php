@@ -16,9 +16,15 @@
     </div>
     @endif
 
-    <div class="mb-3">
-        <input type="text" id="filterInputAdminPeserta" placeholder="Cari nama, email, nomor peserta, instansi..." class="form-control" />
-    </div>
+    <form method="GET" action="" class="mb-3 d-flex gap-2">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, nomor peserta, instansi..." class="form-control" />
+        <select name="filter" class="form-select">
+            <option value="">Semua</option>
+            <option value="aktif" {{ request('filter')=='aktif' ? 'selected' : '' }}>Aktif</option>
+            <option value="nonaktif" {{ request('filter')=='nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Cari/Filter</button>
+    </form>
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover mb-0">

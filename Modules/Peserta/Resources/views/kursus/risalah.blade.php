@@ -14,6 +14,10 @@
         </a>
     </div>
 
+    <form method="GET" action="" class="mb-3 d-flex gap-2">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari materi, catatan..." class="form-control" />
+        <button type="submit" class="btn btn-primary">Cari</button>
+    </form>
     @if($risalahs && count($risalahs) > 0)
         <div class="card border-0 shadow-sm">
             <div class="table-responsive">

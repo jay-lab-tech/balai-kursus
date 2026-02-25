@@ -13,7 +13,24 @@ class PesertaController extends Controller
 {
     public function index()
     {
-        $pesertas = Peserta::with('user')->get();
+        $query = Peserta::with('user');
+        if ($search = request('search')) {
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%") ;
+            });
+            $query->orWhere('nomor_peserta', 'like', "%$search%")
+                  ->orWhere('no_hp', 'like', "%$search%")
+                  ->orWhere('instansi', 'like', "%$search%");
+        }
+        if ($filter = request('filter')) {
+            if ($filter == 'aktif') {
+                $query->where('status', 1);
+            } elseif ($filter == 'nonaktif') {
+                $query->where('status', 0);
+            }
+        }
+        $pesertas = $query->get();
         return view('peserta::admin.peserta.index', compact('pesertas'));
     }
 

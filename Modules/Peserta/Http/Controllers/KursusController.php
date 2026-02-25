@@ -80,9 +80,14 @@ class KursusController extends Controller
             abort(403, 'Anda tidak terdaftar di kursus ini');
         }
 
-        // Get risalah for this course  
-        $risalahs = $kursus->risalahs()->latest('pertemuan_ke')->get();
-
+        $query = $kursus->risalahs()->latest('pertemuan_ke');
+        if ($search = request('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('materi', 'like', "%$search%")
+                  ->orWhere('catatan', 'like', "%$search%");
+            });
+        }
+        $risalahs = $query->get();
         return view('peserta::kursus.risalah', compact('kursus', 'risalahs'));
     }
 
