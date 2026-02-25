@@ -11,16 +11,23 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Auth\CasLoginController;
+
+// SSO CAS Login
+Route::get('login/cas', [CasLoginController::class, 'redirectToCas'])->name('login.cas');
+Route::get('logout/cas', [CasLoginController::class, 'logout'])->name('logout.cas');
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-                ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    // Override default /login to always redirect to SSO
+    Route::get('login', function() {
+        return redirect()->route('login.cas');
+    })->name('login');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
                 ->name('password.request');
