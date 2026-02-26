@@ -4,54 +4,92 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Subfission\Cas\CasManager;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Peserta;
 
 class CasLoginController extends Controller
 {
     public function redirectToCas()
     {
-        // Trigger SSO login
-        \Cas::authenticate();
-        $username = \Cas::getCurrentUser();
-        if ($username) {
-            
-            $email = \Cas::getAttribute('email') ?? $username.'@upi.edu';
-            $name = \Cas::getAttribute('nama') ?? $username;
-            
-            $role = \Cas::getAttribute('role') ?? 'peserta';
+        // Jika belum login ke CAS, redirect ke server CAS
+        if (!\Cas::isAuthenticated()) {
+            return \Cas::authenticate();
+        }
 
-            
-            $user = \App\Models\User::where('username', $username)->orWhere('email', $email)->first();
-            if (!$user) {
-                $user = \App\Models\User::create([
-                    'name' => $name,
-                    'email' => $email,
-                    'username' => $username,
-                    'role' => $role,
-                    'password' => bcrypt(uniqid()),
-                ]);
-            } else {
-            
-                $user->update([
-                    'name' => $name,
-                    'email' => $email,
-                    'role' => $role,
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil Data dari CAS
+        |--------------------------------------------------------------------------
+        */
+
+        $username = \Cas::user(); // Biasanya NIM (unik)
+        $email    = \Cas::getAttribute('email') ?? $username . '@upi.edu';
+        $name     = \Cas::getAttribute('nama') ?? $username;
+        $role     = \Cas::getAttribute('role') ?? 'peserta';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cari atau Buat User
+        |--------------------------------------------------------------------------
+        */
+
+        $user = User::where('name', $username)->first();
+
+        if (!$user) {
+            $user = User::create([
+                'name' => $username,
+                'name'     => $name,
+                'email'    => $email,
+                'role'     => $role,
+                'password' => bcrypt(uniqid()), // dummy password
+            ]);
+        } else {
+            $user->update([
+                'name'  => $name,
+                'email' => $email,
+                'role'  => $role,
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Auto Create Peserta Jika Role Peserta
+        |--------------------------------------------------------------------------
+        */
+
+        if ($role === 'peserta') {
+            if (!$user->peserta) {
+                $nomorPeserta = 'PS-' . date('Y') . '-' . str_pad($user->id, 5, '0', STR_PAD_LEFT);
+                Peserta::create([
+                    'user_id' => $user->id,
+                    'nomor_peserta' => $nomorPeserta,
+                    'no_hp' => '-',
+                    'instansi'      => 'Belum diisi'
+                    
                 ]);
             }
-            Auth::login($user);
-            return redirect()->intended('/');
         }
-        return redirect('/login')->withErrors('SSO gagal.');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login ke Laravel
+        |--------------------------------------------------------------------------
+        */
+
+        Auth::login($user);
+
+        return redirect()->intended('/');
     }
 
     public function logout(Request $request)
     {
-        \Cas::logout();
         Auth::logout();
+        \Cas::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }
