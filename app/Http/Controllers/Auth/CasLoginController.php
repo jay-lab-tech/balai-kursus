@@ -16,13 +16,13 @@ class CasLoginController extends Controller
         \Cas::authenticate();
         $username = \Cas::getCurrentUser();
         if ($username) {
-            // Ambil atribut SSO jika ada (misal email, nama, role)
+            
             $email = \Cas::getAttribute('email') ?? $username.'@upi.edu';
             $name = \Cas::getAttribute('nama') ?? $username;
-            // Contoh: role dari SSO, fallback ke peserta
+            
             $role = \Cas::getAttribute('role') ?? 'peserta';
 
-            // Cek user lokal, jika belum ada buat baru
+            
             $user = \App\Models\User::where('username', $username)->orWhere('email', $email)->first();
             if (!$user) {
                 $user = \App\Models\User::create([
@@ -30,10 +30,10 @@ class CasLoginController extends Controller
                     'email' => $email,
                     'username' => $username,
                     'role' => $role,
-                    'password' => bcrypt(uniqid()), // password random, tidak dipakai
+                    'password' => bcrypt(uniqid()),
                 ]);
             } else {
-                // Update data jika perlu
+            
                 $user->update([
                     'name' => $name,
                     'email' => $email,

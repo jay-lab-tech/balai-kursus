@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\CasLoginController;
 
 Route::get('/', function () {
     if (auth()->check()) {
