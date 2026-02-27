@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Peserta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -16,8 +16,16 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $peserta = null;
+
+        if ($user->role === 'peserta') {
+            $peserta = Peserta::where('user_id', $user->id)->first();
+        }
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'peserta' => $peserta,
         ]);
     }
 
@@ -34,27 +42,22 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        // Update Data Peserta jika user adalah peserta
+        if ($request->user()->role === 'peserta') {
+            $request->validate([
+                'no_hp' => ['nullable', 'string', 'max:20'],
+                'instansi' => ['nullable', 'string', 'max:255'],
+            ]);
+
+            Peserta::updateOrCreate(
+                ['user_id' => $request->user()->id],
+                [
+                    'no_hp' => $request->input('no_hp'),
+                    'instansi' => $request->input('instansi'),
+                ]
+            );
+        }
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
     }
 }

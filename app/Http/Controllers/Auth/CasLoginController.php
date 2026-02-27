@@ -39,7 +39,6 @@ class CasLoginController extends Controller
         if (!$user) {
             $user = User::create([
                 'name' => $username,
-                'name'     => $name,
                 'email'    => $email,
                 'role'     => $role,
                 'password' => bcrypt(uniqid()), // dummy password
