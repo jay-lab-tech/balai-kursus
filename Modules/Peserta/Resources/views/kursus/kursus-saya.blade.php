@@ -19,8 +19,17 @@
         <div class="row">
             @foreach($pendaftarans as $p)
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 d-flex flex-column">
+                <div class="card border-0 shadow-sm h-100 d-flex flex-column"
+                    @if($p->kursus->tanggal_selesai && \Carbon\Carbon::parse($p->kursus->tanggal_selesai)->lt(now()))
+                        style="background-color: #ffe5e5;"
+                    @endif
+                >
                     <div class="card-body flex-grow-1">
+                                                @if($p->kursus->tanggal_selesai && \Carbon\Carbon::parse($p->kursus->tanggal_selesai)->lt(now()))
+                                                    <div class="alert alert-warning py-2 mb-2">
+                                                        <strong>Pemberitahuan:</strong> Kursus ini sudah melewati tanggal selesai ({{ $p->kursus->tanggal_selesai }}).
+                                                    </div>
+                                                @endif
                         <div class="mb-3">
                             <h5 class="card-title fw-bold text-primary mb-2">{{ $p->kursus->nama }}</h5>
                             <small class="text-muted d-block mb-2">

@@ -10,7 +10,7 @@ class Level extends Model
     use HasFactory;
 
     protected $fillable = [
-        'program_id','nama'
+        'program_id','nama','warna'
     ];
 
     public function program() {

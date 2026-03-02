@@ -23,7 +23,7 @@ class KursusController extends Controller
     }
     public function index()
     {
-        $kursus = Kursus::with('program', 'level', 'instruktur', 'instruktur2')
+        $kursus = Kursus::with('program', 'instruktur', 'instruktur2')
             ->latest('id')
             ->paginate(15);
         return view('kursus::admin.kursus.index', compact('kursus'));
@@ -51,6 +51,8 @@ class KursusController extends Controller
             'instruktur_id_2' => 'nullable|exists:instrukturs,id',
             'nama' => 'required|string',
             'periode' => 'nullable|string',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'harga' => 'required|numeric',
             'harga_upi' => 'nullable|numeric',
             'kuota' => 'required|integer',
@@ -84,6 +86,8 @@ class KursusController extends Controller
             'instruktur_id_2' => 'nullable|exists:instrukturs,id',
             'nama' => 'required|string',
             'periode' => 'nullable|string',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'harga' => 'required|numeric',
             'harga_upi' => 'nullable|numeric',
             'kuota' => 'required|integer',

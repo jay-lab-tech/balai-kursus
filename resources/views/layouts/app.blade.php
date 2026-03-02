@@ -16,6 +16,18 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
+                        @php
+                            $kursus_selesai = \App\Models\Kursus::whereNotNull('tanggal_selesai')
+                                ->where('tanggal_selesai', '<', now())
+                                ->get();
+                        @endphp
+                        @if($kursus_selesai->count())
+                            <div class="max-w-7xl mx-auto py-2 px-4">
+                                <div class="alert alert-warning">
+                                    <strong>Pemberitahuan:</strong> Ada {{ $kursus_selesai->count() }} kursus yang sudah melewati tanggal selesai.
+                                </div>
+                            </div>
+                        @endif
             @include('layouts.navigation')
 
             <!-- Page Heading -->

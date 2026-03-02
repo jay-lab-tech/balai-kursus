@@ -18,7 +18,7 @@ class KursusFactory extends Factory
         
         return [
             'program_id' => Program::factory(),
-            'level_id' => Level::factory(),
+            'level' => $this->faker->randomElement(['Dasar', 'Menengah', 'Lanjutan']),
             'instruktur_id' => Instruktur::factory(),
             'nama' => $this->faker->sentence(3),
             'harga' => $harga,

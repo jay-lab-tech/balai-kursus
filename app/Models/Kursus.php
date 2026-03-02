@@ -19,7 +19,7 @@ class Kursus extends Model
 
     protected $fillable = [
         'program_id','level_id','instruktur_id','instruktur_id_2',
-        'nama','periode','harga','harga_upi','kuota','status'
+        'nama','periode','tanggal_mulai','tanggal_selesai','harga','harga_upi','kuota','status'
     ];
 
     public function program() {

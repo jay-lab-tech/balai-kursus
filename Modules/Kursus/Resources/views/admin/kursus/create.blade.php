@@ -32,6 +32,9 @@
                             <label for="level_id" class="form-label fw-500">Level</label>
                             <select class="form-select" id="level_id" name="level_id" required>
                                 <option value="">-- Pilih Level --</option>
+                                @foreach($level as $l)
+                                    <option value="{{ $l->id }}">{{ $l->nama }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -59,6 +62,14 @@
                             <label for="periode" class="form-label fw-500">Periode</label>
                             <input type="text" class="form-control" id="periode" name="periode" placeholder="Contoh: Februari 2026">
                         </div>
+                            <div class="mb-3">
+                                <label for="tanggal_mulai" class="form-label fw-500">Tanggal Mulai</label>
+                                <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal_selesai" class="form-label fw-500">Tanggal Selesai</label>
+                                <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" required>
+                            </div>
 
                         <div class="mb-3">
                             <label for="harga" class="form-label fw-500">Harga</label>

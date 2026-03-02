@@ -264,7 +264,7 @@ class ComprehensiveSeeder extends Seeder
                 'level_id' => $level->id,
                 'instruktur_id' => $instrukturs->random()->id,
                 'instruktur_id_2' => rand(0, 1) ? $instrukturs->random()->id : null,
-                'nama' => 'Kursus ' . $level->program->nama . ' - ' . $level->nama,
+                'nama' => 'Kursus ' . $level->nama,
                 'periode' => 'Februari 2026',
                 'harga' => $this->getRandomHarga(),
                 'harga_upi' => $this->getRandomHarga(),

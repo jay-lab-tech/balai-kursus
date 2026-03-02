@@ -37,7 +37,16 @@
     <div class="row">
         @forelse($kursus as $k)
         <div class="col-md-6 col-lg-4 mb-4 peserta-kursus-item">
-            <div class="card border-0 shadow-sm h-100">
+            @php
+                $levelColors = [
+                    'Beginner' => '#e3f2fd',
+                    'Intermediate' => '#fff3e0',
+                    'Advanced' => '#f3e5f5',
+                    'Expert' => '#e8f5e9',
+                ];
+                $bgColor = $levelColors[$k->level->nama] ?? '#f8f9fa';
+            @endphp
+            <div class="card border-0 shadow-sm h-100" style="background-color: {{ $bgColor }};">
                 <div class="card-body">
                     <h5 class="card-title fw-bold text-primary">{{ $k->nama }}</h5>
                     

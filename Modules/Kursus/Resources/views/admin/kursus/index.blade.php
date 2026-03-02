@@ -8,6 +8,16 @@
 	</div>
 
 	<div class="card border-0 shadow-sm">
+			@php
+				$kursus_selesai = $kursus->filter(function($k) {
+					return $k->tanggal_selesai && \Carbon\Carbon::parse($k->tanggal_selesai)->lt(now());
+				});
+			@endphp
+			@if($kursus_selesai->count())
+				<div class="alert alert-warning mb-3">
+					<strong>Pemberitahuan:</strong> Ada {{ $kursus_selesai->count() }} kursus yang sudah melewati tanggal selesai.
+				</div>
+			@endif
 		<div class="card-body p-0">
 			<div class="table-responsive">
 				<table class="table table-hover mb-0">
@@ -26,7 +36,7 @@
 					<tbody>
 
 	@foreach($kursus as $k)
-						<tr style="transition: background-color 0.2s ease;">
+						<tr style="transition: background-color 0.2s ease; @if($k->tanggal_selesai && \Carbon\Carbon::parse($k->tanggal_selesai)->lt(now())) background-color: #ffe5e5; @endif">
 							<td class="border-0 text-muted">{{ $kursus->firstItem() + $loop->index }}</td>
 							<td class="border-0 fw-500">{{ $k->nama }}</td>
 							<td class="border-0">{{ $k->program->nama }}</td>
