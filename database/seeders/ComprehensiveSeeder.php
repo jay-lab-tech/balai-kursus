@@ -18,6 +18,8 @@ use App\Models\Lokasi;
 use App\Models\Kela;
 use App\Models\Score;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ComprehensiveSeeder extends Seeder
 {
@@ -35,8 +37,8 @@ class ComprehensiveSeeder extends Seeder
         $adminUser = $this->seedUsers();
         $instrukturs = $this->seedInstrukturs();
         $programs = $this->seedPrograms();
-        $levels = $this->seedLevels($programs);
-        $kursusList = $this->seedKursus($instrukturs, $levels);
+        $levels = $this->seedLevels();
+        $kursusList = $this->seedKursus($instrukturs, $levels, $programs);
         $this->seedJadwal($kursusList);
         $pesertas = $this->seedPesertas();
         $pendaftarans = $this->seedPendaftaran($pesertas, $kursusList);
@@ -236,31 +238,36 @@ class ComprehensiveSeeder extends Seeder
         return Program::all();
     }
 
-    private function seedLevels($programs)
+    private function seedLevels()
     {
-        $levelNames = ['Beginner', 'Elementary', 'Intermediate', 'Upper Intermediate', 'Advanced'];
+        Schema::disableForeignKeyConstraints();
+        DB::table('levels')->truncate();
+        Schema::enableForeignKeyConstraints();
 
-        foreach ($programs as $program) {
-            foreach ($levelNames as $name) {
-                Level::firstOrCreate(
-                    ['program_id' => $program->id, 'nama' => $name],
-                    ['program_id' => $program->id, 'nama' => $name]
-                );
-            }
+        $levels = [
+            ['nama' => 'Beginner', 'warna' => '#4ade80'],
+            ['nama' => 'Elementary', 'warna' => '#38bdf8'],
+            ['nama' => 'Intermediate', 'warna' => '#facc15'],
+            ['nama' => 'Advanced', 'warna' => '#fb923c'],
+            ['nama' => 'Proficient', 'warna' => '#f87171'],
+        ];
+
+        foreach ($levels as $level) {
+            Level::create($level);
         }
 
-        $this->command->info('✓ Levels seeded');
+        $this->command->info('✓ Levels seeded (5 static levels)');
         return Level::all();
     }
 
-    private function seedKursus($instrukturs, $levels)
+    private function seedKursus($instrukturs, $levels, $programs)
     {
         $kursusList = [];
 
         for ($i = 0; $i < 20; $i++) {
             $level = $levels->random();
             $kursus = Kursus::create([
-                'program_id' => $level->program_id,
+                'program_id' => $programs->random()->id,
                 'level_id' => $level->id,
                 'instruktur_id' => $instrukturs->random()->id,
                 'instruktur_id_2' => rand(0, 1) ? $instrukturs->random()->id : null,

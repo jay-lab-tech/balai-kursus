@@ -51,3 +51,11 @@ Route::middleware(['auth'])
     ->group(function () {
         Route::resource('/', 'Admin\InstrukturController');
     });
+
+// Route download dokumen risalah untuk semua role yang login
+Route::middleware(['auth'])
+    ->prefix('instruktur/risalah')
+    ->name('instruktur.risalah.')
+    ->group(function () {
+        Route::get('{risalah}/download', 'Modules\Instruktur\Http\Controllers\RisalahController@download')->name('download');
+    });

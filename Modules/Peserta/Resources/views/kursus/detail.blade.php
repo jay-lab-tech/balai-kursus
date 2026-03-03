@@ -79,6 +79,11 @@
                                             <a href="#" class="btn btn-sm btn-primary" onclick="showRisalah({{ $risalah->id }})">
                                                 <i class="bi bi-eye me-1"></i>Lihat
                                             </a>
+                                            @if($risalah->dokumen)
+                                                <a href="{{ route('instruktur.risalah.download', $risalah->id) }}" class="btn btn-sm btn-success ms-1" target="_blank">
+                                                    <i class="bi bi-download me-1"></i>Download Dokumen
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach
@@ -179,6 +184,11 @@
                 </div>
             </div>
             <div class="modal-footer">
+                @if($risalah->dokumen)
+                    <a href="{{ route('instruktur.risalah.download', $risalah->id) }}" class="btn btn-success" target="_blank">
+                        <i class="bi bi-download me-1"></i>Download Dokumen
+                    </a>
+                @endif
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>

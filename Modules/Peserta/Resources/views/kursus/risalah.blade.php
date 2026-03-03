@@ -50,6 +50,11 @@
                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#risalahModal{{ $r->id }}">
                                     <i class="bi bi-eye me-1"></i>Lihat Risalah
                                 </button>
+                                @if($r->dokumen)
+                                    <a href="{{ route('instruktur.risalah.download', $r->id) }}" class="btn btn-sm btn-success ms-1" target="_blank">
+                                        <i class="bi bi-download me-1"></i>Download Dokumen
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

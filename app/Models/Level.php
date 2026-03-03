@@ -10,10 +10,6 @@ class Level extends Model
     use HasFactory;
 
     protected $fillable = [
-        'program_id','nama','warna'
+        'nama', 'warna'
     ];
-
-    public function program() {
-        return $this->belongsTo(Program::class);
-    }
 }

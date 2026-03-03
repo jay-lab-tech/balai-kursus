@@ -43,6 +43,11 @@
                                 <a href="/instruktur/risalah/{{ $r->id }}/absensi" class="btn btn-sm btn-primary">
                                     <i class="bi bi-clipboard-check me-1"></i>Absensi
                                 </a>
+                                @if($r->dokumen)
+                                    <a href="{{ route('instruktur.risalah.download', $r->id) }}" class="btn btn-sm btn-success ms-1" target="_blank">
+                                        <i class="bi bi-download me-1"></i>Download Dokumen
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

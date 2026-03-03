@@ -15,7 +15,7 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <form action="/instruktur/kursus/{{ $kursus->id }}/risalah" method="POST">
+                    <form action="/instruktur/kursus/{{ $kursus->id }}/risalah" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-3">
@@ -47,6 +47,14 @@
                             <small class="text-muted">Jika dipilih, tanggal risalah akan mengikuti jadwal.</small>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="dokumen" class="form-label fw-bold">Upload Dokumen Risalah (opsional)</label>
+                            <input type="file" class="form-control @error('dokumen') is-invalid @enderror" id="dokumen" name="dokumen" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
+                            @error('dokumen')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">File: PDF, Word, Excel, Gambar, dll.</small>
+                        </div>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle me-2"></i>Buat Risalah

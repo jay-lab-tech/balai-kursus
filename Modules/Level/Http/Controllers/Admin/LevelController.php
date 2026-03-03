@@ -4,49 +4,52 @@ namespace Modules\Level\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Level;
-use App\Models\Program;
 use Illuminate\Http\Request;
 
 class LevelController extends Controller
 {
     public function index()
     {
-        $level = Level::with('program')->get();
+        $level = Level::all();
         return view('level::admin.level.index', compact('level'));
     }
 
     public function create()
     {
-        $program = Program::all();
-        return view('level::admin.level.create', compact('program'));
+        return view('level::admin.level.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'program_id' => 'required',
-            'nama' => 'required'
+            'nama' => 'required',
+            'warna' => 'required'
         ]);
 
-        Level::create($request->all());
+        Level::create([
+            'nama' => $request->nama,
+            'warna' => $request->warna
+        ]);
         return redirect()->route('admin.level.index')
             ->with('success', 'Level berhasil ditambahkan');
     }
 
     public function edit(Level $level)
     {
-        $program = Program::all();
-        return view('level::admin.level.edit', compact('level', 'program'));
+        return view('level::admin.level.edit', compact('level'));
     }
 
     public function update(Request $request, Level $level)
     {
         $request->validate([
-            'program_id' => 'required',
-            'nama' => 'required'
+            'nama' => 'required',
+            'warna' => 'required'
         ]);
 
-        $level->update($request->all());
+        $level->update([
+            'nama' => $request->nama,
+            'warna' => $request->warna
+        ]);
         return redirect()->route('admin.level.index')
             ->with('success', 'Level berhasil diupdate');
     }

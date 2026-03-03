@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('program_id')->constrained()->cascadeOnDelete();
             $table->string('nama');
+            $table->string('warna')->nullable();
             $table->timestamps();
         });
     }

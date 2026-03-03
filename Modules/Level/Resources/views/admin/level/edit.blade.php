@@ -14,21 +14,15 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="mb-3">
-                            <label for="program_id" class="form-label fw-500">Program</label>
-                            <select class="form-select" id="program_id" name="program_id" required>
-                                @foreach($program as $p)
-                                    <option value="{{ $p->id }}"
-                                        {{ $level->program_id == $p->id ? 'selected' : '' }}>
-                                        {{ $p->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <!-- Field program dihapus, hanya edit nama level -->
 
                         <div class="mb-3">
                             <label for="nama" class="form-label fw-500">Nama Level</label>
                             <input type="text" class="form-control" id="nama" name="nama" value="{{ $level->nama }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="warna" class="form-label fw-500">Warna Level</label>
+                            <input type="color" class="form-control form-control-color" id="warna" name="warna" value="{{ $level->warna ?? '#2196f3' }}">
                         </div>
 
                         <div class="d-flex gap-2">

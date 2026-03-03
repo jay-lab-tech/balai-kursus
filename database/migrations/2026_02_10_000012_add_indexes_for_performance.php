@@ -74,7 +74,6 @@ return new class extends Migration
 
         // Levels table indexes
         Schema::table('levels', function (Blueprint $table) {
-            $table->index('program_id');
             $table->index('created_at');
         });
 

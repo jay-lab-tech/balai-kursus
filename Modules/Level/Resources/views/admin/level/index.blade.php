@@ -20,8 +20,8 @@
                 <thead style="background-color: #f8f9fa;">
                     <tr>
                         <th class="fw-bold text-muted border-0">No</th>
-                        <th class="fw-bold text-muted border-0">Program</th>
                         <th class="fw-bold text-muted border-0">Nama Level</th>
+                        <th class="fw-bold text-muted border-0">Warna</th>
                         <th class="fw-bold text-muted border-0">Aksi</th>
                     </tr>
                 </thead>
@@ -30,11 +30,10 @@
 @foreach($level as $l)
                     <tr style="transition: background-color 0.2s ease;">
                         <td class="border-0 text-muted">{{ $loop->iteration }}</td>
-                        <td class="border-0 fw-500">{{ $l->program->nama }}</td>
                         <td class="border-0">{{ $l->nama }}</td>
+                        <td class="border-0"><span style="background:{{ $l->warna }};padding:6px 18px;border-radius:4px;color:#fff">{{ $l->warna }}</span></td>
                         <td class="border-0">
                             <a href="{{ route('admin.level.edit', $l->id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Edit</a>
-
                             <form action="{{ route('admin.level.destroy', $l->id) }}" method="POST" style="display:inline">
                                 @csrf
                                 @method('DELETE')

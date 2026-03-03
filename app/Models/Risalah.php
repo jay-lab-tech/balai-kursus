@@ -11,7 +11,7 @@ class Risalah extends Model
 
     protected $fillable = [
         'kursus_id','instruktur_id','jadwal_id',
-        'pertemuan_ke','tgl_pertemuan','materi','catatan'
+        'pertemuan_ke','tgl_pertemuan','materi','catatan','dokumen'
     ];
 
     protected $casts = [
