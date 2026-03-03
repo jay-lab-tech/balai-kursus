@@ -9,7 +9,6 @@ use App\Models\Program;
 use App\Models\Level;
 use App\Models\Kursus;
 use App\Models\Pendaftaran;
-use App\Models\Pembayaran;
 use App\Models\Risalah;
 use App\Models\Absensi;
 use App\Models\Jadwal;
@@ -42,7 +41,7 @@ class ComprehensiveSeeder extends Seeder
         $this->seedJadwal($kursusList);
         $pesertas = $this->seedPesertas();
         $pendaftarans = $this->seedPendaftaran($pesertas, $kursusList);
-        $this->seedPembayaran($pendaftarans);
+        // seedPembayaran dihapus - pembayaran sekarang via Midtrans
         $this->seedRisalah($kursusList);
         $this->seedAbsensi();
         $this->seedScores($pendaftarans, $instrukturs);
@@ -387,24 +386,7 @@ class ComprehensiveSeeder extends Seeder
         return $pendaftarans;
     }
 
-    private function seedPembayaran($pendaftarans)
-    {
-        foreach ($pendaftarans as $pendaftaran) {
-            $numPayments = rand(1, 3);
-            for ($j = 0; $j < $numPayments; $j++) {
-                Pembayaran::create([
-                    'pendaftaran_id' => $pendaftaran->id,
-                    'angsuran_ke' => $j + 1,
-                    'jumlah' => rand(150000, 400000),
-                    'status' => ['pending', 'verified', 'rejected'][rand(0, 2)],
-                    'bukti_path' => rand(0, 1) ? 'bukti/pembayaran_' . uniqid() . '.pdf' : null,
-                    'tgl_bayar' => rand(0, 1) ? now()->subDays(rand(1, 30)) : null
-                ]);
-            }
-        }
 
-        $this->command->info('✓ Pembayaran seeded');
-    }
 
     private function seedRisalah($kursusList)
     {

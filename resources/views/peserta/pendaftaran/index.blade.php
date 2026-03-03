@@ -44,34 +44,25 @@
                     <table class="table table-sm table-hover mb-0">
                         <thead style="background-color: #f8f9fa;">
                             <tr>
-                                <th class="fw-bold text-muted border-0">Angsuran Ke</th>
+                                <th class="fw-bold text-muted border-0">Tanggal</th>
                                 <th class="fw-bold text-muted border-0">Jumlah</th>
+                                <th class="fw-bold text-muted border-0">Metode</th>
                                 <th class="fw-bold text-muted border-0">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($p->pembayarans as $bayar)
+                            @forelse($p->payments()->where('status', 'success')->get() as $bayar)
                                 <tr>
-                                    <td class="border-0">Angsuran {{ $bayar->angsuran_ke }}</td>
-                                    <td class="border-0 fw-500">Rp {{ number_format($bayar->jumlah) }}</td>
+                                    <td class="border-0 text-muted">{{ $bayar->created_at->format('d M Y H:i') }}</td>
+                                    <td class="border-0 fw-500">Rp {{ number_format($bayar->amount) }}</td>
+                                    <td class="border-0">{{ ucfirst($bayar->payment_method ?? 'Midtrans') }}</td>
                                     <td class="border-0">
-                                        @php
-                                            $status = strtolower($bayar->status);
-                                        @endphp
-                                        @if($status === 'verified')
-                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Verified</span>
-                                        @elseif($status === 'pending')
-                                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
-                                        @elseif($status === 'rejected')
-                                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Ditolak</span>
-                                        @else
-                                            <span class="badge bg-secondary">{{ ucfirst($status) }}</span>
-                                        @endif
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Berhasil</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted py-3">Belum ada riwayat pembayaran</td>
+                                    <td colspan="4" class="text-center text-muted py-3">Belum ada pembayaran</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -81,22 +72,24 @@
                 <hr class="my-3">
 
                 @if($p->isLunas())
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="bi bi-check-circle me-2"></i>
                         <strong>Pembayaran Lunas!</strong> Anda sudah menyelesaikan semua pembayaran untuk kursus ini.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @else
-                    <!-- Online Payment Only -->
+                    <!-- Midtrans Payment Section -->
                     <div class="card border-0 bg-light p-4">
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-credit-card me-2 text-success"></i>Pembayaran Online</h6>
                         <p class="text-muted mb-3">
                             <i class="bi bi-info-circle me-2"></i>
-                            Bayar menggunakan berbagai metode pembayaran (kartu kredit, transfer bank, e-wallet, dll)
+                            Bayar menggunakan Midtrans: Transfer Bank, E-Wallet (GoPay, Dana, OVO), Kartu Kredit, dan metode lainnya.
                         </p>
                         
                         <div class="mb-3">
                             <label for="amountOnline{{ $p->id }}" class="form-label fw-500">Nominal Pembayaran</label>
                             <small class="text-muted d-block mb-2">
-                                Sisa Pembayaran: Rp {{ number_format($p->sisa()) }}
+                                Sisa yang harus dibayar: <span class="fw-bold text-danger">Rp {{ number_format($p->sisa()) }}</span>
                             </small>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
@@ -105,13 +98,15 @@
                                        min="1000" step="1000" value="{{ $p->sisa() }}">
                             </div>
                             <small class="text-muted d-block mt-2">
-                                Minimal: Rp 1.000 | Maksimal: Rp {{ number_format($p->sisa()) }}
+                                💡 Minimal: Rp 1.000 &nbsp;|&nbsp; Maksimal: Rp {{ number_format($p->sisa()) }} 
+                                <br>Bisa membayar sebagian atau penuh sesuai kemampuan
                             </small>
                         </div>
 
-                        <button type="button" class="btn btn-success w-100" 
+                        <button type="button" class="btn btn-success w-100 btn-lg" 
+                                id="payBtn{{ $p->id }}"
                                 onclick="processOnlinePayment('{{ $p->id }}')">
-                            <i class="bi bi-credit-card me-2"></i>Lanjutkan ke Pembayaran Online
+                            <i class="bi bi-credit-card me-2"></i>Lanjutkan ke Pembayaran
                         </button>
                     </div>
                 @endif
@@ -135,6 +130,7 @@
 <script>
     function processOnlinePayment(pendaftaranId) {
         const amountInput = document.getElementById('amountOnline' + pendaftaranId);
+        const payBtn = document.getElementById('payBtn' + pendaftaranId);
         const amount = parseInt(amountInput.value);
 
         // Validate amount
@@ -144,8 +140,9 @@
         }
 
         // Disable button
-        event.target.disabled = true;
-        event.target.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Memproses...';
+        payBtn.disabled = true;
+        const originalText = payBtn.innerHTML;
+        payBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Memproses...';
 
         // Send request to create payment
         fetch(`/peserta/pembayaran-online/${pendaftaranId}`, {
@@ -160,7 +157,11 @@
             })
         })
         .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.error || 'Gagal membuat pembayaran');
+                });
+            }
             return response.json();
         })
         .then(data => {
@@ -173,6 +174,8 @@
                     },
                     onPending: function(result) {
                         console.log('Payment pending', result);
+                        // Redirect to success page anyway (payment is processing)
+                        window.location.href = `/peserta/pembayaran-success/${data.order_id}`;
                     },
                     onError: function(result) {
                         // Redirect to failed page
@@ -180,8 +183,8 @@
                     },
                     onClose: function() {
                         // Re-enable button
-                        event.target.disabled = false;
-                        event.target.innerHTML = '<i class="bi bi-credit-card me-2"></i>Lanjutkan ke Pembayaran';
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = originalText;
                     }
                 });
             } else {
@@ -191,8 +194,8 @@
         .catch((error) => {
             alert('Error: ' + error.message);
             // Re-enable button
-            event.target.disabled = false;
-            event.target.innerHTML = '<i class="bi bi-credit-card me-2"></i>Lanjutkan ke Pembayaran';
+            payBtn.disabled = false;
+            payBtn.innerHTML = originalText;
         });
     }
 </script>

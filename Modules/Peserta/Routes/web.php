@@ -31,8 +31,7 @@ Route::middleware(['auth'])
             Route::get('/', 'PendaftaranController@index')->name('index');
         });
 
-        // Pembayaran Routes (Payment via Peserta Module)
-        // Route::post('/bayar/{id}', 'PembayaranController@store')->name('bayar'); // DISABLED: Manual payment removed
+        // Pembayaran Routes (Payment via Peserta Module - Midtrans)
         Route::post('/pembayaran-online/{pendaftaran}', 'PembayaranController@createPaymentForPendaftaran')->name('pembayaran-online');
         Route::get('/pembayaran-success/{orderId}', 'PembayaranController@paymentSuccess')->name('pembayaran-success');
         Route::get('/pembayaran-failed/{orderId}', 'PembayaranController@paymentFailed')->name('pembayaran-failed');

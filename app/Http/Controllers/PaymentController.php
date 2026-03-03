@@ -235,7 +235,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Update payment status in database
+     * Update payment status in database and linked Pendaftaran
      *
      * @param string $orderId
      * @param string $status
@@ -243,8 +243,19 @@ class PaymentController extends Controller
      */
     protected function updatePaymentStatus(string $orderId, string $status)
     {
-        // Update payment status in your database
-        // Example: Payment::where('order_id', $orderId)->update(['status' => $status]);
+        $payment = Payment::where('order_id', $orderId)->first();
+        
+        if (!$payment) {
+            return;
+        }
+
+        // Update payment status
+        $payment->update(['status' => $status]);
+
+        // Only update pendaftaran if payment is successful
+        if ($status === 'success') {
+            $this->updatePendaftaranStatus($payment);
+        }
     }
 
     /**
@@ -266,23 +277,8 @@ class PaymentController extends Controller
             $status = $this->midtransService->getStatus($orderId);
 
             if ($status->transaction_status === 'settlement' || $status->transaction_status === 'capture') {
-                // Update payment status
-                $payment->update(['status' => 'success']);
-
-                // Update pendaftaran
-                if ($payment->pendaftaran_id) {
-                    $pendaftaran = Pendaftaran::findOrFail($payment->pendaftaran_id);
-                    $pendaftaran->terbayar += $payment->amount;
-
-                    // Check if fully paid
-                    if ($pendaftaran->terbayar >= $pendaftaran->total_bayar) {
-                        $pendaftaran->status_pembayaran = 'lunas';
-                    } else {
-                        $pendaftaran->status_pembayaran = 'cicilan';
-                    }
-
-                    $pendaftaran->save();
-                }
+                // Update payment status and pendaftaran
+                $this->updatePaymentStatus($orderId, 'success');
 
                 return redirect()->route('peserta.pendaftaran.index')->with('success', 'Pembayaran berhasil! Terima kasih.');
             }
@@ -308,5 +304,31 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('peserta.pendaftaran.index')->with('error', 'Pembayaran dibatalkan atau gagal. Silakan coba lagi.');
+    }
+
+    /**
+     * Handle payment with lunas/cicilan flow
+     * Update pendaftaran status based on payment completion
+     *
+     * @param Payment $payment
+     * @return void
+     */
+    protected function updatePendaftaranStatus(Payment $payment)
+    {
+        if (!$payment->pendaftaran_id) {
+            return;
+        }
+
+        $pendaftaran = Pendaftaran::findOrFail($payment->pendaftaran_id);
+        $pendaftaran->terbayar += $payment->amount;
+
+        // Update status pembayaran
+        if ($pendaftaran->terbayar >= $pendaftaran->total_bayar) {
+            $pendaftaran->status_pembayaran = 'lunas';
+        } else {
+            $pendaftaran->status_pembayaran = 'cicilan';
+        }
+
+        $pendaftaran->save();
     }
 }
