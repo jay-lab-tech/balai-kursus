@@ -27,6 +27,12 @@ class ComprehensiveSeeder extends Seeder
      */
     public function run(): void
     {
+        // clear data that may have been created by previous runs
+        Schema::disableForeignKeyConstraints();
+        \App\Models\Certificate::truncate();
+        \App\Models\CertificateTemplate::truncate();
+        Schema::enableForeignKeyConstraints();
+
         // 1. SEED MASTER DATA FIRST
         $this->seedHari();
         $this->seedLokasi();
@@ -41,6 +47,13 @@ class ComprehensiveSeeder extends Seeder
         $this->seedJadwal($kursusList);
         $pesertas = $this->seedPesertas();
         $pendaftarans = $this->seedPendaftaran($pesertas, $kursusList);
+
+        // because certificate templates should exist for every course (observer does this, but ensure)
+        $this->seedCertificateTemplates($kursusList);
+
+        // certificates are auto-created via Pendaftaran observer; we can assign some statuses
+        $this->seedCertificates($pendaftarans);
+
         // seedPembayaran dihapus - pembayaran sekarang via Midtrans
         $this->seedRisalah($kursusList);
         $this->seedAbsensi();
@@ -343,6 +356,53 @@ class ComprehensiveSeeder extends Seeder
 
         $this->command->info('✓ Pesertas seeded (30)');
         return $pesertas;
+    }
+
+    /**
+     * Ensure certificate templates exist for all courses (fallback)
+     */
+    private function seedCertificateTemplates($kursusList)
+    {
+        foreach ($kursusList as $kursus) {
+            if (!\App\Models\CertificateTemplate::where('kursus_id', $kursus->id)->exists()) {
+                \App\Models\CertificateTemplate::create([
+                    'kursus_id' => $kursus->id,
+                    'name' => 'Default template for ' . $kursus->nama,
+                    'html_template' => '<p>Srft: {{NAMA}} - {{KURSUS}}</p>',
+                    'is_default' => false,
+                ]);
+            }
+        }
+        $this->command->info('✓ Certificate templates ensured for each kursus');
+    }
+
+    /**
+     * Post-process certificates created by pendaftaran listener.
+     * Assign random statuses so admins have variety to work with.
+     */
+    private function seedCertificates($pendaftarans)
+    {
+        $count = 0;
+        foreach ($pendaftarans as $pend) {
+            $cert = \App\Models\Certificate::where('peserta_id', $pend->peserta_id)
+                ->where('kursus_id', $pend->kursus_id)
+                ->latest()
+                ->first();
+            if (!$cert) continue;
+
+            // randomly set some to applied, some to rejected
+            $r = rand(1, 100);
+            if ($r <= 60) {
+                $cert->status = 'applied';
+                $cert->save();
+            } elseif ($r <= 80) {
+                $cert->status = 'rejected';
+                $cert->revoked_reason = 'Data tidak lengkap';
+                $cert->save();
+            }
+            $count++;
+        }
+        $this->command->info("✓ {$count} certificates seeded (with varied statuses)");
     }
 
     private function seedPendaftaran($pesertas, $kursusList)

@@ -82,6 +82,7 @@ class CertificateBatchController extends Controller
                     'issued_at' => now(),
                     'expires_at' => $expiresAt,
                     'validity_days' => $validityDays,
+                    'status' => 'generated',
                 ]);
 
                 GenerateCertificateJob::dispatch($cert);

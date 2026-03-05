@@ -105,4 +105,30 @@ class Certificate extends Model
         }
         return now()->diffInDays($this->expires_at, false);
     }
+
+    /**
+     * Apply (Terbitkan) certificate - change status to 'applied' and send email.
+     */
+    public function apply()
+    {
+        $this->update(['status' => 'applied']);
+        
+        // Send email to peserta
+        \App\Jobs\SendCertificateEmail::dispatch($this);
+        
+        return true;
+    }
+
+    /**
+     * Reject certificate - change status to 'rejected' with optional reason.
+     */
+    public function reject($reason = null)
+    {
+        $this->update([
+            'status' => 'rejected',
+            'revoked_reason' => $reason,
+        ]);
+        
+        return true;
+    }
 }

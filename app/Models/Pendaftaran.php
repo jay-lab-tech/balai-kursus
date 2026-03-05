@@ -56,12 +56,14 @@ class Pendaftaran extends Model
     protected static function booted()
     {
         static::created(function ($pendaftaran) {
-            // automatically issue certificate when someone registers
+            // automatically generate certificate when someone registers
             $cert = \App\Models\Certificate::create([
                 'peserta_id' => $pendaftaran->peserta_id,
                 'kursus_id' => $pendaftaran->kursus_id,
                 'issued_at' => now(),
+                'status' => 'generated', // Set status to generated immediately
             ]);
+            // Queue the PDF generation
             \App\Jobs\GenerateCertificateJob::dispatch($cert);
         });
     }

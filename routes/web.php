@@ -76,6 +76,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/certificates/create', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'create'])->name('certificates.create');
     Route::post('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'store'])->name('certificates.store');
     Route::get('/certificates/{certificate}', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'show'])->name('certificates.show');
+    
+    // Apply/Reject/Reapply actions
+    Route::post('/certificates/{certificate}/apply', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'apply'])->name('certificates.apply');
+    Route::post('/certificates/{certificate}/reject', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'reject'])->name('certificates.reject');
+    Route::post('/certificates/{certificate}/reapply', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'reapply'])->name('certificates.reapply');
+    
     Route::get('/certificates/{certificate}/revoke', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'editRevoke'])->name('certificates.editRevoke');
     Route::put('/certificates/{certificate}/revoke', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'revoke'])->name('certificates.revoke');
     Route::post('/certificates/{certificate}/regenerate', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'regenerate'])->name('certificates.regenerate');

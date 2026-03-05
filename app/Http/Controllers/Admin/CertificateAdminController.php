@@ -87,12 +87,61 @@ class CertificateAdminController extends Controller
     }
 
     /**
+     * Apply (Terbitkan) a generated certificate.
+     */
+    public function apply(Certificate $certificate)
+    {
+        if ($certificate->status !== 'generated') {
+            return back()->with('error', 'Hanya sertifikat yang belum diterbitkan yang dapat disetujui.');
+        }
+
+        $certificate->apply();
+
+        return redirect()->route('admin.certificates.show', $certificate)
+            ->with('success', 'Sertifikat berhasil diterbitkan dan email dikirim ke peserta.');
+    }
+
+    /**
+     * Reject a generated certificate.
+     */
+    public function reject(Request $request, Certificate $certificate)
+    {
+        $request->validate([
+            'reject_reason' => 'required|string|min:10|max:500',
+        ]);
+
+        if ($certificate->status !== 'generated') {
+            return back()->with('error', 'Hanya sertifikat yang belum diterbitkan yang dapat ditolak.');
+        }
+
+        $certificate->reject($request->reject_reason);
+
+        return redirect()->route('admin.certificates.show', $certificate)
+            ->with('success', 'Sertifikat berhasil ditolak.' . ($request->reject_reason ? ' Alasan: ' . $request->reject_reason : ''));
+    }
+
+    /**
+     * Re-apply (re-issue) a rejected certificate.
+     */
+    public function reapply(Certificate $certificate)
+    {
+        if ($certificate->status !== 'rejected') {
+            return back()->with('error', 'Hanya sertifikat yang ditolak yang dapat di-terbitkan kembali.');
+        }
+
+        $certificate->apply();
+
+        return redirect()->route('admin.certificates.show', $certificate)
+            ->with('success', 'Sertifikat berhasil diterbitkan kembali dan email dikirim ke peserta.');
+    }
+
+    /**
      * Regenerate a revoked or failed certificate.
      */
     public function regenerate(Certificate $certificate)
     {
         $certificate->update([
-            'status' => 'queued',
+            'status' => 'generated',
             'file_path' => null,
             'generated_at' => null,
             'revoked_reason' => null,
@@ -106,7 +155,7 @@ class CertificateAdminController extends Controller
     }
 
     /**
-     * Manually issue certificate for a peserta & kursus.
+     * Manually issue certificate for a peserta & kursus (for emergency/manual cases).
      */
     public function create()
     {
@@ -132,11 +181,12 @@ class CertificateAdminController extends Controller
             'issued_at' => now(),
             'expires_at' => $expiresAt,
             'validity_days' => $request->validity_days,
+            'status' => 'generated',
         ]);
 
         \App\Jobs\GenerateCertificateJob::dispatch($cert);
 
         return redirect()->route('admin.certificates.show', $cert)
-            ->with('success', 'Sertifikat berhasil diterbitkan: ' . $cert->no_sertifikat);
+            ->with('success', 'Sertifikat berhasil dibuat: ' . $cert->no_sertifikat . ' (siap untuk diterbitkan)');
     }
 }

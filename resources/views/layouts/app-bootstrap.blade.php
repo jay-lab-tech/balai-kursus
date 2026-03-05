@@ -173,6 +173,11 @@
                                         <i class="bi bi-file-check me-1"></i>Nilai Peserta
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.certificates.index') }}">
+                                        <i class="bi bi-award me-1"></i>Sertifikat
+                                    </a>
+                                </li>
                             @elseif(Auth::user()->role === 'instruktur')
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url('/instruktur/dashboard') }}">

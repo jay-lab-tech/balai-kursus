@@ -55,6 +55,5 @@ class Kursus extends Model
     {
         return $this->hasOne(CertificateTemplate::class);
     }
-        return $this->hasMany(\App\Models\Jadwal::class);
-    }
+    
 }
