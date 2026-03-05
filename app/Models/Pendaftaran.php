@@ -53,6 +53,19 @@ class Pendaftaran extends Model
         return $this->hasOne(Score::class);
     }
 
+    protected static function booted()
+    {
+        static::created(function ($pendaftaran) {
+            // automatically issue certificate when someone registers
+            $cert = \App\Models\Certificate::create([
+                'peserta_id' => $pendaftaran->peserta_id,
+                'kursus_id' => $pendaftaran->kursus_id,
+                'issued_at' => now(),
+            ]);
+            \App\Jobs\GenerateCertificateJob::dispatch($cert);
+        });
+    }
+
     public function isLunas()
     {
         return $this->terbayar >= $this->total_bayar;

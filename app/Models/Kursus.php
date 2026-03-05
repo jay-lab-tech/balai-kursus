@@ -48,6 +48,13 @@ class Kursus extends Model
 
     public function jadwals()
     {
+        return $this->hasMany(Jadwal::class);
+    }
+
+    public function certificateTemplate()
+    {
+        return $this->hasOne(CertificateTemplate::class);
+    }
         return $this->hasMany(\App\Models\Jadwal::class);
     }
 }
