@@ -1,53 +1,52 @@
-@extends('program::layouts.master')
+@extends('layouts.admin')
+
+@section('title', 'Manajemen Program')
+
+@section('page-title', 'Manajemen Program')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-folder me-2"></i>Manajemen Program</h2>
-        <a href="{{ route('admin.program.create') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle me-2"></i>Tambah Program</a>
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-900"><i class="bi bi-folder me-2"></i>Manajemen Program</h2>
+        <a href="{{ route('admin.program.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700"><i class="bi bi-plus-circle me-2"></i>Tambah Program</a>
     </div>
 
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
         <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead style="background-color: #f8f9fa;">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="fw-bold text-muted border-0">No</th>
-                        <th class="fw-bold text-muted border-0">Nama Program</th>
-                        <th class="fw-bold text-muted border-0">Jumlah Level</th>
-                        <th class="fw-bold text-muted border-0 text-nowrap" style="white-space:nowrap;">Jumlah Kursus</th>
-                        <th class="fw-bold text-muted border-0 text-nowrap" style="width:1%; white-space:nowrap;">Aksi</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Program</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Level</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Kursus</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-
-    @foreach($program as $p)
-                    <tr style="transition: background-color 0.2s ease;">
-                        <td class="border-0 text-muted">{{ $loop->iteration }}</td>
-                        <td class="border-0 fw-500">{{ $p->nama }}</td>
-                        <td class="border-0">
-                            <span class="badge bg-info me-1">{{ $p->levels->count() }}</span>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($program as $p)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $p->nama }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $p->kursuses->pluck('level.id')->unique()->count() }}</span>
                         </td>
-                        <td class="border-0 text-nowrap" style="white-space:nowrap;">
-                            <span class="badge bg-success me-2">{{ $p->kursuses->count() }}</span>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{{ $p->kursuses->count() }}</span>
                         </td>
-                        <td class="border-0 text-end">
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('admin.program.edit', $p->id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i> Edit</a>
-
-                                <form action="{{ route('admin.program.destroy', $p->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus program?')"><i class="bi bi-trash"></i> Hapus</button>
-                                </form>
-                            </div>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <a href="{{ route('admin.program.edit', $p->id) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
+                            <form action="{{ route('admin.program.destroy', $p->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Hapus program?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                            </form>
                         </td>
                     </tr>
                     @endforeach
@@ -56,10 +55,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .table tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-</style>
 @endsection

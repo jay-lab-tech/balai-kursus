@@ -1,11 +1,11 @@
-@extends('layouts.app-bootstrap')
+@extends('layouts.admin')
 
-@section('title', 'Risalah')
+@section('title', 'Risalah & Absensi')
+
+@section('page-title', 'Risalah & Absensi')
 
 @section('content')
-    <div class="container-fluid py-4">
-        @yield('content')
-    </div>
+    @yield('content')
 @endsection
 
 @section('styles')

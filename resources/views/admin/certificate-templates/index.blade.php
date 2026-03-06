@@ -1,68 +1,88 @@
-@extends('layouts.app-bootstrap')
+@extends('layouts.admin')
 
 @section('title', 'Template Sertifikat')
 
+@section('page-title', 'Template Sertifikat')
+
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-text me-2"></i>Template Sertifikat</h2>
-        <a href="{{ route('admin.templates.create') }}" class="btn btn-primary btn-lg">
-            <i class="bi bi-plus-circle me-2"></i>Buat Template Baru
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Template Sertifikat</h1>
+        <a href="{{ route('admin.templates.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Buat Template Baru
         </a>
     </div>
 
+    <!-- Success Message -->
     @if ($message = Session::get('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>{{ $message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ $message }}</span>
         </div>
     @endif
 
-    <div class="card border-0 shadow-sm">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
+    <!-- Table -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="fw-bold"><i class="bi bi-file-earmark me-2"></i>Nama Template</th>
-                        <th class="fw-bold"><i class="bi bi-book me-2"></i>Kursus</th>
-                        <th class="fw-bold text-center"><i class="bi bi-star me-2"></i>Default</th>
-                        <th class="fw-bold text-center"><i class="bi bi-award me-2"></i>Digunakan</th>
-                        <th class="fw-bold text-center">Aksi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nama Template
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Kursus
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Default
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Digunakan
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Aksi
+                        </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($templates as $template)
-                        <tr class="align-middle">
-                            <td><strong>{{ $template->name }}</strong></td>
-                            <td>{{ $template->kursus->nama ?? $template->kursus->judul ?? '(Global Default)' }}</td>
-                            <td class="text-center">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $template->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $template->kursus->nama ?? $template->kursus->judul ?? '(Global Default)' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 @if ($template->is_default)
-                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Ya</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Ya
+                                    </span>
                                 @else
-                                    <span class="text-muted small">-</span>
+                                    <span class="text-gray-400">-</span>
                                 @endif
                             </td>
-                            <td class="text-center">
-                                <span class="badge bg-info">{{ $template->certificates()->count() }}</span>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ $template->certificates()->count() }}
+                                </span>
                             </td>
-                            <td class="text-center">
-                                <a href="{{ route('admin.templates.edit', $template) }}" class="btn btn-sm btn-warning" title="Edit">
-                                    <i class="bi bi-pencil me-1"></i>Edit
-                                </a>
-                                <form method="post" action="{{ route('admin.templates.destroy', $template) }}" style="display: inline;">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <a href="{{ route('admin.templates.edit', $template) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
+                                <form method="post" action="{{ route('admin.templates.destroy', $template) }}" style="display: inline;" onsubmit="return confirm('Hapus template ini? Tindakan tidak dapat dibatalkan.');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus"
-                                        onclick="return confirm('Hapus template ini? Tindakan tidak dapat dibatalkan.')">
-                                        <i class="bi bi-trash me-1"></i>Hapus
-                                    </button>
+                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="bi bi-inbox me-2"></i>Belum ada template. <a href="{{ route('admin.templates.create') }}">Buat template baru</a>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                Belum ada template. <a href="{{ route('admin.templates.create') }}" class="text-blue-600 hover:text-blue-900">Buat template baru</a>
                             </td>
                         </tr>
                     @endforelse
@@ -71,6 +91,7 @@
         </div>
     </div>
 
+    <!-- Pagination -->
     <div class="mt-4">
         {{ $templates->links() }}
     </div>

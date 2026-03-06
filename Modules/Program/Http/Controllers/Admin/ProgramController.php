@@ -10,7 +10,7 @@ class ProgramController extends Controller
 {
     public function index()
     {
-        $program = Program::all();
+        $program = Program::with('kursuses.level')->get();
         return view('program::admin.program.index', compact('program'));
     }
 

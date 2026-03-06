@@ -1,6 +1,8 @@
-@extends('layouts.app-bootstrap')
+@extends('layouts.admin')
 
 @section('title', 'Buat Template Sertifikat')
+
+@section('page-title', 'Buat Template Sertifikat')
 
 @section('content')
 <div class="container-fluid py-4">

@@ -1,138 +1,178 @@
-@extends('layouts.app-bootstrap')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Sertifikat')
 
+@section('page-title', 'Manajemen Sertifikat')
+
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-award me-2"></i>Manajemen Sertifikat</h2>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.certificates.create') }}" class="btn btn-primary btn-lg">
-                <i class="bi bi-plus-circle me-2"></i>Terbitkan
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Manajemen Sertifikat</h1>
+        <div class="flex space-x-3">
+            <a href="{{ route('admin.certificates.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Terbitkan
             </a>
-            <a href="{{ route('admin.certificates.batch.create') }}" class="btn btn-info btn-lg">
-                <i class="bi bi-file-earmark-text me-2"></i>Massal
+            <a href="{{ route('admin.certificates.batch.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Massal
             </a>
-            <a href="{{ route('admin.templates.index') }}" class="btn btn-secondary btn-lg">
-                <i class="bi bi-palette me-2"></i>Template
+            <a href="{{ route('admin.templates.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+                </svg>
+                Template
             </a>
-            <a href="{{ route('admin.certificates.analytics') }}" class="btn btn-success btn-lg">
-                <i class="bi bi-graph-up me-2"></i>Analytics
+            <a href="{{ route('admin.certificates.analytics') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Analytics
             </a>
         </div>
     </div>
 
-    {{-- Filters --}}
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label">Cari No. / Nama</label>
-                    <input type="text" name="search" class="form-control" value="{{ request('search') }}"
-                        placeholder="Cari sertifikat atau peserta...">
+    <!-- Filters -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Cari No. / Nama</label>
+                    <input type="text" name="search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ request('search') }}" placeholder="Cari sertifikat atau peserta...">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <select name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         <option value="">Semua Status</option>
                         <option value="queued" {{ request('status') === 'queued' ? 'selected' : '' }}>Antri</option>
                         <option value="generated" {{ request('status') === 'generated' ? 'selected' : '' }}>Generated</option>
                         <option value="revoked" {{ request('status') === 'revoked' ? 'selected' : '' }}>Dicabut</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Kursus</label>
-                    <select name="kursus_id" class="form-select">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Program / Kursus</label>
+                    <select name="kursus_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                         <option value="">Semua Kursus</option>
-                        @foreach (\App\Models\Kursus::all() as $k)
+                        @foreach (\App\Models\Kursus::with('program')->get() as $k)
                             <option value="{{ $k->id }}" {{ request('kursus_id') == $k->id ? 'selected' : '' }}>
-                                {{ $k->judul }}
+                                {{ optional($k->program)->nama ? $k->program->nama . ' - ' : '' }}{{ $k->nama ?? $k->judul }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-outline-secondary w-100">Filter</button>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        Filter
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    {{-- Status Messages --}}
+    <!-- Status Messages -->
     @if ($message = Session::get('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>{{ $message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ $message }}</span>
         </div>
     @endif
     @if ($message = Session::get('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i>{{ $message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ $message }}</span>
         </div>
     @endif
 
-    {{-- Table --}}
-    <div class="card border-0 shadow-sm">
-        <table class="table table-hover mb-0">
-            <thead style="background-color: #f8f9fa;">
-                <tr>
-                    <th class="fw-bold text-muted border-0"><i class="bi bi-hash me-2"></i>No. Sertifikat</th>
-                    <th class="fw-bold text-muted border-0"><i class="bi bi-person me-2"></i>Peserta</th>
-                    <th class="fw-bold text-muted border-0"><i class="bi bi-book me-2"></i>Kursus</th>
-                    <th class="fw-bold text-muted border-0"><i class="bi bi-tag me-2"></i>Status</th>
-                    <th class="fw-bold text-muted border-0"><i class="bi bi-calendar me-2"></i>Terbit</th>
-                    <th class="fw-bold text-muted border-0">Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="certificateTableBody">
-                @forelse ($certificates as $cert)
-                    <tr style="transition: background-color 0.2s ease;">
-                        <td class="border-0 fw-bold">{{ $cert->no_sertifikat }}</td>
-                        <td class="border-0">{{ $cert->peserta->nama ?? '-' }}</td>
-                        <td class="border-0">{{ $cert->kursus->nama ?? '-' }}</td>
-                        <td class="border-0">
-                            @if ($cert->status === 'generated')
-                                <span class="badge bg-success text-white"><i class="bi bi-check-circle me-1"></i>Generated</span>
-                            @elseif ($cert->status === 'applied')
-                                <span class="badge bg-primary text-white"><i class="bi bi-check2-all me-1"></i>Diterbitkan</span>
-                            @elseif ($cert->status === 'rejected')
-                                <span class="badge bg-warning text-dark"><i class="bi bi-x-circle me-1"></i>Ditolak</span>
-                            @elseif ($cert->status === 'revoked')
-                                <span class="badge bg-danger text-white"><i class="bi bi-slash-circle me-1"></i>Dicabut</span>
-                            @else
-                                <span class="badge bg-secondary text-white">{{ $cert->status }}</span>
-                            @endif
-                        </td>
-                        <td class="border-0 text-muted">{{ optional($cert->issued_at)->format('d M Y') }}</td>
-                        <td class="border-0">
-                            <a href="{{ route('admin.certificates.show', $cert) }}" class="btn btn-sm btn-primary">
-                                <i class="bi bi-eye me-1"></i>Detail
-                            </a>
-                        </td>
-                    </tr>
-                @empty
+    <!-- Table -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">Tidak ada sertifikat.</td>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            No. Sertifikat
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Peserta
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Program / Kursus
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Terbit
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Aksi
+                        </th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse ($certificates as $cert)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $cert->no_sertifikat }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $cert->peserta->nama ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ optional($cert->kursus->program)->nama ? $cert->kursus->program->nama . ' - ' : '' }}{{ $cert->kursus->nama ?? $cert->kursus->judul ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if ($cert->status === 'generated')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Generated
+                                    </span>
+                                @elseif ($cert->status === 'applied')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Diterbitkan
+                                    </span>
+                                @elseif ($cert->status === 'rejected')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Ditolak
+                                    </span>
+                                @elseif ($cert->status === 'revoked')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Dicabut
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ $cert->status }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ optional($cert->issued_at)->format('d M Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ route('admin.certificates.show', $cert) }}" class="text-blue-600 hover:text-blue-900">
+                                    Detail
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                Tidak ada sertifikat.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    </div>
-    
-    {{-- Pagination --}}
+    <!-- Pagination -->
     <div class="mt-4">
         {{ $certificates->links() }}
     </div>
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .table tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-</style>
-@endpush
+

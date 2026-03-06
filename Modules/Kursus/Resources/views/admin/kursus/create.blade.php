@@ -1,107 +1,118 @@
-@extends('kursus::layouts.master')
+@extends('layouts.admin')
+
+@section('title', 'Tambah Kursus')
+
+@section('page-title', 'Tambah Kursus')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-plus-circle me-2"></i>Tambah Kursus</h2>
-    </div>
-
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <form method="POST" action="{{ route('admin.kursus.store') }}">
-                        @csrf
-
-                        <div class="mb-3">
-                            <label for="nama" class="form-label fw-500">Nama</label>
-                            <input type="text" class="form-control" id="nama" name="nama" required>
+<div class="space-y-6">
+    <div class="max-w-4xl">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6"><i class="bi bi-plus-circle me-2"></i>Tambah Kursus</h2>
+                <form method="POST" action="{{ route('admin.kursus.store') }}">
+                    @csrf
+                    <div class="space-y-6">
+                        <div>
+                            <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="nama" name="nama" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="program_id" class="form-label fw-500">Program</label>
-                            <select class="form-select" id="program_id" name="program_id" required>
-                                <option value="">-- Pilih Program --</option>
-                                @foreach($program as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="level_id" class="form-label fw-500">Level</label>
-                            <select class="form-select" id="level_id" name="level_id" required>
-                                <option value="">-- Pilih Level --</option>
-                                @foreach($level as $l)
-                                    <option value="{{ $l->id }}">{{ $l->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="instruktur_id" class="form-label fw-500">Instruktur</label>
-                            <select class="form-select" id="instruktur_id" name="instruktur_id" required>
-                                <option value="">-- Pilih Instruktur --</option>
-                                @foreach($instruktur as $i)
-                                    <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="instruktur_id_2" class="form-label fw-500">Instruktur Kedua (Opsional)</label>
-                            <select class="form-select" id="instruktur_id_2" name="instruktur_id_2">
-                                <option value="">-- Pilih Instruktur --</option>
-                                @foreach($instruktur as $i)
-                                    <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="periode" class="form-label fw-500">Periode</label>
-                            <input type="text" class="form-control" id="periode" name="periode" placeholder="Contoh: Februari 2026">
-                        </div>
-                            <div class="mb-3">
-                                <label for="tanggal_mulai" class="form-label fw-500">Tanggal Mulai</label>
-                                <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tanggal_selesai" class="form-label fw-500">Tanggal Selesai</label>
-                                <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" required>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <label for="program_id" class="block text-sm font-medium text-gray-700">Program</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="program_id" name="program_id" required>
+                                    <option value="">-- Pilih Program --</option>
+                                    @foreach($program as $p)
+                                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
-                        <div class="mb-3">
-                            <label for="harga" class="form-label fw-500">Harga</label>
-                            <input type="number" class="form-control" id="harga" name="harga" required>
+                            <div>
+                                <label for="level_id" class="block text-sm font-medium text-gray-700">Level</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="level_id" name="level_id" required>
+                                    <option value="">-- Pilih Level --</option>
+                                    @foreach($level as $l)
+                                        <option value="{{ $l->id }}">{{ $l->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="harga_upi" class="form-label fw-500">Harga UPI (Opsional)</label>
-                            <input type="number" class="form-control" id="harga_upi" name="harga_upi">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <label for="instruktur_id" class="block text-sm font-medium text-gray-700">Instruktur</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="instruktur_id" name="instruktur_id" required>
+                                    <option value="">-- Pilih Instruktur --</option>
+                                    @foreach($instruktur as $i)
+                                        <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="instruktur_id_2" class="block text-sm font-medium text-gray-700">Instruktur Kedua (Opsional)</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="instruktur_id_2" name="instruktur_id_2">
+                                    <option value="">-- Pilih Instruktur --</option>
+                                    @foreach($instruktur as $i)
+                                        <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="kuota" class="form-label fw-500">Kuota</label>
-                            <input type="number" class="form-control" id="kuota" name="kuota" required>
+                        <div>
+                            <label for="periode" class="block text-sm font-medium text-gray-700">Periode</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="periode" name="periode" placeholder="Contoh: Februari 2026">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="status" class="form-label fw-500">Status</label>
-                            <select class="form-select" id="status" name="status" required>
-                                <option value="">-- Pilih Status --</option>
-                                <option value="buka">Buka</option>
-                                <option value="tutup">Tutup</option>
-                                <option value="berjalan">Berjalan</option>
-                            </select>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="tanggal_mulai" name="tanggal_mulai" required>
+                            </div>
+                            <div>
+                                <label for="tanggal_selesai" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="tanggal_selesai" name="tanggal_selesai" required>
+                            </div>
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-circle me-2"></i>Simpan</button>
-                            <a href="{{ route('admin.kursus.index') }}" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <label for="harga" class="block text-sm font-medium text-gray-700">Harga</label>
+                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="harga" name="harga" required>
+                            </div>
+
+                            <div>
+                                <label for="harga_upi" class="block text-sm font-medium text-gray-700">Harga UPI (Opsional)</label>
+                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="harga_upi" name="harga_upi">
+                            </div>
                         </div>
-                    </form>
-                </div>
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <label for="kuota" class="block text-sm font-medium text-gray-700">Kuota</label>
+                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="kuota" name="kuota" required>
+                            </div>
+
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="status" name="status" required>
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="buka">Buka</option>
+                                    <option value="tutup">Tutup</option>
+                                    <option value="berjalan">Berjalan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 pt-4">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700"><i class="bi bi-check-circle me-2"></i>Simpan</button>
+                            <a href="{{ route('admin.kursus.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

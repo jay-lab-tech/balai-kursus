@@ -1,81 +1,67 @@
-@extends('kursus::layouts.master')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard Admin')
 
+@section('page-title', 'Dashboard Admin')
+
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-speedometer2 me-2"></i>Dashboard Admin</h2>
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <h2 class="text-3xl font-bold text-gray-900"><i class="bi bi-speedometer2 me-2"></i>Dashboard Admin</h2>
         <form method="POST" action="{{ route('logout') }}" style="display: inline;">
             @csrf
-            <button type="submit" class="btn btn-danger btn-sm">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
                 <i class="bi bi-box-arrow-right me-2"></i>Logout
             </button>
         </form>
     </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm" style="border-top: 4px solid #667eea;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1"><i class="bi bi-people me-2"></i>Total Peserta</h6>
-                            <h2 class="fw-bold text-dark mb-0">{{ $totalPeserta }}</h2>
-                        </div>
-                        <div style="font-size: 3rem; opacity: 0.1;">
-                            <i class="bi bi-people"></i>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white shadow rounded-lg p-6 border-t-4 border-indigo-500">
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <p class="text-sm text-gray-600 mb-1"><i class="bi bi-people me-2"></i>Total Peserta</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ $totalPeserta }}</p>
+                </div>
+                <div class="text-4xl text-gray-100">
+                    <i class="bi bi-people"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm" style="border-top: 4px solid #764ba2;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1"><i class="bi bi-book me-2"></i>Total Kursus</h6>
-                            <h2 class="fw-bold text-dark mb-0">{{ $totalKursus }}</h2>
-                        </div>
-                        <div style="font-size: 3rem; opacity: 0.1;">
-                            <i class="bi bi-book"></i>
-                        </div>
-                    </div>
+        <div class="bg-white shadow rounded-lg p-6 border-t-4 border-purple-500">
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <p class="text-sm text-gray-600 mb-1"><i class="bi bi-book me-2"></i>Total Kursus</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ $totalKursus }}</p>
+                </div>
+                <div class="text-4xl text-gray-100">
+                    <i class="bi bi-book"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm" style="border-top: 4px solid #4f46e5;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1"><i class="bi bi-cash-coin me-2"></i>Total Pemasukan</h6>
-                            <h2 class="fw-bold text-dark mb-0">Rp {{ number_format($totalPemasukan) }}</h2>
-                        </div>
-                        <div style="font-size: 3rem; opacity: 0.1;">
-                            <i class="bi bi-cash-coin"></i>
-                        </div>
-                    </div>
+        <div class="bg-white shadow rounded-lg p-6 border-t-4 border-blue-600">
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <p class="text-sm text-gray-600 mb-1"><i class="bi bi-cash-coin me-2"></i>Total Pemasukan</p>
+                    <p class="text-3xl font-bold text-gray-900">Rp {{ number_format($totalPemasukan) }}</p>
+                </div>
+                <div class="text-4xl text-gray-100">
+                    <i class="bi bi-cash-coin"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-lg-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-light">
-                    <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-graph-up me-2 text-primary"></i>Grafik Pemasukan Bulanan
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="chart" style="max-height: 400px;"></canvas>
-                </div>
-            </div>
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6 border-b border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900">
+                <i class="bi bi-graph-up text-blue-600 me-2"></i>Grafik Pemasukan Bulanan
+            </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+            <canvas id="chart" style="max-height: 400px;"></canvas>
         </div>
     </div>
 </div>

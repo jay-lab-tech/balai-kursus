@@ -1,38 +1,33 @@
-@extends('level::layouts.master')
+@extends('layouts.admin')
+
+@section('title', 'Tambah Level')
+
+@section('page-title', 'Tambah Level')
 
 @section('content')
-<div class="container-fluid py-4">
-                        <div class="mb-3">
-                            <label for="nama" class="form-label fw-500">Nama Level</label>
-                            <input type="text" class="form-control" id="nama" name="nama" required>
+<div class="space-y-6">
+    <div class="max-w-2xl">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6"><i class="bi bi-stack me-2"></i>Tambah Level</h2>
+                <form method="POST" action="{{ route('admin.level.store') }}">
+                    @csrf
+                    <div class="space-y-6">
+                        <div>
+                            <label for="nama" class="block text-sm font-medium text-gray-700">Nama Level</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="nama" name="nama" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="warna" class="form-label fw-500">Warna Level</label>
-                            <input type="color" class="form-control form-control-color" id="warna" name="warna" value="#2196f3">
-                        </div>
-        <div class="col-md-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <form method="POST" action="{{ route('admin.level.store') }}">
-                        @csrf
-
-                        <!-- Field program dihapus, hanya input nama level -->
-
-                        <div class="mb-3">
-                            <label for="nama" class="form-label fw-500">Nama Level</label>
-                            <input type="text" class="form-control" id="nama" name="nama" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="warna" class="form-label fw-500">Warna Level</label>
-                            <input type="color" class="form-control form-control-color" id="warna" name="warna" value="#2196f3">
+                        <div>
+                            <label for="warna" class="block text-sm font-medium text-gray-700">Warna Level</label>
+                            <input type="color" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="warna" name="warna" value="#2196f3">
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-circle me-2"></i>Simpan</button>
-                            <a href="{{ route('admin.level.index') }}" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
+                        <div class="flex gap-3">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700"><i class="bi bi-check-circle me-2"></i>Simpan</button>
+                            <a href="{{ route('admin.level.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -35,7 +35,7 @@ class CertificateAnalyticsController extends Controller
         $queued = $query->clone()->where('status', 'queued')->count();
 
         // By course
-        $byCourse = Kursus::withCount([
+        $byCourse = Kursus::with(['program'])->withCount([
             'pendaftarans' => function ($q) {
                 if ($startDate) {
                     $q->where('created_at', '>=', $startDate);
@@ -46,8 +46,9 @@ class CertificateAnalyticsController extends Controller
             if ($startDate) {
                 $certs->where('created_at', '>=', $startDate);
             }
+            $label = optional($course->program)->nama ? $course->program->nama . ' - ' . $course->judul : $course->judul;
             return [
-                'kursus' => $course->judul,
+                'kursus' => $label,
                 'issued' => $certs->clone()->count(),
                 'generated' => $certs->clone()->where('status', 'generated')->count(),
                 'revoked' => $certs->clone()->where('status', 'revoked')->count(),
@@ -101,14 +102,14 @@ class CertificateAnalyticsController extends Controller
 
         $certificates = $query->get();
 
-        $csv = "No. Sertifikat,Peserta,Kursus,Status,Terbit,Valid Hingga,Hari Tersisa\n";
+        $csv = "No. Sertifikat,Peserta,Program / Kursus,Status,Terbit,Valid Hingga,Hari Tersisa\n";
 
         foreach ($certificates as $cert) {
             $csv .= sprintf(
                 '"%s","%s","%s","%s","%s","%s","%s"' . "\n",
                 $cert->no_sertifikat,
                 $cert->peserta->nama ?? '-',
-                $cert->kursus->judul ?? '-',
+                (optional($cert->kursus->program)->nama ? $cert->kursus->program->nama . ' - ' : '') . ($cert->kursus->judul ?? $cert->kursus->nama ?? '-'),
                 ucfirst($cert->status),
                 $cert->issued_at?->format('Y-m-d') ?? '-',
                 $cert->expires_at?->format('Y-m-d') ?? '-',

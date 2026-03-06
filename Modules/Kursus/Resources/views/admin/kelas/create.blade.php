@@ -1,35 +1,46 @@
-@extends('kursus::layouts.master')
+@extends('layouts.admin')
+
+@section('title', 'Tambah Kelas')
+
+@section('page-title', 'Tambah Kelas')
 
 @section('content')
-<div class="container-fluid py-4">
-    <h2 class="fw-bold">Tambah Kelas</h2>
-    <div class="card mt-3">
-        <div class="card-body">
-            <form method="POST" action="{{ route('admin.kelas.store') }}">
-                @csrf
-                <div class="mb-3">
-                    <label class="form-label">Nama Kelas</label>
-                    <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" required value="{{ old('nama') }}">
-                    @error('nama') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Kapasitas (orang)</label>
-                    <input type="number" name="kapasitas" class="form-control @error('kapasitas') is-invalid @enderror" min="1" required value="{{ old('kapasitas') }}">
-                    @error('kapasitas') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Fasilitas</label>
-                    <input type="text" name="fasilitas" class="form-control @error('fasilitas') is-invalid @enderror" required value="{{ old('fasilitas') }}" placeholder="Contoh: Proyektor, AC, Whiteboard">
-                    @error('fasilitas') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Keterangan</label>
-                    <textarea name="keterangan" class="form-control @error('keterangan') is-invalid @enderror" rows="2">{{ old('keterangan') }}</textarea>
-                    @error('keterangan') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-                <button class="btn btn-primary">Simpan</button>
-                <a href="{{ route('admin.kelas.index') }}" class="btn btn-secondary">Batal</a>
-            </form>
+<div class="space-y-6">
+    <div class="max-w-2xl">
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Tambah Kelas</h2>
+                <form method="POST" action="{{ route('admin.kelas.store') }}">
+                    @csrf
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nama Kelas</label>
+                            <input type="text" name="nama" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('nama') border-red-500 @enderror" required value="{{ old('nama') }}">
+                            @error('nama') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Kapasitas (orang)</label>
+                            <input type="number" name="kapasitas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('kapasitas') border-red-500 @enderror" min="1" required value="{{ old('kapasitas') }}">
+                            @error('kapasitas') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Fasilitas</label>
+                            <input type="text" name="fasilitas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('fasilitas') border-red-500 @enderror" required value="{{ old('fasilitas') }}" placeholder="Contoh: Proyektor, AC, Whiteboard">
+                            @error('fasilitas') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Keterangan</label>
+                            <textarea name="keterangan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('keterangan') border-red-500 @enderror" rows="2">{{ old('keterangan') }}</textarea>
+                            @error('keterangan') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="flex gap-3 pt-4">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">Simpan</button>
+                            <a href="{{ route('admin.kelas.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">Batal</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
