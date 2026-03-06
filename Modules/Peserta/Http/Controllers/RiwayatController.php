@@ -12,11 +12,18 @@ class RiwayatController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $peserta = $user->peserta;
+
+        if (!$peserta) {
+            // Jika tidak ada profil peserta, tampilkan halaman kosong tanpa redirect
+            $pendaftarans = collect();
+            return view('peserta::riwayat.index', compact('pendaftarans'));
+        }
 
         $pendaftarans = Pendaftaran::with('kursus','pembayarans')
-            ->where('peserta_id', $user->peserta->id)
+            ->where('peserta_id', $peserta->id)
             ->get();
 
-        return view('peserta.riwayat.index', compact('pendaftarans'));
+        return view('peserta::riwayat.index', compact('pendaftarans'));
     }
 }

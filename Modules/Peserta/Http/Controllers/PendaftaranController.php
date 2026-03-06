@@ -12,13 +12,23 @@ class PendaftaranController extends Controller
     public function index()
     {
         try {
-            // Get semua pendaftaran
-            $pendaftarans = Pendaftaran::with('kursus', 'pembayarans')->get();
+            $user = Auth::user();
+            $peserta = $user->peserta;
 
-            return view('peserta.pendaftaran.index', compact('pendaftarans'));
+            if (!$peserta) {
+                // Jika tidak ada profil peserta, tampilkan halaman kosong tanpa redirect
+                $pendaftarans = collect();
+                return view('peserta::pendaftaran.index', compact('pendaftarans'));
+            }
+
+            $pendaftarans = Pendaftaran::with('kursus', 'pembayarans')
+                ->where('peserta_id', $peserta->id)
+                ->get();
+
+            return view('peserta::pendaftaran.index', compact('pendaftarans'));
         } catch (\Exception $e) {
             \Log::error('PendaftaranController Error: ' . $e->getMessage());
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return redirect('/peserta/dashboard')->with('error', 'Terjadi kesalahan, coba lagi nanti.');
         }
     }
 }

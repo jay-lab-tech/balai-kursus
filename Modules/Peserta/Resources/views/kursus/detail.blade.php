@@ -1,196 +1,264 @@
-@extends('peserta::layouts.master')
+@extends('peserta::layouts.student')
+
+@section('title', 'Detail ' . $kursus->nama . ' - Balai Kursus')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-dark mb-1">
-                <i class="bi bi-book me-2"></i>{{ $kursus->nama }}
-            </h2>
-            <small class="text-muted">Pertemuan dan Risalah</small>
-        </div>
-        <a href="/peserta/kursus/saya" class="btn btn-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Kembali
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Back Button -->
+        <a href="/peserta/kursus/saya" class="inline-flex items-center px-4 py-2 mb-8 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 group">
+            <i class="bi bi-arrow-left mr-2 transform group-hover:-translate-x-1 transition-transform"></i>
+            <span>Kembali ke Kursus Saya</span>
         </a>
-    </div>
 
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">Info Kursus</h5>
-                    <div class="row">
-                        <div class="col-sm-6 mb-2">
-                            <small class="text-muted d-block">Program</small>
-                            <strong>{{ $kursus->program->nama }}</strong>
-                        </div>
-                        <div class="col-sm-6 mb-2">
-                            <small class="text-muted d-block">Level</small>
-                            <strong>{{ $kursus->level->nama }}</strong>
-                        </div>
-                        <div class="col-sm-6 mb-2">
-                            <small class="text-muted d-block">Instruktur</small>
-                            <strong>{{ $kursus->instruktur->nama_instr ?? 'N/A' }}</strong>
-                        </div>
-                        <div class="col-sm-6 mb-2">
-                            <small class="text-muted d-block">Periode</small>
-                            <strong>{{ $kursus->periode }}</strong>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Course Header -->
+                <div class="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-8 mb-8 shadow-lg">
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $kursus->nama }}</h1>
+                    <p class="text-gray-600">Pertemuan dan Materi Pembelajaran</p>
+                </div>
+
+                <!-- Course Info Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                            <i class="bi bi-info-circle text-yellow-400 mr-2"></i>
+                            Informasi Kursus
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">Program</p>
+                                <p class="text-white font-semibold">{{ $kursus->program->nama }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">Level</p>
+                                <p class="text-white font-semibold">{{ $kursus->level->nama }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">Instruktur</p>
+                                <p class="text-white font-semibold">{{ $kursus->instruktur->nama_instr ?? 'N/A' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">Periode</p>
+                                <p class="text-white font-semibold">{{ $kursus->periode }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">
-                        <i class="bi bi-calendar me-2"></i>Daftar Pertemuan
-                    </h5>
+                <!-- Meetings List -->
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-8">
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+                        <i class="bi bi-calendar3 text-red-500 mr-3"></i>
+                        Daftar Pertemuan
+                    </h3>
 
                     @if($risalahs && count($risalahs) > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead style="background-color: #f8f9fa;">
-                                    <tr>
-                                        <th class="fw-bold text-muted border-0">Pertemuan</th>
-                                        <th class="fw-bold text-muted border-0">Tanggal</th>
-                                        <th class="fw-bold text-muted border-0">Status</th>
-                                        <th class="fw-bold text-muted border-0">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($risalahs as $risalah)
-                                    <tr>
-                                        <td class="fw-bold border-0">Pertemuan {{ $risalah->pertemuan_ke }}</td>
-                                        <td class="border-0">
-                                            @if($risalah->tgl_pertemuan)
-                                                {{ \Carbon\Carbon::parse($risalah->tgl_pertemuan)->translatedFormat('d F Y') }}
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
-                                        <td class="border-0">
-                                            @if($risalah->materi)
-                                                <span class="badge bg-success">Ada</span>
-                                            @else
-                                                <span class="badge bg-warning">Belum</span>
-                                            @endif
-                                        </td>
-                                        <td class="border-0">
-                                            <a href="#" class="btn btn-sm btn-primary" onclick="showRisalah({{ $risalah->id }})">
-                                                <i class="bi bi-eye me-1"></i>Lihat
-                                            </a>
-                                            @if($risalah->dokumen)
-                                                <a href="{{ route('instruktur.risalah.download', $risalah->id) }}" class="btn btn-sm btn-success ms-1" target="_blank">
-                                                    <i class="bi bi-download me-1"></i>Download Dokumen
-                                                </a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="space-y-4">
+                            @foreach($risalahs as $risalah)
+                            <div class="group bg-gradient-to-r from-gray-700/30 to-transparent hover:from-gray-700/50 border border-gray-700 hover:border-red-500/50 rounded-lg p-6 transition-all duration-200 cursor-pointer" onclick="showRisalah({{ $risalah->id }})">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-grow">
+                                        <h4 class="text-white font-semibold text-lg mb-2">Pertemuan {{ $risalah->pertemuan_ke }}</h4>
+                                        <div class="flex items-center space-x-4 text-gray-400 text-sm">
+                                            <span class="flex items-center">
+                                                <i class="bi bi-calendar2 mr-2 text-yellow-400"></i>
+                                                {{ $risalah->tgl_pertemuan ? \Carbon\Carbon::parse($risalah->tgl_pertemuan)->translatedFormat('d F Y') : 'Belum ditentukan' }}
+                                            </span>
+                                            <span class="flex items-center">
+                                                <i class="bi bi-book mr-2 text-blue-400"></i>
+                                                {{ $risalah->materi ? 'Ada Materi' : 'Belum Ada Materi' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        @if($risalah->materi)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                                                <i class="bi bi-check-circle mr-1"></i>Tersedia
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                                                <i class="bi bi-clock mr-1"></i>Belum
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Document Download -->
+                                @if($risalah->dokumen)
+                                <div class="mt-4 pt-4 border-t border-gray-600">
+                                    <a href="{{ route('instruktur.risalah.download', $risalah->id) }}" class="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors" target="_blank" onclick="event.stopPropagation();">
+                                        <i class="bi bi-download mr-2"></i>
+                                        <span>Download Dokumen</span>
+                                    </a>
+                                </div>
+                                @endif
+                            </div>
+                            @endforeach
                         </div>
                     @else
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <i class="bi bi-info-circle me-2"></i>
-                            Belum ada pertemuan untuk kursus ini.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="text-center py-12 text-gray-400">
+                            <i class="bi bi-inbox text-5xl mb-4 block opacity-30"></i>
+                            <p class="text-lg">Belum ada pertemuan untuk kursus ini</p>
                         </div>
                     @endif
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">
-                        <i class="bi bi-info-circle me-2"></i>Status Pendaftaran
-                    </h5>
+            <!-- Sidebar - Payment Status -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24">
+                    <!-- Payment Status Card -->
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 mb-6">
+                        <h4 class="text-white font-semibold mb-6 flex items-center">
+                            <i class="bi bi-credit-card text-yellow-400 mr-2"></i>
+                            Status Pembayaran
+                        </h4>
 
-                    <div class="mb-3">
-                        <small class="text-muted d-block mb-2">Status Pembayaran</small>
-                        @if($pendaftaran->status_pembayaran === 'selesai')
-                            <span class="badge bg-success p-2">Pembayaran Selesai</span>
-                        @elseif($pendaftaran->status_pembayaran === 'dp')
-                            <span class="badge bg-warning p-2">DP (Cicilan)</span>
-                        @else
-                            <span class="badge bg-secondary p-2">{{ ucfirst($pendaftaran->status_pembayaran) }}</span>
+                        <!-- Status Badge -->
+                        <div class="mb-6 pb-6 border-b border-gray-700">
+                            @if($pendaftaran->status_pembayaran === 'selesai')
+                                <span class="inline-flex items-center px-4 py-2 rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 font-semibold">
+                                    <i class="bi bi-check-circle mr-2"></i>
+                                    Pembayaran Selesai
+                                </span>
+                            @elseif($pendaftaran->status_pembayaran === 'dp')
+                                <span class="inline-flex items-center px-4 py-2 rounded-lg bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-semibold">
+                                    <i class="bi bi-hourglass-split mr-2"></i>
+                                    DP (Cicilan)
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-4 py-2 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 font-semibold">
+                                    <i class="bi bi-x-circle mr-2"></i>
+                                    {{ ucfirst($pendaftaran->status_pembayaran) }}
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Payment Details -->
+                        <div class="space-y-4 mb-6 pb-6 border-b border-gray-700">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">Total Biaya</p>
+                                <p class="text-2xl font-bold text-yellow-400">Rp {{ number_format($pendaftaran->total_bayar, 0, ',', '.') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm mb-1">Sudah Terbayar</p>
+                                <p class="text-xl font-semibold text-white">Rp {{ number_format($pendaftaran->terbayar, 0, ',', '.') }}</p>
+                            </div>
+                            @php
+                                $progress = $pendaftaran->total_bayar > 0 ? ($pendaftaran->terbayar / $pendaftaran->total_bayar) * 100 : 0;
+                            @endphp
+                            <div>
+                                <p class="text-gray-400 text-sm mb-2">Progress Pembayaran</p>
+                                <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-yellow-500 to-red-500 h-full transition-all duration-500" style="width: {{ min($progress, 100) }}%"></div>
+                                </div>
+                                <p class="text-sm text-gray-400 mt-2">{{ number_format($progress, 0) }}% selesai</p>
+                            </div>
+                        </div>
+
+                        <!-- Remaining Amount -->
+                        @php
+                            $sisa = $pendaftaran->total_bayar - $pendaftaran->terbayar;
+                        @endphp
+                        @if($sisa > 0)
+                        <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                            <p class="text-gray-400 text-sm mb-1">Sisa Pembayaran</p>
+                            <p class="text-lg font-bold text-red-400">Rp {{ number_format($sisa, 0, ',', '.') }}</p>
+                        </div>
                         @endif
                     </div>
 
-                    <div class="mb-3">
-                        <small class="text-muted d-block mb-2">Total Bayar</small>
-                        <strong class="text-dark">Rp {{ number_format($pendaftaran->total_bayar, 0, ',', '.') }}</strong>
+                    <!-- Attendance Info -->
+                    @if($risalahs && count($risalahs) > 0)
+                    <div class="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border border-blue-500/30 rounded-xl p-6">
+                        <h4 class="text-white font-semibold mb-4 flex items-center">
+                            <i class="bi bi-people-fill text-blue-400 mr-2"></i>
+                            Kehadiran
+                        </h4>
+                        <div class="text-center">
+                            <p class="text-4xl font-bold text-blue-400">{{ $risalahs->sum(fn($r) => $r->absensis()->count()) ?? 0 }}</p>
+                            <p class="text-gray-400 text-sm">pertemuan dihadiri</p>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <small class="text-muted d-block mb-2">Terbayar</small>
-                        <strong class="text-dark">Rp {{ number_format($pendaftaran->terbayar, 0, ',', '.') }}</strong>
-                    </div>
-
-                    <div class="progress mb-3">
-                        @php
-                            $progress = $pendaftaran->total_bayar > 0 ? ($pendaftaran->terbayar / $pendaftaran->total_bayar) * 100 : 0;
-                        @endphp
-                        <div class="progress-bar" style="width: {{ $progress }}%"></div>
-                    </div>
-
-                    <small class="text-muted">{{ number_format($progress, 0) }}% terbayar</small>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODALS CONTAINER -->
+<!-- MODAL CONTAINER -->
 @if($risalahs && count($risalahs) > 0)
 @foreach($risalahs as $risalah)
-<div class="modal fade" id="risalahModal{{ $risalah->id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Risalah Pertemuan {{ $risalah->pertemuan_ke }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div id="risalahModal{{ $risalah->id }}" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="if(event.target === this) closeRisalah({{ $risalah->id }})">
+    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl max-w-2xl w-full border border-gray-700 animate-fade-in-up">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-700">
+            <h3 class="text-2xl font-bold text-white">Risalah Pertemuan {{ $risalah->pertemuan_ke }}</h3>
+            <button onclick="closeRisalah({{ $risalah->id }})" class="text-gray-400 hover:text-white text-2xl transition-colors">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 max-h-96 overflow-y-auto">
+            <!-- Tanggal -->
+            <div class="mb-6 pb-6 border-b border-gray-700">
+                <p class="text-yellow-400 text-sm font-semibold mb-2">Tanggal Pertemuan</p>
+                <p class="text-white text-lg">
+                    {{ $risalah->tgl_pertemuan ? \Carbon\Carbon::parse($risalah->tgl_pertemuan)->translatedFormat('d F Y') : 'Belum ditentukan' }}
+                </p>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tanggal</label>
-                    <p class="form-control-plaintext">
-                        {{ $risalah->tgl_pertemuan ? \Carbon\Carbon::parse($risalah->tgl_pertemuan)->translatedFormat('d F Y') : '-' }}
-                    </p>
-                </div>
-                <hr>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Materi Pembelajaran</label>
-                    @if($risalah->materi)
-                        <div class="alert alert-light border">{{ $risalah->materi }}</div>
-                    @else
-                        <p class="text-muted">Materi belum ditambahkan</p>
-                    @endif
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Catatan</label>
-                    @if($risalah->catatan)
-                        <div class="alert alert-light border">{{ $risalah->catatan }}</div>
-                    @else
-                        <p class="text-muted">Tidak ada catatan</p>
-                    @endif
-                </div>
-                <hr>
-                <div class="mb-0">
-                    <label class="form-label fw-bold">Peserta Hadir</label>
-                    <p class="form-control-plaintext"><span class="badge bg-info">{{ $risalah->absensis()->count() ?? 0 }} peserta</span></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                @if($risalah->dokumen)
-                    <a href="{{ route('instruktur.risalah.download', $risalah->id) }}" class="btn btn-success" target="_blank">
-                        <i class="bi bi-download me-1"></i>Download Dokumen
-                    </a>
+
+            <!-- Materi -->
+            <div class="mb-6 pb-6 border-b border-gray-700">
+                <p class="text-blue-400 text-sm font-semibold mb-2">Materi Pembelajaran</p>
+                @if($risalah->materi)
+                    <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-gray-300 text-sm">
+                        {{ $risalah->materi }}
+                    </div>
+                @else
+                    <p class="text-gray-400 italic">Materi belum ditambahkan oleh instruktur</p>
                 @endif
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
+
+            <!-- Catatan -->
+            <div class="mb-6 pb-6 border-b border-gray-700">
+                <p class="text-green-400 text-sm font-semibold mb-2">Catatan Tambahan</p>
+                @if($risalah->catatan)
+                    <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-gray-300 text-sm">
+                        {{ $risalah->catatan }}
+                    </div>
+                @else
+                    <p class="text-gray-400 italic">Tidak ada catatan tambahan</p>
+                @endif
+            </div>
+
+            <!-- Peserta Hadir -->
+            <div>
+                <p class="text-indigo-400 text-sm font-semibold mb-2">Peserta Hadir</p>
+                <div class="inline-flex items-center px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30">
+                    <i class="bi bi-people-fill mr-2"></i>
+                    <span class="font-semibold">{{ $risalah->absensis()->count() ?? 0 }} peserta</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-between p-6 border-t border-gray-700 bg-gray-900/50">
+            @if($risalah->dokumen)
+                <a href="{{ route('instruktur.risalah.download', $risalah->id) }}" class="flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200" target="_blank">
+                    <i class="bi bi-download mr-2"></i>Download Dokumen
+                </a>
+            @else
+                <div></div>
+            @endif
+            <button onclick="closeRisalah({{ $risalah->id }})" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors duration-200">
+                Tutup
+            </button>
         </div>
     </div>
 </div>
@@ -199,8 +267,35 @@
 
 <script>
 function showRisalah(id) {
-    const modal = new bootstrap.Modal(document.getElementById('risalahModal' + id));
-    modal.show();
+    const modal = document.getElementById('risalahModal' + id);
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
+
+function closeRisalah(id) {
+    const modal = document.getElementById('risalahModal' + id);
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('[id^="risalahModal"]').forEach(modal => {
+            modal.classList.add('hidden');
+        });
+        document.body.style.overflow = 'auto';
+    }
+});
 </script>
+
+<style>
+    [id^="risalahModal"] {
+        display: flex !important;
+    }
+</style>
 @endsection
