@@ -5,9 +5,14 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Nilai Peserta - {{ $kursus->nama }}</h1>
-            <a href="{{ route('instruktur.kursus.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Kembali
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('instruktur.kursus.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Kembali
+                </a>
+                <a href="{{ route('instruktur.nilai.export', $kursus->id) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Export Nilai
+                </a>
+            </div>
         </div>
 
         <div class="overflow-x-auto">

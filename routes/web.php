@@ -11,6 +11,8 @@ Route::get('/', function () {
 
     return redirect()->route('login');
 });
+// Export nilai peserta instruktur
+Route::get('/instruktur/kursus/{kursus}/nilai/export', [\Modules\Instruktur\Http\Controllers\NilaiController::class, 'export'])->name('instruktur.nilai.export');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +74,7 @@ Route::get('/certificate/{id}/download', [\App\Http\Controllers\CertificateContr
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/score/export', [\Modules\Kursus\Http\Controllers\Admin\ScoreController::class, 'export'])->name('score.export');
     Route::get('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'index'])->name('certificates.index');
     Route::get('/certificates/create', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'create'])->name('certificates.create');
     Route::post('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'store'])->name('certificates.store');
@@ -101,4 +104,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Analytics
     Route::get('/certificates/analytics/dashboard', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'index'])->name('certificates.analytics');
     Route::get('/certificates/analytics/export', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'export'])->name('certificates.analytics.export');
+        // Peserta export
+        Route::get('/peserta/export', [\Modules\Peserta\Http\Controllers\Admin\PesertaController::class, 'export'])->name('peserta.export');
 });

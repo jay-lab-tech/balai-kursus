@@ -8,8 +8,10 @@
 <div class="space-y-6">
     <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
         <h2 class="text-2xl font-bold text-gray-900"><i class="bi bi-list me-2"></i>Daftar Nilai Peserta</h2>
-
         <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+            <a href="{{ route('admin.score.export') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
+                <i class="bi bi-download me-2"></i>Export Nilai
+            </a>
             <form method="GET" action="{{ route('admin.score.index') }}" class="flex gap-2">
                 <div class="flex">
                     <input type="search" name="q" class="px-3 py-2 border border-gray-300 rounded-l-md text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Cari peserta, kursus..." value="{{ old('q', $q ?? '') }}">
