@@ -11,7 +11,7 @@
         $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
     @endphp
     @if($cssFile)
-        <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}">
+        <link rel="stylesheet" href="{{ secure_asset('build/' . $cssFile) }}">
     @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -149,7 +149,7 @@
     </footer>
 
     @if($jsFile)
-        <script src="{{ asset('build/' . $jsFile) }}"></script>
+        <script src="{{ secure_asset('build/' . $jsFile) }}"></script>
     @endif
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"></script>
 </body>

@@ -105,11 +105,17 @@ class MidtransService
             $transaction['item_details'] = $itemDetails;
         }
 
+        // Setup callbacks for Midtrans notifications
+        $notificationUrl = config('midtrans.notification_url') ?: route('pembayaran-notification');
+        
         $transaction['callbacks'] = [
             'finish' => config('midtrans.finish_redirect_url'),
             'error' => config('midtrans.error_redirect_url'),
-            'pending' => config('midtrans.notification_url'),
+            'pending' => $notificationUrl,
         ];
+        
+        // Add notification URL (for server-to-server notification)
+        $transaction['custom_field1'] = 'payment';
 
         return $transaction;
     }

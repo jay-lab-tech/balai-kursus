@@ -42,6 +42,9 @@ Route::middleware(['auth'])
         });
     });
 
+// Midtrans Webhook Notification (NO AUTH REQUIRED)
+Route::post('/peserta/pembayaran-notification', 'Modules\Peserta\Http\Controllers\PembayaranController@handleMidtransNotification')->name('pembayaran-notification');
+
 // Admin Routes for Peserta Module
 Route::middleware(['auth'])
     ->prefix('admin/peserta')
