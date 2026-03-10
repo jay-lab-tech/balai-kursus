@@ -15,6 +15,11 @@
                     <x-nav-link :href="auth()->user()->role === 'admin' ? route('admin.dashboard') : (auth()->user()->role === 'instruktur' ? route('instruktur.dashboard') : route('peserta.dashboard'))" :active="request()->routeIs('admin.*') || request()->routeIs('instruktur.*') || request()->routeIs('peserta.*')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if(auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
+                            {{ __('Manajemen Sertifikat') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 

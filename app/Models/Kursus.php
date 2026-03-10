@@ -51,9 +51,6 @@ class Kursus extends Model
         return $this->hasMany(Jadwal::class);
     }
 
-    public function certificateTemplate()
-    {
-        return $this->hasOne(CertificateTemplate::class);
-    }
+    // Relasi certificateTemplate dihapus
     
 }

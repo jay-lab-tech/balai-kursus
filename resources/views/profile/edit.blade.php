@@ -1,79 +1,47 @@
-@extends('layouts.app-bootstrap')
+@extends('profile.layout')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Edit Profil Saya</h4>
-                </div>
-                <div class="card-body">
-                    @if (session('status') === 'profile-updated')
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            Profil berhasil diperbarui.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-                        @csrf
-                        @method('patch')
-
-                        {{-- Informasi Akun Utama --}}
-                        <h5 class="mb-3 text-muted">Informasi Akun</h5>
-                        
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name">
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="username">
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Informasi Tambahan Peserta --}}
-                        @if($user->role === 'peserta')
-                            <hr class="my-4">
-                            <h5 class="mb-3 text-muted">Data Peserta</h5>
-
-                            <div class="mb-3">
-                                <label for="nomor_peserta" class="form-label">Nomor Peserta</label>
-                                <input type="text" class="form-control bg-light" id="nomor_peserta" value="{{ $peserta->nomor_peserta ?? '-' }}" readonly disabled>
-                                <small class="text-muted">Nomor peserta digenerate otomatis oleh sistem.</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="no_hp" class="form-label">Nomor HP / WhatsApp</label>
-                                <input type="text" class="form-control @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp', $peserta->no_hp ?? '') }}" placeholder="Contoh: 08123456789">
-                                @error('no_hp')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="instansi" class="form-label">Asal Instansi / Sekolah</label>
-                                <input type="text" class="form-control @error('instansi') is-invalid @enderror" id="instansi" name="instansi" value="{{ old('instansi', $peserta->instansi ?? '') }}" placeholder="Contoh: Universitas Pendidikan Indonesia">
-                                @error('instansi')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        @endif
-
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="max-w-2xl mx-auto mt-8">
+    <h2 class="text-2xl font-bold mb-6">Edit Profile</h2>
+    @if(session('success'))
+        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">{{ session('success') }}</div>
+    @endif
+    <form method="POST" action="{{ route('profile.update') }}" class="space-y-4">
+        @csrf
+        @method('PATCH')
+        <div>
+            <label class="block text-sm font-medium">Name</label>
+            <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full border rounded px-3 py-2" required>
+            @error('name')<div class="text-red-600 text-xs">{{ $message }}</div>@enderror
         </div>
-    </div>
+        <div>
+            <label class="block text-sm font-medium">Email</label>
+            <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full border rounded px-3 py-2" required>
+            @error('email')<div class="text-red-600 text-xs">{{ $message }}</div>@enderror
+        </div>
+        {{-- Informasi Tambahan Peserta --}}
+        @if(isset($user->role) && $user->role === 'peserta')
+        <hr class="my-4">
+        <h5 class="mb-3 text-gray-700 font-semibold">Data Peserta</h5>
+        <div>
+            <label class="block text-sm font-medium">Nomor Peserta</label>
+            <input type="text" class="w-full border rounded px-3 py-2 bg-gray-100" value="{{ $peserta->nomor_peserta ?? '-' }}" readonly disabled>
+            <span class="text-xs text-gray-500">Nomor peserta digenerate otomatis oleh sistem.</span>
+        </div>
+        <div>
+            <label class="block text-sm font-medium">Nomor HP / WhatsApp</label>
+            <input type="text" name="no_hp" value="{{ old('no_hp', $peserta->no_hp ?? '') }}" class="w-full border rounded px-3 py-2" placeholder="Contoh: 08123456789">
+            @error('no_hp')<div class="text-red-600 text-xs">{{ $message }}</div>@enderror
+        </div>
+        <div>
+            <label class="block text-sm font-medium">Asal Instansi / Sekolah</label>
+            <input type="text" name="instansi" value="{{ old('instansi', $peserta->instansi ?? '') }}" class="w-full border rounded px-3 py-2" placeholder="Contoh: Universitas Pendidikan Indonesia">
+            @error('instansi')<div class="text-red-600 text-xs">{{ $message }}</div>@enderror
+        </div>
+        @endif
+        <div>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Update Profile</button>
+        </div>
+    </form>
 </div>
 @endsection

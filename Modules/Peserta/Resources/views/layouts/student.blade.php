@@ -11,7 +11,7 @@
         $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
     @endphp
     @if($cssFile)
-        <link rel="stylesheet" href="{{ secure_asset('build/' . $cssFile) }}">
+        <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}">
     @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -97,10 +97,10 @@
 
                 <!-- User Menu -->
                 <div class="flex items-center space-x-4">
-                    <div class="hidden sm:flex items-center px-4 py-2 bg-red-600/20 rounded-lg border border-red-500/30">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 bg-red-600/20 rounded-lg border border-red-500/30 focus:outline-none">
                         <i class="bi bi-person-circle text-yellow-400 mr-2"></i>
                         <span class="text-sm font-semibold">{{ Auth::user()->name ?? 'Peserta' }}</span>
-                    </div>
+                    </a>
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors duration-200 transform hover:scale-105">
                         <i class="bi bi-box-arrow-right mr-2"></i>Keluar
                     </a>
@@ -149,7 +149,7 @@
     </footer>
 
     @if($jsFile)
-        <script src="{{ secure_asset('build/' . $jsFile) }}"></script>
+        <script src="{{ asset('build/' . $jsFile) }}" type="module"></script>
     @endif
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"></script>
 </body>

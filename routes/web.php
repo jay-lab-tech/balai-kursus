@@ -60,45 +60,36 @@ Route::post('/peserta/pendaftaran/{pendaftaran}/create-payment', [\App\Http\Cont
     ->middleware('auth')
     ->name('peserta.pendaftaran.create-payment');
 
-// certificate verification
-Route::get('/verify/{code}', [\App\Http\Controllers\CertificateController::class, 'verify'])->name('certificate.verify');
+// Admin Certificate Management
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/certificates', [\App\Http\Controllers\CertificateController::class, 'index'])->name('admin.certificates.index');
+    Route::get('/admin/certificates/create', [\App\Http\Controllers\CertificateController::class, 'create'])->name('admin.certificates.create');
+    Route::post('/admin/certificates', [\App\Http\Controllers\CertificateController::class, 'store'])->name('admin.certificates.store');
+    Route::get('/admin/certificates/{certificate}/edit', [\App\Http\Controllers\CertificateController::class, 'edit'])->name('admin.certificates.edit');
+    Route::put('/admin/certificates/{certificate}', [\App\Http\Controllers\CertificateController::class, 'update'])->name('admin.certificates.update');
+    Route::delete('/admin/certificates/{certificate}', [\App\Http\Controllers\CertificateController::class, 'destroy'])->name('admin.certificates.destroy');
+    Route::post('/admin/certificates/{certificate}/publish', [\App\Http\Controllers\CertificateController::class, 'publish'])->name('admin.certificates.publish');
+    Route::get('/admin/get-participants', function (Illuminate\Http\Request $request) {
+        $pesertas = \App\Models\Peserta::whereHas('pendaftarans', function($q) use ($request) {
+            $q->where('kursus_id', $request->course_id);
+        })
+        ->with('user')
+        ->get(['id', 'nomor_peserta', 'user_id']);
+        // Ambil nama
+        foreach ($pesertas as $peserta) {
+            $peserta->nama = $peserta->user->name ?? '';
+        }
+        return response()->json($pesertas);
+    });
+});
 
-Route::get('/certificate/{id}/download', [\App\Http\Controllers\CertificateController::class, 'download'])
-    ->name('certificate.download');
-
-/*
-|--------------------------------------------------------------------------
-| ADMIN CERTIFICATE MANAGEMENT
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'index'])->name('certificates.index');
-    Route::get('/certificates/create', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'create'])->name('certificates.create');
-    Route::post('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'store'])->name('certificates.store');
-    Route::get('/certificates/{certificate}', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'show'])->name('certificates.show');
-    
-    // Apply/Reject/Reapply actions
-    Route::post('/certificates/{certificate}/apply', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'apply'])->name('certificates.apply');
-    Route::post('/certificates/{certificate}/reject', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'reject'])->name('certificates.reject');
-    Route::post('/certificates/{certificate}/reapply', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'reapply'])->name('certificates.reapply');
-    
-    Route::get('/certificates/{certificate}/revoke', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'editRevoke'])->name('certificates.editRevoke');
-    Route::put('/certificates/{certificate}/revoke', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'revoke'])->name('certificates.revoke');
-    Route::post('/certificates/{certificate}/regenerate', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'regenerate'])->name('certificates.regenerate');
-
-    // Batch issue
-    Route::get('/certificates/batch/create', [\App\Http\Controllers\Admin\CertificateBatchController::class, 'create'])->name('certificates.batch.create');
-    Route::post('/certificates/batch', [\App\Http\Controllers\Admin\CertificateBatchController::class, 'store'])->name('certificates.batch.store');
-
-    // Templates
-    Route::get('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'index'])->name('templates.index');
-    Route::get('/certificate-templates/create', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'create'])->name('templates.create');
-    Route::post('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'store'])->name('templates.store');
-    Route::get('/certificate-templates/{template}/edit', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'edit'])->name('templates.edit');
-    Route::put('/certificate-templates/{template}', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'update'])->name('templates.update');
-    Route::delete('/certificate-templates/{template}', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'destroy'])->name('templates.destroy');
-
-    // Analytics
-    Route::get('/certificates/analytics/dashboard', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'index'])->name('certificates.analytics');
-    Route::get('/certificates/analytics/export', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'export'])->name('certificates.analytics.export');
+// User Certificate Management
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/certificates', [\App\Http\Controllers\UserCertificateController::class, 'index'])->name('profile.certificates');
+    Route::get('/profile/certificates/{id}/download', [\App\Http\Controllers\UserCertificateController::class, 'download'])->name('profile.certificates.download');
+    Route::get('/profile/certificates/{id}/detail', [\App\Http\Controllers\UserCertificateController::class, 'detail'])->name('profile.certificates.detail');
+    Route::get('/my-certificates', [\App\Http\Controllers\CertificateController::class, 'myCertificates'])->name('user.certificates.index');
+    Route::get('/my-certificates/{id}/download', [\App\Http\Controllers\CertificateController::class, 'download'])->name('user.certificates.download');
 });
