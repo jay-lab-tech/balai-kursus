@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class PesertaController extends Controller
 {
+    /**
+     * Export data peserta ke CSV
+     */
+    public function export()
+    {
+        $date = date('Ymd_His');
+        $filename = "balai_kursus_upi_peserta_{$date}.xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PesertaExport, $filename);
+    }
     public function index()
     {
         $query = Peserta::with('user');

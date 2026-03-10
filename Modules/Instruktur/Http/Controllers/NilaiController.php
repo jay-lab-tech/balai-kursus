@@ -10,6 +10,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NilaiController extends Controller
+    /**
+     * Export nilai peserta ke CSV
+     */
+    public function export(Kursus $kursus)
+    {
+        $instruktur = Auth::user()->instruktur;
+        if (!$instruktur || ($kursus->instruktur_id !== $instruktur->id && $kursus->instruktur_id_2 !== $instruktur->id)) {
+            abort(403);
+        }
+        $pendaftarans = $kursus->pendaftarans()->with('peserta.user', 'score')->get();
+        $csv = "Nama Peserta,Listening,Speaking,Reading,Writing,Final Score\n";
+        foreach ($pendaftarans as $p) {
+            $csv .= sprintf(
+                '"%s","%s","%s","%s","%s","%s"' . "\n",
+                $p->peserta->user->name,
+                $p->score->listening ?? '-',
+                $p->score->speaking ?? '-',
+                $p->score->reading ?? '-',
+                $p->score->writing ?? '-',
+                $p->score->final_score ?? '-'
+            );
+        }
+        return response($csv)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="nilai_peserta.csv"');
+    }
 {
     public function index(Kursus $kursus)
     {

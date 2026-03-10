@@ -10,6 +10,15 @@ use Illuminate\Http\Request;
 
 class ScoreController extends Controller
 {
+    /**
+     * Export semua nilai peserta ke CSV
+     */
+    public function export(Request $request)
+    {
+        $date = date('Ymd_His');
+        $filename = "balai_kursus_upi_nilai_{$date}.xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\NilaiExport, $filename);
+    }
     public function __construct()
     {
         $this->middleware('auth');
