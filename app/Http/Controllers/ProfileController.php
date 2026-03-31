@@ -21,8 +21,20 @@ class ProfileController extends Controller
 
         if ($user->role === 'peserta') {
             $peserta = Peserta::where('user_id', $user->id)->first();
+            return view('profile.edit', [
+                'user' => $user,
+                'peserta' => $peserta,
+            ]);
         }
 
+        // Untuk instruktur, gunakan layout dan view khusus
+        if ($user->role === 'instruktur') {
+            return view('instruktur.profile.edit', [
+                'user' => $user,
+            ]);
+        }
+
+        // Default fallback
         return view('profile.edit', [
             'user' => $user,
             'peserta' => $peserta,

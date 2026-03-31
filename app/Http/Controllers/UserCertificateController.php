@@ -9,12 +9,13 @@ class UserCertificateController extends Controller
     public function index()
     {
         $peserta = \App\Models\Peserta::where('user_id', Auth::id())->first();
-        $certificates = [];
         if ($peserta) {
             $certificates = Certificate::where('participant_id', $peserta->id)
                 ->where('status', 'published')
                 ->latest()
                 ->get();
+        } else {
+            $certificates = collect([]);
         }
         return view('profile.certificates', compact('certificates'));
     }

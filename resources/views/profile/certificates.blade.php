@@ -13,8 +13,8 @@
             <div class="text-sm text-gray-500 mb-2">Kursus: {{ $certificate->course->nama ?? '-' }}</div>
             <div class="text-sm text-gray-500 mb-2">Diterbitkan: {{ $certificate->created_at->format('d M Y') }}</div>
             <div class="flex space-x-2 mt-2">
-                <a href="{{ route('profile.certificates.detail', $certificate->id) }}" class="bg-yellow-500 text-black px-3 py-2 rounded text-center font-semibold">Detail</a>
-                <a href="{{ route('profile.certificates.download', $certificate->id) }}" class="bg-blue-600 text-white px-3 py-2 rounded text-center font-semibold">Download PDF</a>
+                <a href="{{ route('profile.certificate.detail', $certificate->id) }}" class="bg-yellow-500 text-black px-3 py-2 rounded text-center font-semibold">Detail</a>
+                <a href="{{ route('profile.certificate.download', $certificate->id) }}" class="bg-blue-600 text-white px-3 py-2 rounded text-center font-semibold">Download PDF</a>
             </div>
         </div>
         @endforeach

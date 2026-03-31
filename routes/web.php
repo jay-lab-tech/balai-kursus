@@ -23,6 +23,10 @@ Route::get('/instruktur/kursus/{kursus}/nilai/export', [\Modules\Instruktur\Http
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Sertifikat user
+    Route::get('/profile/certificates', [\App\Http\Controllers\UserCertificateController::class, 'index'])->name('profile.certificates');
+    Route::get('/profile/certificates/{id}', [\App\Http\Controllers\UserCertificateController::class, 'detail'])->name('profile.certificate.detail');
+    Route::get('/profile/certificates/{id}/download', [\App\Http\Controllers\UserCertificateController::class, 'download'])->name('profile.certificate.download');
 });
 
 require __DIR__ . '/auth.php';
@@ -74,24 +78,16 @@ Route::get('/certificate/{id}/download', [\App\Http\Controllers\CertificateContr
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/score/export', [\Modules\Kursus\Http\Controllers\Admin\ScoreController::class, 'export'])->name('score.export');
-    Route::get('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'index'])->name('certificates.index');
-    Route::get('/certificates/create', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'create'])->name('certificates.create');
-    Route::post('/certificates', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'store'])->name('certificates.store');
-    Route::get('/certificates/{certificate}', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'show'])->name('certificates.show');
-    
-    // Apply/Reject/Reapply actions
-    Route::post('/certificates/{certificate}/apply', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'apply'])->name('certificates.apply');
-    Route::post('/certificates/{certificate}/reject', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'reject'])->name('certificates.reject');
-    Route::post('/certificates/{certificate}/reapply', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'reapply'])->name('certificates.reapply');
-    
-    Route::get('/certificates/{certificate}/revoke', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'editRevoke'])->name('certificates.editRevoke');
-    Route::put('/certificates/{certificate}/revoke', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'revoke'])->name('certificates.revoke');
-    Route::post('/certificates/{certificate}/regenerate', [\App\Http\Controllers\Admin\CertificateAdminController::class, 'regenerate'])->name('certificates.regenerate');
+    Route::get('/score/export', [\Modules\Kursus\Http\Controllers\Admin\ScoreController::class, 'export'])->name('score.export');
 
-    // Batch issue
-    Route::get('/certificates/batch/create', [\App\Http\Controllers\Admin\CertificateBatchController::class, 'create'])->name('certificates.batch.create');
-    Route::post('/certificates/batch', [\App\Http\Controllers\Admin\CertificateBatchController::class, 'store'])->name('certificates.batch.store');
+    // Sertifikat admin
+    Route::get('/certificates', [\App\Http\Controllers\CertificateController::class, 'index'])->name('certificates.index');
+    Route::get('/certificates/create', [\App\Http\Controllers\CertificateController::class, 'create'])->name('certificates.create');
+    Route::post('/certificates', [\App\Http\Controllers\CertificateController::class, 'store'])->name('certificates.store');
+    Route::get('/certificates/{id}/edit', [\App\Http\Controllers\CertificateController::class, 'edit'])->name('certificates.edit');
+    Route::put('/certificates/{id}', [\App\Http\Controllers\CertificateController::class, 'update'])->name('certificates.update');
+    Route::delete('/certificates/{id}', [\App\Http\Controllers\CertificateController::class, 'destroy'])->name('certificates.destroy');
+    Route::post('/certificates/{id}/publish', [\App\Http\Controllers\CertificateController::class, 'publish'])->name('certificates.publish');
 
     // Templates
     Route::get('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'index'])->name('templates.index');
@@ -104,6 +100,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Analytics
     Route::get('/certificates/analytics/dashboard', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'index'])->name('certificates.analytics');
     Route::get('/certificates/analytics/export', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'export'])->name('certificates.analytics.export');
-        // Peserta export
-        Route::get('/peserta/export', [\Modules\Peserta\Http\Controllers\Admin\PesertaController::class, 'export'])->name('peserta.export');
+    // Peserta export
+    Route::get('/peserta/export', [\Modules\Peserta\Http\Controllers\Admin\PesertaController::class, 'export'])->name('peserta.export');
 });

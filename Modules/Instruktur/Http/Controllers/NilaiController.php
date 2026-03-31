@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NilaiController extends Controller
+{
     /**
      * Export nilai peserta ke CSV
      */
@@ -36,7 +37,6 @@ class NilaiController extends Controller
             ->header('Content-Type', 'text/csv')
             ->header('Content-Disposition', 'attachment; filename="nilai_peserta.csv"');
     }
-{
     public function index(Kursus $kursus)
     {
         $instruktur = Auth::user()->instruktur;
