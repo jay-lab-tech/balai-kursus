@@ -1,102 +1,141 @@
 @extends('instruktur::layouts.master')
 
+@section('title', 'Dashboard Instruktur')
+
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold text-dark mb-0">
-                <i class="bi bi-speedometer2 me-2"></i>Dashboard Instruktur
-            </h2>
-        </div>
-    </div>
+@php
+    $instruktur = auth()->user()->instruktur;
+    $pivotData = \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
+        ->with(['kursus.program', 'level'])
+        ->get();
+    $kursusIds = $pivotData->pluck('kursus_id')->unique();
+    $kursus = \App\Models\Kursus::whereIn('id', $kursusIds)->get();
+    $totalPeserta = $kursus->sum(fn ($item) => $item->pendaftarans()->count());
+    $totalRisalah = $kursus->sum(fn ($item) => $item->risalahs()->count());
+@endphp
 
-    @php
-        $instruktur = auth()->user()->instruktur;
-        $pivotData = \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
-            ->with(['kursus.program', 'level'])
-            ->get();
-        $kursusIds = $pivotData->pluck('kursus_id')->unique();
-        $kursus = \App\Models\Kursus::whereIn('id', $kursusIds)->get();
-        $totalPeserta = $kursus->sum(function($k) { return $k->pendaftarans()->count(); });
-        $totalRisalah = $kursus->sum(function($k) { return $k->risalahs()->count(); });
-    @endphp
+<div class="min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+        <div class="mb-8 flex items-center gap-4">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600/15 text-yellow-400">
+                <i class="bi bi-speedometer2 text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Dashboard Instruktur</h1>
+                <p class="mt-1 text-sm text-gray-400">Ringkasan kelas dan aktivitas mengajar Anda.</p>
+            </div>
+        </div>
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <!-- Total Kursus -->
-        <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl shadow-lg p-6 flex items-center gap-4">
-            <div class="flex-shrink-0">
-                <i class="bi bi-book text-yellow-400 text-4xl"></i>
-            </div>
-            <div>
-                <div class="text-gray-400 text-sm font-semibold mb-1">Total Kursus</div>
-                <div class="text-3xl font-bold text-white">{{ $kursus->count() }}</div>
-            </div>
-        </div>
-        <!-- Total Peserta -->
-        <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl shadow-lg p-6 flex items-center gap-4">
-            <div class="flex-shrink-0">
-                <i class="bi bi-people text-green-400 text-4xl"></i>
-            </div>
-            <div>
-                <div class="text-gray-400 text-sm font-semibold mb-1">Total Peserta</div>
-                <div class="text-3xl font-bold text-white">{{ $totalPeserta }}</div>
-            </div>
-        </div>
-        <!-- Total Pertemuan -->
-        <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl shadow-lg p-6 flex items-center gap-4">
-            <div class="flex-shrink-0">
-                <i class="bi bi-calendar-event text-blue-400 text-4xl"></i>
-            </div>
-            <div>
-                <div class="text-gray-400 text-sm font-semibold mb-1">Total Pertemuan</div>
-                <div class="text-3xl font-bold text-white">{{ $totalRisalah }}</div>
-            </div>
-        </div>
-    <div class="mb-8 w-full max-w-none px-0">
-        <h2 class="text-2xl font-bold text-white mb-6">Kursus yang Anda Ajarkan</h2>
-        @if($pivotData->count() > 0)
-            <div class="flex flex-wrap gap-6">
-            @foreach($pivotData as $pivot)
-                @php $k = $pivot->kursus; @endphp
-                <div class="w-full md:w-1/2 lg:w-1/3">
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-2xl shadow-lg flex flex-col justify-between p-8 mb-6 h-full hover:border-yellow-500/50 transition-colors duration-200">
-                        <div class="flex flex-col flex-1 min-w-0">
-                            <h3 class="text-2xl font-bold text-white mb-1 flex items-center break-words">
-                                <i class="bi bi-bookmark text-yellow-400 mr-2"></i>{{ $k->nama }}
-                            </h3>
-                            <div class="text-gray-400 mb-1 flex items-center text-base break-words">
-                                <i class="bi bi-folder mr-2"></i>{{ $k->program->nama ?? '-' }}
-                            </div>
-                            <div class="text-gray-400 flex items-center text-base mb-4 break-words">
-                                <i class="bi bi-bookmark mr-2"></i>{{ $pivot->level->nama ?? '-' }}
-                            </div>
-                        </div>
-                        <div class="flex flex-row gap-8 items-center flex-shrink-0 mb-4">
-                            <div class="text-center flex-1">
-                                <div class="text-sm text-gray-400 font-semibold mb-1">Peserta</div>
-                                <div class="text-2xl font-bold text-yellow-400">{{ $k->pendaftarans()->count() }}</div>
-                            </div>
-                            <div class="text-center flex-1">
-                                <div class="text-sm text-gray-400 font-semibold mb-1">Pertemuan</div>
-                                <div class="text-2xl font-bold text-yellow-400">{{ $k->risalahs()->count() }}</div>
-                            </div>
-                        </div>
-                        <a href="{{ url('/instruktur/kursus/'.$k->id) }}" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200 text-base whitespace-nowrap w-full">
-                            <i class="bi bi-arrow-right mr-2"></i>Lihat Detail
-                        </a>
+        <div class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div class="rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-400">
+                        <i class="bi bi-book text-3xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">Total Kursus</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{{ $kursus->count() }}</p>
                     </div>
                 </div>
-            @endforeach
             </div>
-        @else
-            <div class="text-center py-20">
-                <div class="inline-flex items-center justify-center h-24 w-24 bg-gray-700/50 rounded-full mb-6">
-                    <i class="bi bi-book text-5xl text-gray-400"></i>
+
+            <div class="rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 text-green-400">
+                        <i class="bi bi-people text-3xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">Total Peserta</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{{ $totalPeserta }}</p>
+                    </div>
                 </div>
-                <h2 class="text-2xl font-bold text-white mb-2">Belum Ada Kursus</h2>
-                <p class="text-gray-400 mb-8">Hubungi Admin untuk mendapatkan kursus</p>
             </div>
-        @endif
+
+            <div class="rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400">
+                        <i class="bi bi-calendar-event text-3xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">Total Pertemuan</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{{ $totalRisalah }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="space-y-6">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Kursus yang Anda Ajarkan</h2>
+                    <p class="text-sm text-gray-400">Setiap kartu akan otomatis turun ke bawah saat ruang layar tidak cukup.</p>
+                </div>
+                <div class="rounded-full border border-gray-700 bg-gray-900/70 px-4 py-2 text-sm text-gray-300">
+                    {{ $pivotData->count() }} penugasan aktif
+                </div>
+            </div>
+
+            @if($pivotData->count() > 0)
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    @foreach($pivotData as $pivot)
+                        @php $k = $pivot->kursus; @endphp
+                        <article class="min-w-0 overflow-hidden rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg transition-colors duration-200 hover:border-yellow-500/50">
+                            <div class="flex h-full flex-col">
+                                <div class="min-w-0 flex-1">
+                                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-400">
+                                        <i class="bi bi-bookmark text-2xl"></i>
+                                    </div>
+
+                                    <h3 class="mb-4 break-words text-2xl font-bold leading-tight text-white">
+                                        {{ $k->nama }}
+                                    </h3>
+
+                                    <div class="space-y-3 text-base text-gray-300">
+                                        <div class="flex items-start gap-3">
+                                            <i class="bi bi-folder mt-1 text-gray-500"></i>
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Program</p>
+                                                <p class="break-words">{{ $k->program->nama ?? '-' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <i class="bi bi-bookmark mt-1 text-gray-500"></i>
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Level</p>
+                                                <p class="break-words">{{ $pivot->level->nama ?? '-' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="my-6 grid grid-cols-2 gap-4 rounded-2xl border border-gray-700/80 bg-black/20 p-4">
+                                    <div class="text-center">
+                                        <p class="text-sm font-semibold text-gray-400">Peserta</p>
+                                        <p class="mt-2 text-3xl font-bold text-yellow-400">{{ $k->pendaftarans()->count() }}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm font-semibold text-gray-400">Pertemuan</p>
+                                        <p class="mt-2 text-3xl font-bold text-yellow-400">{{ $k->risalahs()->count() }}</p>
+                                    </div>
+                                </div>
+
+                                <a href="{{ url('/instruktur/kursus/' . $k->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-700 px-5 py-3 text-base font-semibold text-white transition-all duration-200 hover:from-yellow-700 hover:to-yellow-800">
+                                    <i class="bi bi-arrow-right mr-2"></i>Lihat Detail
+                                </a>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="rounded-3xl border border-dashed border-gray-700 bg-gray-900/60 px-6 py-16 text-center">
+                    <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gray-800 text-gray-400">
+                        <i class="bi bi-book text-5xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Belum Ada Kursus</h2>
+                    <p class="mt-2 text-gray-400">Hubungi admin untuk mendapatkan penugasan mengajar.</p>
+                </div>
+            @endif
+        </section>
     </div>
+</div>
 @endsection

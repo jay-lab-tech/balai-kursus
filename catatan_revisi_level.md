@@ -21,3 +21,5 @@
 ## Status
 - Seeder, model, dan tampilan pendaftaran peserta sudah disesuaikan.
 - Selanjutnya: sesuaikan form pendaftaran, detail kursus, dan fitur lain yang terkait level/instruktur.
+
+APP_URL=http://localhost:8000
