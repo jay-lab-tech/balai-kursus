@@ -20,4 +20,9 @@ class Instruktur extends Model
     public function kursuses() {
         return $this->hasMany(Kursus::class);
     }
+
+    // Relasi ke pivot instruktur_kursus_levels
+    public function kursusLevels() {
+        return $this->hasMany(InstrukturKursusLevel::class);
+    }
 }

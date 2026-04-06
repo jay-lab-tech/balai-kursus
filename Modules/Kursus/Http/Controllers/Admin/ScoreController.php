@@ -3,124 +3,82 @@
 namespace Modules\Kursus\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Score;
-use App\Models\Pendaftaran;
 use App\Models\Instruktur;
+use App\Models\Pendaftaran;
+use App\Models\Score;
+use App\Services\PendaftaranPlacementService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ScoreController extends Controller
 {
-    /**
-     * Export semua nilai peserta ke CSV
-     */
-    public function export(Request $request)
-    {
-        $date = date('Ymd_His');
-        $filename = "balai_kursus_upi_nilai_{$date}.xlsx";
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\NilaiExport, $filename);
-    }
     public function __construct()
     {
         $this->middleware('auth');
         $this->middleware('role:admin');
     }
 
-    /**
-     * Display all scores across all kursus
-     */
+    public function export()
+    {
+        $date = date('Ymd_His');
+        $filename = "balai_kursus_upi_hasil_tes_penempatan_{$date}.xlsx";
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\NilaiExport(), $filename);
+    }
+
     public function index(Request $request)
     {
-        $q = $request->get('q');
-        $sortBy = $request->get('sort_by');
-        $sortDir = strtolower($request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $query = Pendaftaran::with(['peserta.user', 'program', 'level', 'kursus', 'placementScore.evaluator'])
+            ->whereNotNull('program_id');
 
-        $query = Score::with('pendaftaran.peserta.user', 'pendaftaran.kursus', 'evaluator');
-
-        if ($q) {
-            $query->where(function ($sub) use ($q) {
-                $sub->whereHas('pendaftaran.peserta.user', function ($u) use ($q) {
-                    $u->where('name', 'like', "%{$q}%");
-                })
-                ->orWhereHas('pendaftaran.kursus', function ($k) use ($q) {
-                    $k->where('nama', 'like', "%{$q}%");
-                })
-                ->orWhereHas('pendaftaran.peserta', function ($p) use ($q) {
-                    $p->where('nomor_peserta', 'like', "%{$q}%");
-                });
+        if ($search = $request->get('q')) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('nomor', 'like', "%{$search}%")
+                    ->orWhere('status_pendaftaran', 'like', "%{$search}%")
+                    ->orWhereHas('peserta.user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('program', function ($programQuery) use ($search) {
+                        $programQuery->where('nama', 'like', "%{$search}%");
+                    });
             });
         }
 
-        // Whitelist sortable columns and apply ordering safely.
-        $allowed = ['participant', 'kursus', 'final_score', 'evaluated_at', 'status'];
-
-        if (in_array($sortBy, $allowed)) {
-            switch ($sortBy) {
-                case 'participant':
-                    $query = $query->select('scores.*')
-                        ->join('pendaftarans', 'scores.pendaftaran_id', '=', 'pendaftarans.id')
-                        ->join('pesertas', 'pendaftarans.peserta_id', '=', 'pesertas.id')
-                        ->join('users', 'pesertas.user_id', '=', 'users.id')
-                        ->orderBy('users.name', $sortDir);
-                    break;
-                case 'kursus':
-                    $query = $query->select('scores.*')
-                        ->join('pendaftarans', 'scores.pendaftaran_id', '=', 'pendaftarans.id')
-                        ->join('kursus', 'pendaftarans.kursus_id', '=', 'kursus.id')
-                        ->orderBy('kursus.nama', $sortDir);
-                    break;
-                case 'final_score':
-                    $query = $query->orderBy('final_score', $sortDir);
-                    break;
-                case 'evaluated_at':
-                    $query = $query->orderBy('evaluated_at', $sortDir);
-                    break;
-                case 'status':
-                    $query = $query->orderBy('status', $sortDir);
-                    break;
-            }
-        } else {
-            $query = $query->latest('scores.id');
+        if ($status = $request->get('status')) {
+            $query->where('status_pendaftaran', $status);
         }
 
-        $scores = $query->paginate(15)->appends($request->only('q', 'sort_by', 'sort_dir'));
+        $pendaftarans = $query->latest('id')
+            ->paginate(15)
+            ->appends($request->only('q', 'status'));
 
-        return view('kursus::admin.score.index', compact('scores', 'q', 'sortBy', 'sortDir'));
+        return view('kursus::admin.score.index', compact('pendaftarans'));
     }
 
-    /**
-     * Display scores for a specific kursus
-     */
-    public function byKursus($kursusId)
-    {
-        $scores = Score::whereHas('pendaftaran', function ($query) use ($kursusId) {
-            $query->where('kursus_id', $kursusId);
-        })->with('pendaftaran.peserta.user', 'evaluator')
-            ->latest()
-            ->get();
-
-        return view('kursus::admin.score.by_kursus', compact('scores', 'kursusId'));
-    }
-
-    /**
-     * Create form for new score
-     */
     public function create()
     {
-        $pendaftarans = Pendaftaran::with('peserta.user', 'kursus')
-            ->where('status_pembayaran', '!=', 'pending')
+        $selectedPendaftaranId = request('pendaftaran_id');
+
+        $pendaftarans = Pendaftaran::with(['peserta.user', 'program'])
+            ->whereNotNull('program_id')
+            ->whereDoesntHave('placementScore')
+            ->latest('id')
             ->get();
+
         $instrukturs = Instruktur::with('user')->get();
 
-        return view('kursus::admin.score.create', compact('pendaftarans', 'instrukturs'));
+        return view('kursus::admin.score.create', compact('pendaftarans', 'instrukturs', 'selectedPendaftaranId'));
     }
 
-    /**
-     * Store a newly created score
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'pendaftaran_id' => 'required|exists:pendaftarans,id|unique:scores,pendaftaran_id',
+        $validated = $request->validate([
+            'pendaftaran_id' => [
+                'required',
+                'exists:pendaftarans,id',
+                Rule::unique('scores', 'pendaftaran_id')->where(fn ($query) => $query->where('jenis', Score::TYPE_PLACEMENT)),
+            ],
             'listening' => 'required|integer|min:0|max:100',
             'speaking' => 'required|integer|min:0|max:100',
             'reading' => 'required|integer|min:0|max:100',
@@ -136,42 +94,54 @@ class ScoreController extends Controller
             'status' => 'required|in:pass,fail,pending',
             'evaluated_by' => 'required|exists:instrukturs,id',
             'evaluated_at' => 'required|date',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
-        Score::create($request->all());
+        $score = Score::create(array_merge($validated, [
+            'jenis' => Score::TYPE_PLACEMENT,
+        ]));
 
-        return redirect('/admin/score')->with('success', 'Nilai berhasil ditambahkan');
+        $result = app(PendaftaranPlacementService::class)->placeFromScore($score);
+
+        return redirect('/admin/score')->with('success', $result['message']);
     }
 
-    /**
-     * Show score details
-     */
     public function show(Score $score)
     {
-        $score->load('pendaftaran.peserta.user', 'pendaftaran.kursus', 'evaluator');
+        abort_unless($score->jenis === Score::TYPE_PLACEMENT, 404);
+
+        $score->load(['pendaftaran.peserta.user', 'pendaftaran.program', 'pendaftaran.level', 'pendaftaran.kursus', 'evaluator']);
+
         return view('kursus::admin.score.show', compact('score'));
     }
 
-    /**
-     * Show edit form
-     */
     public function edit(Score $score)
     {
-        $pendaftarans = Pendaftaran::with('peserta.user', 'kursus')->get();
-        $instrukturs = Instruktur::all();
+        abort_unless($score->jenis === Score::TYPE_PLACEMENT, 404);
+
+        $pendaftarans = Pendaftaran::with(['peserta.user', 'program'])
+            ->whereNotNull('program_id')
+            ->latest('id')
+            ->get();
+
+        $instrukturs = Instruktur::with('user')->get();
         $score->load('evaluator');
 
         return view('kursus::admin.score.edit', compact('score', 'pendaftarans', 'instrukturs'));
     }
 
-    /**
-     * Update score
-     */
     public function update(Request $request, Score $score)
     {
-        $request->validate([
-            'pendaftaran_id' => 'required|exists:pendaftarans,id',
+        abort_unless($score->jenis === Score::TYPE_PLACEMENT, 404);
+
+        $validated = $request->validate([
+            'pendaftaran_id' => [
+                'required',
+                'exists:pendaftarans,id',
+                Rule::unique('scores', 'pendaftaran_id')
+                    ->ignore($score->id)
+                    ->where(fn ($query) => $query->where('jenis', Score::TYPE_PLACEMENT)),
+            ],
             'listening' => 'required|integer|min:0|max:100',
             'speaking' => 'required|integer|min:0|max:100',
             'reading' => 'required|integer|min:0|max:100',
@@ -187,20 +157,24 @@ class ScoreController extends Controller
             'status' => 'required|in:pass,fail,pending',
             'evaluated_by' => 'required|exists:instrukturs,id',
             'evaluated_at' => 'required|date',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
-        $score->update($request->all());
+        $score->update(array_merge($validated, [
+            'jenis' => Score::TYPE_PLACEMENT,
+        ]));
 
-        return redirect('/admin/score')->with('success', 'Nilai berhasil diperbarui');
+        $result = app(PendaftaranPlacementService::class)->placeFromScore($score->fresh());
+
+        return redirect('/admin/score')->with('success', $result['message']);
     }
 
-    /**
-     * Delete score
-     */
     public function destroy(Score $score)
     {
+        abort_unless($score->jenis === Score::TYPE_PLACEMENT, 404);
+
         $score->delete();
-        return back()->with('success', 'Nilai berhasil dihapus');
+
+        return back()->with('success', 'Hasil tes penempatan berhasil dihapus dan placement peserta direset.');
     }
 }

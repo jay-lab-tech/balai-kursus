@@ -11,12 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('kursuses', function (Blueprint $table) {
-            if (!Schema::hasColumn('kursuses', 'level_id')) {
-                $table->unsignedBigInteger('level_id')->nullable()->after('program_id');
-                $table->foreign('level_id')->references('id')->on('levels')->onDelete('set null');
-            }
-        });
+        // Tidak perlu menambah kolom level_id lagi
     }
 
     /**
@@ -24,11 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('kursuses', function (Blueprint $table) {
-            if (Schema::hasColumn('kursuses', 'level_id')) {
-                $table->dropForeign(['level_id']);
-                $table->dropColumn('level_id');
-            }
-        });
+        // Tidak perlu drop kolom level_id
     }
 };

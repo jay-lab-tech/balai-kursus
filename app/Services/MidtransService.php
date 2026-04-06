@@ -17,10 +17,9 @@ class MidtransService
         $clientKey = config('midtrans.client_key');
         $isProduction = config('midtrans.is_production');
         
-        // Debug logging - FULL credentials
-        \Log::info('Midtrans Config Loaded FULL', [
-            'server_key' => $serverKey,
-            'client_key' => $clientKey,
+        \Log::info('Midtrans Config Loaded', [
+            'server_key_set' => !empty($serverKey),
+            'client_key_set' => !empty($clientKey),
             'is_production' => $isProduction,
             'server_key_length' => strlen($serverKey),
         ]);

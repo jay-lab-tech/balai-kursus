@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -13,10 +14,14 @@ Route::middleware(['auth'])
     ->prefix('peserta')
     ->name('peserta.')
     ->group(function () {
-        // Dashboard
         Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
-        // Kursus Routes
+        Route::prefix('program')->name('program.')->group(function () {
+            Route::get('/', 'ProgramController@index')->name('index');
+            Route::get('{program}', 'ProgramController@show')->name('show');
+            Route::post('{program}/daftar', 'ProgramController@daftar')->name('daftar');
+        });
+
         Route::prefix('kursus')->name('kursus.')->group(function () {
             Route::get('/', 'KursusController@index')->name('index');
             Route::get('saya', 'KursusController@kursusSaya')->name('saya');
@@ -26,17 +31,14 @@ Route::middleware(['auth'])
             Route::get('{kursus}', 'KursusController@show')->name('show');
         });
 
-        // Pendaftaran Routes
         Route::prefix('pendaftaran')->name('pendaftaran.')->group(function () {
             Route::get('/', 'PendaftaranController@index')->name('index');
         });
 
-        // Pembayaran Routes (Payment via Peserta Module - Midtrans)
         Route::post('/pembayaran-online/{pendaftaran}', 'PembayaranController@createPaymentForPendaftaran')->name('pembayaran-online');
         Route::get('/pembayaran-success/{orderId}', 'PembayaranController@paymentSuccess')->name('pembayaran-success');
         Route::get('/pembayaran-failed/{orderId}', 'PembayaranController@paymentFailed')->name('pembayaran-failed');
 
-        // Riwayat Routes
         Route::prefix('riwayat-pembayaran')->name('riwayat.')->group(function () {
             Route::get('/', 'RiwayatController@index')->name('index');
         });
@@ -50,5 +52,8 @@ Route::middleware(['auth'])
     ->prefix('admin/peserta')
     ->name('admin.peserta.')
     ->group(function () {
-        Route::resource('/', 'Admin\PesertaController');
+        Route::resource('', 'Admin\PesertaController')
+            ->except(['show'])
+            ->parameters(['' => 'peserta']);
+
     });

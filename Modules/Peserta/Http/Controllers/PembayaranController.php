@@ -34,21 +34,39 @@ class PembayaranController extends Controller
                 return response()->json(['error' => 'User tidak login'], 401);
             }
 
+            if (!$user->peserta || $pendaftaran->peserta_id !== $user->peserta->id) {
+                return response()->json(['error' => 'Pendaftaran ini tidak dapat diakses.'], 403);
+            }
+
             $validated = $request->validate([
-                'amount' => 'required|integer|min:1',
+                'amount' => 'nullable|integer|min:1',
             ]);
+
+            $amount = (int) ($validated['amount'] ?? $pendaftaran->sisa());
 
             // Check if already paid
             if ($pendaftaran->isLunas()) {
                 return response()->json(['error' => 'Pembayaran sudah lunas'], 400);
             }
 
+            if ($amount < 1) {
+                return response()->json(['error' => 'Tidak ada tagihan yang perlu dibayar.'], 400);
+            }
+
             // Check if amount exceeds outstanding balance
-            if ($validated['amount'] > $pendaftaran->sisa()) {
+            if ($amount > $pendaftaran->sisa()) {
                 return response()->json(['error' => 'Jumlah pembayaran melebihi sisa yang harus dibayar'], 400);
             }
 
-            $orderId = 'PEMBAYARAN-' . $pendaftaran->id . '-' . microtime(true);
+            if (!$pendaftaran->canBePaid()) {
+                return response()->json(['error' => 'Pembayaran baru bisa dilakukan setelah peserta ditempatkan ke kelas.'], 400);
+            }
+
+            if (!$pendaftaran->kursus) {
+                return response()->json(['error' => 'Peserta belum mendapatkan kelas untuk dibayar.'], 400);
+            }
+
+            $orderId = 'KELAS-' . $pendaftaran->id . '-' . str_replace('.', '', (string) microtime(true));
 
             // Get phone - safe fallback
             $phone = '-';
@@ -56,16 +74,25 @@ class PembayaranController extends Controller
                 $phone = $user->peserta->no_hp;
             }
 
+            $courseDescription = 'Pembayaran Kelas: ' . $pendaftaran->kursus->nama;
+
             // Create transaction
             $transaction = $this->midtransService->createTransaction(
                 $orderId,
-                $validated['amount'],
-                'Pembayaran Pendaftaran Kursus: ' . ($pendaftaran->kursus->nama ?? 'Kursus'),
+                $amount,
+                $courseDescription,
                 [
                     'first_name' => $user->name,
                     'email' => $user->email,
                     'phone' => $phone,
                 ]
+                ,
+                [[
+                    'id' => 'kursus-' . $pendaftaran->kursus_id,
+                    'price' => $amount,
+                    'quantity' => 1,
+                    'name' => substr($pendaftaran->kursus->nama, 0, 50),
+                ]]
             );
 
             // Get Snap Token
@@ -74,8 +101,8 @@ class PembayaranController extends Controller
             // Save payment record
             Payment::create([
                 'order_id' => $orderId,
-                'amount' => $validated['amount'],
-                'description' => 'Pembayaran Pendaftaran Kursus: ' . ($pendaftaran->kursus->nama ?? 'Kursus'),
+                'amount' => $amount,
+                'description' => $courseDescription,
                 'customer_name' => $user->name,
                 'customer_email' => $user->email,
                 'customer_phone' => $phone,
@@ -123,9 +150,10 @@ class PembayaranController extends Controller
 
                     // Check if fully paid
                     if ($pendaftaran->terbayar >= $pendaftaran->total_bayar) {
-                        $pendaftaran->status_pembayaran = 'selesai';
+                        $pendaftaran->status_pembayaran = Pendaftaran::PAYMENT_LUNAS;
+                        $pendaftaran->status_pendaftaran = Pendaftaran::STATUS_AKTIF;
                     } else {
-                        $pendaftaran->status_pembayaran = 'dp';
+                        $pendaftaran->status_pembayaran = Pendaftaran::PAYMENT_CICIL;
                     }
 
                     $pendaftaran->save();
@@ -199,9 +227,10 @@ class PembayaranController extends Controller
 
                     // Check if fully paid
                     if ($pendaftaran->terbayar >= $pendaftaran->total_bayar) {
-                        $pendaftaran->status_pembayaran = 'selesai';
+                        $pendaftaran->status_pembayaran = Pendaftaran::PAYMENT_LUNAS;
+                        $pendaftaran->status_pendaftaran = Pendaftaran::STATUS_AKTIF;
                     } else {
-                        $pendaftaran->status_pembayaran = 'dp';
+                        $pendaftaran->status_pembayaran = Pendaftaran::PAYMENT_CICIL;
                     }
 
                     $pendaftaran->save();

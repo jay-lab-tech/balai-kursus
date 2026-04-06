@@ -12,5 +12,6 @@ Route::middleware(['auth'])
     ->name('admin.level.')
     ->group(function () {
         Route::resource('', 'Admin\\LevelController')
+            ->except(['show'])
             ->parameters(['' => 'level']);
     });

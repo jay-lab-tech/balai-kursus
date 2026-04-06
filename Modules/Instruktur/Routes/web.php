@@ -49,7 +49,9 @@ Route::middleware(['auth'])
     ->prefix('admin/instruktur')
     ->name('admin.instruktur.')
     ->group(function () {
-        Route::resource('/', 'Admin\InstrukturController');
+        Route::resource('', 'Admin\InstrukturController')
+            ->except(['show'])
+            ->parameters(['' => 'instruktur']);
     });
 
 // Route download dokumen risalah untuk semua role yang login

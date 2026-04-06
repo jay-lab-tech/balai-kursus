@@ -8,6 +8,8 @@ use App\Models\Kursus;
 use App\Models\Lokasi;
 use App\Models\Kela;
 use App\Models\Hari;
+use App\Models\Risalah;
+use App\Models\InstrukturKursusLevel;
 use Illuminate\Http\Request;
 
 class JadwalController extends Controller
@@ -32,7 +34,7 @@ class JadwalController extends Controller
     // Global jadwal list across all kursus
     public function indexAll()
     {
-        $jadwals = Jadwal::with('kursus', 'lokasi', 'kela', 'hari')
+        $jadwals = Jadwal::with('kursus.program', 'lokasi', 'kela', 'hari')
             ->latest('id')
             ->paginate(15);
         return view('kursus::admin.jadwal.all', compact('jadwals'));
@@ -58,7 +60,7 @@ class JadwalController extends Controller
             'hari_id' => 'required|exists:haris,id'
         ]);
 
-        Jadwal::create([
+        $jadwal = Jadwal::create([
             'kursus_id' => $kursus->id,
             'pertemuan_ke' => $request->pertemuan_ke,
             'tgl_pertemuan' => $request->tgl_pertemuan,
@@ -70,23 +72,9 @@ class JadwalController extends Controller
             'created_by' => auth()->id()
         ]);
 
-        // Also create a Risalah record linked to this jadwal so instruktur can fill absensi
-        $jadwal = \App\Models\Jadwal::where('kursus_id', $kursus->id)
-            ->latest('id')
-            ->first();
+        $this->syncRisalahFromJadwal($kursus, $jadwal);
 
-        if ($jadwal) {
-            \App\Models\Risalah::create([
-                'kursus_id' => $kursus->id,
-                'instruktur_id' => $kursus->instruktur_id,
-                'jadwal_id' => $jadwal->id,
-                'pertemuan_ke' => $jadwal->pertemuan_ke,
-                'tgl_pertemuan' => $jadwal->tgl_pertemuan,
-                'materi' => 'Auto created by admin'
-            ]);
-        }
-
-        return redirect("/admin/kursus/{$kursus->id}/jadwal")->with('success', 'Jadwal ditambahkan');
+        return redirect()->route('admin.jadwal.index', $kursus)->with('success', 'Jadwal ditambahkan');
     }
 
     public function edit(Kursus $kursus, Jadwal $jadwal)
@@ -109,12 +97,37 @@ class JadwalController extends Controller
 
         $jadwal->update($request->only(['pertemuan_ke','tgl_pertemuan','jam_mulai','jam_selesai','lokasi_id','kela_id','hari_id']));
 
-        return redirect("/admin/kursus/{$kursus->id}/jadwal")->with('success', 'Jadwal diperbarui');
+        $this->syncRisalahFromJadwal($kursus, $jadwal);
+
+        return redirect()->route('admin.jadwal.index', $kursus)->with('success', 'Jadwal diperbarui');
     }
 
     public function destroy(Kursus $kursus, Jadwal $jadwal)
     {
+        Risalah::where('jadwal_id', $jadwal->id)->delete();
         $jadwal->delete();
         return back()->with('success','Jadwal dihapus');
+    }
+
+    private function syncRisalahFromJadwal(Kursus $kursus, Jadwal $jadwal): void
+    {
+        $instrukturId = InstrukturKursusLevel::where('kursus_id', $kursus->id)
+            ->orderBy('id')
+            ->value('instruktur_id');
+
+        if (!$instrukturId) {
+            return;
+        }
+
+        Risalah::updateOrCreate([
+            'jadwal_id' => $jadwal->id,
+        ], [
+            'kursus_id' => $kursus->id,
+            'instruktur_id' => $instrukturId,
+            'pertemuan_ke' => $jadwal->pertemuan_ke,
+            'tgl_pertemuan' => $jadwal->tgl_pertemuan,
+            'materi' => 'Materi pertemuan ' . ($jadwal->pertemuan_ke ?: '-'),
+            'catatan' => null,
+        ]);
     }
 }

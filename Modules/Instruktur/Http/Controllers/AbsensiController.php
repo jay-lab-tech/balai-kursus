@@ -17,8 +17,9 @@ class AbsensiController extends Controller
     {
         $instruktur = auth()->user()->instruktur;
 
-        $kursus = Kursus::where('instruktur_id', $instruktur->id)
-            ->with('program', 'level')
+        $kursusIds = \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->pluck('kursus_id');
+        $kursus = Kursus::whereIn('id', $kursusIds)
+            ->with('program')
             ->withCount(['pendaftarans as peserta_count', 'risalahs as risalah_count'])
             ->get();
 
@@ -28,7 +29,7 @@ class AbsensiController extends Controller
     public function show(Kursus $kursus)
     {
         $instruktur = auth()->user()->instruktur;
-        if (!$instruktur || $kursus->instruktur_id !== $instruktur->id) {
+        if (!$instruktur || !\App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $kursus->id)->exists()) {
             abort(403);
         }
 

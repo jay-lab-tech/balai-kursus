@@ -5,31 +5,43 @@
 @section('page-title', 'Tambah Level')
 
 @section('content')
-<div class="space-y-6">
-    <div class="max-w-2xl">
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6"><i class="bi bi-stack me-2"></i>Tambah Level</h2>
-                <form method="POST" action="{{ route('admin.level.store') }}">
-                    @csrf
-                    <div class="space-y-6">
-                        <div>
-                            <label for="nama" class="block text-sm font-medium text-gray-700">Nama Level</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="nama" name="nama" required>
-                        </div>
-                        <div>
-                            <label for="warna" class="block text-sm font-medium text-gray-700">Warna Level</label>
-                            <input type="color" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="warna" name="warna" value="#2196f3">
-                        </div>
+<div class="max-w-3xl">
+    <div class="rounded-2xl bg-white p-6 shadow">
+        <form method="POST" action="{{ route('admin.level.store') }}" class="space-y-6">
+            @csrf
 
-                        <div class="flex gap-3">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700"><i class="bi bi-check-circle me-2"></i>Simpan</button>
-                            <a href="{{ route('admin.level.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
-                        </div>
-                    </div>
-                </form>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="nama" class="block text-sm font-medium text-gray-700">Nama Level</label>
+                    <input type="text" id="nama" name="nama" value="{{ old('nama') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="urutan" class="block text-sm font-medium text-gray-700">Urutan</label>
+                    <input type="number" id="urutan" name="urutan" value="{{ old('urutan', 1) }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
             </div>
-        </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="nilai_min" class="block text-sm font-medium text-gray-700">Nilai Minimum</label>
+                    <input type="number" step="0.01" id="nilai_min" name="nilai_min" value="{{ old('nilai_min') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="nilai_max" class="block text-sm font-medium text-gray-700">Nilai Maksimum</label>
+                    <input type="number" step="0.01" id="nilai_max" name="nilai_max" value="{{ old('nilai_max') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="deskripsi" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                <textarea id="deskripsi" name="deskripsi" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('deskripsi') }}</textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">Simpan</button>
+                <a href="{{ route('admin.level.index') }}" class="rounded-xl bg-gray-200 px-5 py-3 font-semibold text-gray-800 hover:bg-gray-300">Kembali</a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

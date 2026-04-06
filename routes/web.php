@@ -89,17 +89,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/certificates/{id}', [\App\Http\Controllers\CertificateController::class, 'destroy'])->name('certificates.destroy');
     Route::post('/certificates/{id}/publish', [\App\Http\Controllers\CertificateController::class, 'publish'])->name('certificates.publish');
 
-    // Templates
-    Route::get('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'index'])->name('templates.index');
-    Route::get('/certificate-templates/create', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'create'])->name('templates.create');
-    Route::post('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'store'])->name('templates.store');
-    Route::get('/certificate-templates/{template}/edit', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'edit'])->name('templates.edit');
-    Route::put('/certificate-templates/{template}', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'update'])->name('templates.update');
-    Route::delete('/certificate-templates/{template}', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'destroy'])->name('templates.destroy');
+    if (class_exists(\App\Http\Controllers\Admin\CertificateTemplateController::class)) {
+        Route::get('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'index'])->name('templates.index');
+        Route::get('/certificate-templates/create', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'create'])->name('templates.create');
+        Route::post('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'store'])->name('templates.store');
+        Route::get('/certificate-templates/{template}/edit', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'edit'])->name('templates.edit');
+        Route::put('/certificate-templates/{template}', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'update'])->name('templates.update');
+        Route::delete('/certificate-templates/{template}', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'destroy'])->name('templates.destroy');
+    }
 
-    // Analytics
-    Route::get('/certificates/analytics/dashboard', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'index'])->name('certificates.analytics');
-    Route::get('/certificates/analytics/export', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'export'])->name('certificates.analytics.export');
+    if (class_exists(\App\Http\Controllers\Admin\CertificateAnalyticsController::class)) {
+        Route::get('/certificates/analytics/dashboard', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'index'])->name('certificates.analytics');
+        Route::get('/certificates/analytics/export', [\App\Http\Controllers\Admin\CertificateAnalyticsController::class, 'export'])->name('certificates.analytics.export');
+    }
     // Peserta export
     Route::get('/peserta/export', [\Modules\Peserta\Http\Controllers\Admin\PesertaController::class, 'export'])->name('peserta.export');
 });

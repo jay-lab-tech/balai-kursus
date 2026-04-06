@@ -68,35 +68,42 @@
         .animate-slide-in-right {
             animation: slideInRight 0.5s ease-out;
         }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+<body class="overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-gradient-to-r from-black to-gray-900 shadow-2xl border-b border-red-600/30">
+    <nav x-data="{ mobileMenuOpen: false, syncDesktopMenu() { if (window.innerWidth >= 768) this.mobileMenuOpen = false } }"
+         x-init="syncDesktopMenu()"
+         @resize.window="syncDesktopMenu()"
+         class="sticky top-0 z-50 border-b border-red-600/30 bg-gradient-to-r from-black to-gray-900 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    <a href="/peserta/dashboard" class="text-2xl font-bold text-white hover:text-yellow-400 transition-colors">
-                        <i class="bi bi-mortarboard text-yellow-400 mr-2"></i>Balai Kursus
+            <div class="flex min-h-20 items-center justify-between gap-4 py-4">
+                <div class="flex min-w-0 items-center">
+                    <a href="/peserta/dashboard" class="whitespace-nowrap text-xl font-bold text-white transition-colors hover:text-yellow-400 sm:text-2xl">
+                        <i class="bi bi-mortarboard mr-2 text-yellow-400"></i>Balai Kursus
                     </a>
                 </div>
 
-                <!-- Nav Links -->
-                <div class="hidden md:flex items-center space-x-1">
+                <div class="hidden items-center space-x-1 md:flex">
                     <a href="/peserta/dashboard" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/dashboard*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
                         <i class="bi bi-speedometer2 mr-2"></i>Dashboard
                     </a>
-                    <a href="/peserta/kursus" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/kursus*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
-                        <i class="bi bi-book mr-2"></i>Kursus
+                    <a href="/peserta/program" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/program*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
+                        <i class="bi bi-diagram-3 mr-2"></i>Program
                     </a>
                     <a href="/peserta/pendaftaran" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/pendaftaran*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
                         <i class="bi bi-clipboard mr-2"></i>Pendaftaran
                     </a>
+                    <a href="/peserta/kursus/saya" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/kursus/saya*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
+                        <i class="bi bi-door-open mr-2"></i>Kelas Saya
+                    </a>
                 </div>
 
-                <!-- User Menu -->
-                <div class="flex items-center space-x-4">
+                <div class="hidden items-center space-x-4 md:flex">
                     <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 bg-red-600/20 rounded-lg border border-red-500/30 focus:outline-none">
                         <i class="bi bi-person-circle text-yellow-400 mr-2"></i>
                         <span class="text-sm font-semibold">{{ Auth::user()->name ?? 'Peserta' }}</span>
@@ -108,12 +115,49 @@
                         @csrf
                     </form>
                 </div>
+
+                <button type="button"
+                        class="ml-auto inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-red-500/30 bg-red-600/10 text-yellow-400 transition hover:bg-red-600/20 md:hidden"
+                        @click="mobileMenuOpen = !mobileMenuOpen"
+                        :aria-expanded="mobileMenuOpen.toString()"
+                        aria-label="Buka menu navigasi">
+                    <i class="bi text-2xl" :class="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+                </button>
+            </div>
+
+            <div x-cloak
+                 x-show="mobileMenuOpen"
+                 x-transition.opacity.duration.200ms
+                 class="border-t border-red-600/20 pb-4 pt-3 md:hidden">
+                <div class="space-y-2">
+                    <a href="/peserta/dashboard" class="block rounded-xl px-4 py-3 text-base transition-all duration-200 {{ request()->is('peserta/dashboard*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300 hover:bg-red-600/10 hover:text-yellow-400' }}">
+                        <i class="bi bi-speedometer2 mr-3"></i>Dashboard
+                    </a>
+                    <a href="/peserta/program" class="block rounded-xl px-4 py-3 text-base transition-all duration-200 {{ request()->is('peserta/program*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300 hover:bg-red-600/10 hover:text-yellow-400' }}">
+                        <i class="bi bi-diagram-3 mr-3"></i>Program
+                    </a>
+                    <a href="/peserta/pendaftaran" class="block rounded-xl px-4 py-3 text-base transition-all duration-200 {{ request()->is('peserta/pendaftaran*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300 hover:bg-red-600/10 hover:text-yellow-400' }}">
+                        <i class="bi bi-clipboard mr-3"></i>Pendaftaran
+                    </a>
+                    <a href="/peserta/kursus/saya" class="block rounded-xl px-4 py-3 text-base transition-all duration-200 {{ request()->is('peserta/kursus/saya*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300 hover:bg-red-600/10 hover:text-yellow-400' }}">
+                        <i class="bi bi-door-open mr-3"></i>Kelas Saya
+                    </a>
+                </div>
+
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center justify-center rounded-xl border border-red-500/30 bg-red-600/20 px-4 py-3 text-sm font-semibold text-white">
+                        <i class="bi bi-person-circle mr-2 text-yellow-400"></i>{{ Auth::user()->name ?? 'Peserta' }}
+                    </a>
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center justify-center rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-700">
+                        <i class="bi bi-box-arrow-right mr-2"></i>Keluar
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <main class="overflow-x-hidden">
         @yield('content')
     </main>
 
@@ -129,15 +173,16 @@
                     <h4 class="text-white font-semibold mb-4">Navigasi Cepat</h4>
                     <ul class="space-y-2 text-gray-400">
                         <li><a href="/peserta/dashboard" class="hover:text-yellow-400 transition-colors">Dashboard</a></li>
-                        <li><a href="/peserta/kursus" class="hover:text-yellow-400 transition-colors">Daftar Kursus</a></li>
+                        <li><a href="/peserta/program" class="hover:text-yellow-400 transition-colors">Daftar Program</a></li>
                         <li><a href="/peserta/pendaftaran" class="hover:text-yellow-400 transition-colors">Pendaftaran Saya</a></li>
+                        <li><a href="/peserta/kursus/saya" class="hover:text-yellow-400 transition-colors">Kelas Saya</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-white font-semibold mb-4">Hubungi Kami</h4>
                     <ul class="space-y-2 text-gray-400 text-sm">
                         <li><i class="bi bi-telephone mr-2 text-red-500"></i>+62 123 456 789</li>
-                        <li><i class="bi bi-envelope mr-2 text-red-500"></i>info@balaiku rsus.com</li>
+                        <li><i class="bi bi-envelope mr-2 text-red-500"></i>info@balaikursus.com</li>
                         <li><i class="bi bi-geo-alt mr-2 text-red-500"></i>Jakarta, Indonesia</li>
                     </ul>
                 </div>
@@ -151,6 +196,6 @@
     @if($jsFile)
         <script src="{{ asset('build/' . $jsFile) }}" type="module"></script>
     @endif
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 </body>
 </html>

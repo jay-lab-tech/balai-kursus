@@ -13,6 +13,8 @@ Route::middleware(['auth'])
     ->prefix('admin/program')
     ->name('admin.program.')
     ->group(function () {
-        Route::resource('/', 'Admin\ProgramController');
-        Route::get('{program}/levels', 'Admin\ProgramController@getLevels')->name('admin.program.getLevels');
+        Route::resource('', 'Admin\ProgramController')
+            ->except(['show'])
+            ->parameters(['' => 'program']);
+        Route::get('{program}/levels', 'Admin\ProgramController@getLevels')->name('getLevels');
     });

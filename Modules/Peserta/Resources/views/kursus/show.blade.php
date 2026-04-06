@@ -22,7 +22,7 @@
                     </div>
                     <div class="bg-gradient-to-r from-gray-50 to-white p-8">
                         <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $kursus->nama }}</h1>
-                        <p class="text-gray-600">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p>
+                        <p class="text-gray-600">{{ $kursus->program->nama ?? '-' }} | {{ $kursus->level->nama ?? '-' }}</p>
                     </div>
                 </div>
 

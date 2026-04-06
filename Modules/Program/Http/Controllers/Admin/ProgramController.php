@@ -10,7 +10,8 @@ class ProgramController extends Controller
 {
     public function index()
     {
-        $program = Program::with('kursuses.level')->get();
+        $program = Program::with(['kursuses.level'])->get();
+
         return view('program::admin.program.index', compact('program'));
     }
 
@@ -21,11 +22,13 @@ class ProgramController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required'
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'warna' => 'nullable|string|max:32',
         ]);
 
-        Program::create($request->all());
+        Program::create($validated);
+
         return redirect()->route('admin.program.index')
             ->with('success', 'Program berhasil ditambahkan');
     }
@@ -37,11 +40,13 @@ class ProgramController extends Controller
 
     public function update(Request $request, Program $program)
     {
-        $request->validate([
-            'nama' => 'required'
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'warna' => 'nullable|string|max:32',
         ]);
 
-        $program->update($request->all());
+        $program->update($validated);
+
         return redirect()->route('admin.program.index')
             ->with('success', 'Program berhasil diupdate');
     }
@@ -49,11 +54,12 @@ class ProgramController extends Controller
     public function destroy(Program $program)
     {
         $program->delete();
+
         return back()->with('success', 'Program dihapus');
     }
 
     public function getLevels(Program $program)
     {
-        return response()->json($program->levels);
+        return response()->json($program->levels()->ordered()->get());
     }
 }

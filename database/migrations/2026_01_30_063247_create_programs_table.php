@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('programs', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('warna', 32)->nullable();
             $table->timestamps();
         });
     }

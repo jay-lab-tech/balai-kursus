@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Score;
+use App\Models\Pendaftaran;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -10,46 +10,58 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class NilaiExport implements FromCollection, WithHeadings, WithStyles
 {
-    public $date;
+    public string $date;
+
     public function __construct()
     {
         $this->date = date('d-m-Y H:i:s');
     }
+
     public function collection()
     {
         $data = [];
-        // Tambahkan 3 baris kosong untuk judul, subjudul, tanggal
-        $data[] = ["BALAI KURSUS UPI", '', '', '', '', '', '', '', '', '', ''];
-        $data[] = ["Data Nilai Peserta", '', '', '', '', '', '', '', '', '', ''];
-        $data[] = ["Tanggal Export: " . $this->date, '', '', '', '', '', '', '', '', '', ''];
-        // Header data
+
+        $data[] = ['BALAI KURSUS UPI', '', '', '', '', '', '', '', '', '', '', ''];
+        $data[] = ['Data Hasil Tes Penempatan', '', '', '', '', '', '', '', '', '', '', ''];
+        $data[] = ['Tanggal Export: ' . $this->date, '', '', '', '', '', '', '', '', '', '', ''];
         $data[] = [
+            'Nomor',
             'Peserta',
-            'Kursus',
+            'Program',
             'Listening',
             'Speaking',
             'Reading',
             'Writing',
             'Assignment',
             'Final Score',
-            'Status',
+            'Level Hasil',
+            'Kelas Hasil',
             'Evaluator',
         ];
-        // Data nilai
-        foreach (Score::with('pendaftaran.peserta.user', 'pendaftaran.kursus', 'evaluator')->get() as $score) {
+
+        $pendaftarans = Pendaftaran::with(['peserta.user', 'program', 'level', 'kursus', 'placementScore.evaluator.user'])
+            ->whereNotNull('program_id')
+            ->get();
+
+        foreach ($pendaftarans as $pendaftaran) {
+            $score = $pendaftaran->placementScore;
+
             $data[] = [
-                $score->pendaftaran->peserta->user->name ?? '-',
-                $score->pendaftaran->kursus->nama ?? '-',
+                $pendaftaran->nomor ?? '-',
+                $pendaftaran->peserta->user->name ?? '-',
+                $pendaftaran->program->nama ?? '-',
                 $score->listening ?? '-',
                 $score->speaking ?? '-',
                 $score->reading ?? '-',
                 $score->writing ?? '-',
                 $score->assignment ?? '-',
                 $score->final_score ?? '-',
-                $score->status ?? '-',
+                $pendaftaran->level->nama ?? '-',
+                $pendaftaran->kursus->nama ?? '-',
                 $score->evaluator->user->name ?? '-',
             ];
         }
+
         return collect($data);
     }
 
@@ -58,21 +70,21 @@ class NilaiExport implements FromCollection, WithHeadings, WithStyles
         return [];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): array
     {
-        // Set border for all cells
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
-        // Border untuk seluruh data
+
         $sheet->getStyle('A4:' . $highestColumn . $highestRow)
             ->getBorders()->getAllBorders()->setBorderStyle('thin');
-        // Auto-size columns
-        foreach (range('A', $highestColumn) as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
+
+        foreach (range('A', $highestColumn) as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
         }
-        // Bold judul dan header
+
         $sheet->getStyle('A1:A3')->getFont()->setBold(true);
         $sheet->getStyle('A4:' . $highestColumn . '4')->getFont()->setBold(true);
+
         return [];
     }
 }

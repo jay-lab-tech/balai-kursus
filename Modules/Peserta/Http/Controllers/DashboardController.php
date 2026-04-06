@@ -3,7 +3,7 @@
 namespace Modules\Peserta\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Pendaftaran;
 
 class DashboardController extends Controller
 {
@@ -11,10 +11,14 @@ class DashboardController extends Controller
     {
         $peserta = auth()->user()->peserta;
 
-        $pendaftarans = \App\Models\Pendaftaran::with('kursus')
-            ->where('peserta_id', $peserta->id)
-            ->get();
-        
+        $pendaftarans = collect();
+        if ($peserta) {
+            $pendaftarans = Pendaftaran::with(['program', 'level', 'kursus', 'payments', 'placementScore'])
+                ->where('peserta_id', $peserta->id)
+                ->latest('id')
+                ->get();
+        }
+
         return view('peserta::dashboard.index', compact('pendaftarans'));
     }
 }

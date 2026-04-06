@@ -3,27 +3,28 @@
 namespace Modules\Peserta\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pendaftaran;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class RiwayatController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        $peserta = $user->peserta;
+        $peserta = Auth::user()->peserta;
 
         if (!$peserta) {
-            // Jika tidak ada profil peserta, tampilkan halaman kosong tanpa redirect
-            $pendaftarans = collect();
-            return view('peserta::riwayat.index', compact('pendaftarans'));
+            $payments = collect();
+
+            return view('peserta::riwayat.index', compact('payments'));
         }
 
-        $pendaftarans = Pendaftaran::with('kursus','pembayarans')
-            ->where('peserta_id', $peserta->id)
+        $payments = Payment::with(['pendaftaran.program', 'pendaftaran.kursus'])
+            ->whereHas('pendaftaran', function ($query) use ($peserta) {
+                $query->where('peserta_id', $peserta->id);
+            })
+            ->latest('id')
             ->get();
 
-        return view('peserta::riwayat.index', compact('pendaftarans'));
+        return view('peserta::riwayat.index', compact('payments'));
     }
 }
