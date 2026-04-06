@@ -10,7 +10,8 @@ class LevelController extends Controller
 {
     public function index()
     {
-        $level = Level::all();
+        $level = Level::ordered()->get();
+
         return view('level::admin.level.index', compact('level'));
     }
 
@@ -21,15 +22,16 @@ class LevelController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required',
-            'warna' => 'required'
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'urutan' => 'required|integer|min:1',
+            'nilai_min' => 'required|numeric|min:0|max:100|lte:nilai_max',
+            'nilai_max' => 'required|numeric|min:0|max:100|gte:nilai_min',
+            'deskripsi' => 'nullable|string',
         ]);
 
-        Level::create([
-            'nama' => $request->nama,
-            'warna' => $request->warna
-        ]);
+        Level::create($validated);
+
         return redirect()->route('admin.level.index')
             ->with('success', 'Level berhasil ditambahkan');
     }
@@ -41,15 +43,16 @@ class LevelController extends Controller
 
     public function update(Request $request, Level $level)
     {
-        $request->validate([
-            'nama' => 'required',
-            'warna' => 'required'
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'urutan' => 'required|integer|min:1',
+            'nilai_min' => 'required|numeric|min:0|max:100|lte:nilai_max',
+            'nilai_max' => 'required|numeric|min:0|max:100|gte:nilai_min',
+            'deskripsi' => 'nullable|string',
         ]);
 
-        $level->update([
-            'nama' => $request->nama,
-            'warna' => $request->warna
-        ]);
+        $level->update($validated);
+
         return redirect()->route('admin.level.index')
             ->with('success', 'Level berhasil diupdate');
     }
@@ -57,6 +60,7 @@ class LevelController extends Controller
     public function destroy(Level $level)
     {
         $level->delete();
+
         return back()->with('success', 'Level dihapus');
     }
 }

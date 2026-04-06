@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Kursus;
+use App\Models\Score;
 use App\Observers\KursusObserver;
+use App\Observers\ScoreObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,5 +32,6 @@ class AppServiceProvider extends ServiceProvider
 
         // Register model observers
         Kursus::observe(KursusObserver::class);
+        Score::observe(ScoreObserver::class);
     }
 }

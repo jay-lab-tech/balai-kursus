@@ -9,8 +9,12 @@ class Score extends Model
 {
     use HasFactory;
 
+    public const TYPE_PLACEMENT = 'placement';
+    public const TYPE_COURSE = 'course';
+
     protected $fillable = [
         'pendaftaran_id',
+        'jenis',
         'listening',
         'speaking',
         'reading',
@@ -42,6 +46,16 @@ class Score extends Model
     public function evaluator()
     {
         return $this->belongsTo(Instruktur::class, 'evaluated_by');
+    }
+
+    public function scopePlacement($query)
+    {
+        return $query->where('jenis', self::TYPE_PLACEMENT);
+    }
+
+    public function scopeCourse($query)
+    {
+        return $query->where('jenis', self::TYPE_COURSE);
     }
 
     public function getAverageScore()

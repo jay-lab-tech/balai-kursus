@@ -64,11 +64,7 @@ return new class extends Migration
         // Kursuses table indexes
         Schema::table('kursuses', function (Blueprint $table) {
             $table->index('program_id');
-            $table->index('level_id');
-            $table->index('instruktur_id');
-            $table->index('instruktur_id_2');
             $table->index('status');
-            $table->index(['program_id', 'level_id']);
             $table->index('created_at');
         });
 

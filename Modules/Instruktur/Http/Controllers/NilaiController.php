@@ -17,7 +17,7 @@ class NilaiController extends Controller
     public function export(Kursus $kursus)
     {
         $instruktur = Auth::user()->instruktur;
-        if (!$instruktur || ($kursus->instruktur_id !== $instruktur->id && $kursus->instruktur_id_2 !== $instruktur->id)) {
+        if (!$instruktur || !\App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $kursus->id)->exists()) {
             abort(403);
         }
         $pendaftarans = $kursus->pendaftarans()->with('peserta.user', 'score')->get();
@@ -40,7 +40,7 @@ class NilaiController extends Controller
     public function index(Kursus $kursus)
     {
         $instruktur = Auth::user()->instruktur;
-        if (!$instruktur || ($kursus->instruktur_id !== $instruktur->id && $kursus->instruktur_id_2 !== $instruktur->id)) {
+        if (!$instruktur || !\App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $kursus->id)->exists()) {
             abort(403);
         }
         $query = $kursus->pendaftarans()->with('peserta.user', 'score');
@@ -67,7 +67,7 @@ class NilaiController extends Controller
     public function create(Pendaftaran $pendaftaran)
     {
         $instruktur = Auth::user()->instruktur;
-        if (!$instruktur || ($pendaftaran->kursus->instruktur_id !== $instruktur->id && $pendaftaran->kursus->instruktur_id_2 !== $instruktur->id)) {
+        if (!$instruktur || !\App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $pendaftaran->kursus_id)->exists()) {
             abort(403);
         }
         return view('instruktur::instruktur.nilai.create', compact('pendaftaran'));
@@ -78,7 +78,7 @@ class NilaiController extends Controller
         $pendaftaran_id = $request->input('pendaftaran_id');
         $pendaftaran = Pendaftaran::findOrFail($pendaftaran_id);
         $instruktur = Auth::user()->instruktur;
-        if (!$instruktur || ($pendaftaran->kursus->instruktur_id !== $instruktur->id && $pendaftaran->kursus->instruktur_id_2 !== $instruktur->id)) {
+        if (!$instruktur || !\App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $pendaftaran->kursus_id)->exists()) {
             abort(403);
         }
         $request->validate([
@@ -97,13 +97,20 @@ class NilaiController extends Controller
         ]);
         $data = $request->only(['listening', 'speaking', 'reading', 'writing', 'assignment', 'uktp', 'ukap', 'var1', 'var2', 'var3', 'var4', 'keterangan']);
         $data['pendaftaran_id'] = $pendaftaran_id;
+        $data['jenis'] = \App\Models\Score::TYPE_COURSE;
         $data['evaluated_by'] = $instruktur->id;
         $data['evaluated_at'] = now();
         $scores = array_filter([$data['listening'], $data['speaking'], $data['reading'], $data['writing'], $data['assignment'], $data['uktp'], $data['ukap'], $data['var1'], $data['var2'], $data['var3'], $data['var4']]);
         if (count($scores) > 0) {
             $data['final_score'] = array_sum($scores) / count($scores);
         }
-        Score::create($data);
+        Score::updateOrCreate(
+            [
+                'pendaftaran_id' => $pendaftaran_id,
+                'jenis' => \App\Models\Score::TYPE_COURSE,
+            ],
+            $data
+        );
         return redirect()->route('instruktur.nilai.index', $pendaftaran->kursus_id)->with('success', 'Nilai berhasil disimpan');
     }
 
@@ -146,6 +153,7 @@ class NilaiController extends Controller
             'keterangan' => 'nullable|string'
         ]);
         $data = $request->only(['listening', 'speaking', 'reading', 'writing', 'assignment', 'uktp', 'ukap', 'var1', 'var2', 'var3', 'var4', 'keterangan']);
+        $data['jenis'] = \App\Models\Score::TYPE_COURSE;
         $scores = array_filter([$data['listening'], $data['speaking'], $data['reading'], $data['writing'], $data['assignment'], $data['uktp'], $data['ukap'], $data['var1'], $data['var2'], $data['var3'], $data['var4']]);
         if (count($scores) > 0) {
             $data['final_score'] = array_sum($scores) / count($scores);

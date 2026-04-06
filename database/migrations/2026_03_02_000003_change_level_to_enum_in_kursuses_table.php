@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('kursuses', function (Blueprint $table) {
-            $table->dropForeign(['level_id']);
-            $table->dropColumn('level_id');
-            $table->enum('level', ['Dasar', 'Menengah', 'Lanjutan'])->after('program_id');
+            // Kolom level_id sudah dihapus, cukup tambahkan enum jika perlu
+            if (!Schema::hasColumn('kursuses', 'level')) {
+                $table->enum('level', ['Dasar', 'Menengah', 'Lanjutan'])->after('program_id');
+            }
         });
     }
 
@@ -24,8 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('kursuses', function (Blueprint $table) {
-            $table->dropColumn('level');
-            $table->foreignId('level_id')->constrained();
+            if (Schema::hasColumn('kursuses', 'level')) {
+                $table->dropColumn('level');
+            }
+            // Tidak perlu menambah level_id lagi
         });
     }
 };

@@ -20,4 +20,9 @@ class Peserta extends Model
     public function pendaftarans() {
         return $this->hasMany(Pendaftaran::class);
     }
+
+    // Relasi ke pivot peserta_kursus_levels
+    public function kursusLevels() {
+        return $this->hasMany(PesertaKursusLevel::class);
+    }
 }

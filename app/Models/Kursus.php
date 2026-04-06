@@ -18,31 +18,40 @@ class Kursus extends Model
     use HasFactory;
 
     protected $fillable = [
-        'program_id','level_id','instruktur_id','instruktur_id_2',
-        'nama','periode','tanggal_mulai','tanggal_selesai','harga','harga_upi','kuota','status'
+        'program_id',
+        'level_id',
+        'nama',
+        'periode',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'harga',
+        'harga_upi',
+        'kuota',
+        'status',
     ];
 
-    public function program() {
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+    ];
+
+    public function program()
+    {
         return $this->belongsTo(Program::class);
     }
 
-    public function level() {
+    public function level()
+    {
         return $this->belongsTo(Level::class);
     }
 
-    public function instruktur() {
-        return $this->belongsTo(Instruktur::class);
-    }
-
-    public function instruktur2() {
-        return $this->belongsTo(Instruktur::class, 'instruktur_id_2');
-    }
-
-    public function pendaftarans() {
+    public function pendaftarans()
+    {
         return $this->hasMany(Pendaftaran::class);
     }
 
-    public function risalahs() {
+    public function risalahs()
+    {
         return $this->hasMany(Risalah::class);
     }
 
@@ -51,6 +60,18 @@ class Kursus extends Model
         return $this->hasMany(Jadwal::class);
     }
 
-    // Relasi certificateTemplate dihapus
-    
+    public function pesertaKursusLevels()
+    {
+        return $this->hasMany(PesertaKursusLevel::class);
+    }
+
+    public function instrukturKursusLevels()
+    {
+        return $this->hasMany(InstrukturKursusLevel::class);
+    }
+
+    public function scopeOpenForRegistration($query)
+    {
+        return $query->whereIn('status', ['buka', 'berjalan']);
+    }
 }

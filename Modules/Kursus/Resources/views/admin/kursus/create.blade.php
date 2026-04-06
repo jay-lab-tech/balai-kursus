@@ -1,150 +1,87 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Kursus')
+@section('title', 'Tambah Kelas')
 
-@section('page-title', 'Tambah Kursus')
+@section('page-title', 'Tambah Kelas')
 
 @section('content')
-<div class="space-y-6">
-    <div class="max-w-4xl">
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6"><i class="bi bi-plus-circle me-2"></i>Tambah Kursus</h2>
-                <form method="POST" action="{{ route('admin.kursus.store') }}">
-                    @csrf
-                    <div class="space-y-6">
-                        <div>
-                            <label for="nama" class="block text-sm font-medium text-gray-700">Nama</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="nama" name="nama" required>
-                        </div>
+<div class="max-w-4xl">
+    <div class="rounded-2xl bg-white p-6 shadow">
+        <form method="POST" action="{{ route('admin.kursus.store') }}" class="space-y-6">
+            @csrf
 
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label for="program_id" class="block text-sm font-medium text-gray-700">Program</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="program_id" name="program_id" required>
-                                    <option value="">-- Pilih Program --</option>
-                                    @foreach($program as $p)
-                                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="level_id" class="block text-sm font-medium text-gray-700">Level</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="level_id" name="level_id" required>
-                                    <option value="">-- Pilih Level --</option>
-                                    @foreach($level as $l)
-                                        <option value="{{ $l->id }}">{{ $l->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label for="instruktur_id" class="block text-sm font-medium text-gray-700">Instruktur</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="instruktur_id" name="instruktur_id" required>
-                                    <option value="">-- Pilih Instruktur --</option>
-                                    @foreach($instruktur as $i)
-                                        <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="instruktur_id_2" class="block text-sm font-medium text-gray-700">Instruktur Kedua (Opsional)</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="instruktur_id_2" name="instruktur_id_2">
-                                    <option value="">-- Pilih Instruktur --</option>
-                                    @foreach($instruktur as $i)
-                                        <option value="{{ $i->id }}">{{ $i->nama_instr }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="periode" class="block text-sm font-medium text-gray-700">Periode</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="periode" name="periode" placeholder="Contoh: Februari 2026">
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
-                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="tanggal_mulai" name="tanggal_mulai" required>
-                            </div>
-                            <div>
-                                <label for="tanggal_selesai" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
-                                <input type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="tanggal_selesai" name="tanggal_selesai" required>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label for="harga" class="block text-sm font-medium text-gray-700">Harga</label>
-                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="harga" name="harga" required>
-                            </div>
-
-                            <div>
-                                <label for="harga_upi" class="block text-sm font-medium text-gray-700">Harga UPI (Opsional)</label>
-                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="harga_upi" name="harga_upi">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <div>
-                                <label for="kuota" class="block text-sm font-medium text-gray-700">Kuota</label>
-                                <input type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="kuota" name="kuota" required>
-                            </div>
-
-                            <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" id="status" name="status" required>
-                                    <option value="">-- Pilih Status --</option>
-                                    <option value="buka">Buka</option>
-                                    <option value="tutup">Tutup</option>
-                                    <option value="berjalan">Berjalan</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-3 pt-4">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700"><i class="bi bi-check-circle me-2"></i>Simpan</button>
-                            <a href="{{ route('admin.kursus.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
-                        </div>
-                    </div>
-                </form>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="nama" class="block text-sm font-medium text-gray-700">Nama Kelas</label>
+                    <input type="text" id="nama" name="nama" value="{{ old('nama') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="periode" class="block text-sm font-medium text-gray-700">Periode</label>
+                    <input type="text" id="periode" name="periode" value="{{ old('periode') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
             </div>
-        </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="program_id" class="block text-sm font-medium text-gray-700">Program</label>
+                    <select id="program_id" name="program_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                        <option value="">Pilih program</option>
+                        @foreach($program as $item)
+                            <option value="{{ $item->id }}" {{ (string) old('program_id') === (string) $item->id ? 'selected' : '' }}>{{ $item->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="level_id" class="block text-sm font-medium text-gray-700">Level</label>
+                    <select id="level_id" name="level_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                        <option value="">Pilih level</option>
+                        @foreach($levels as $level)
+                            <option value="{{ $level->id }}" {{ (string) old('level_id') === (string) $level->id ? 'selected' : '' }}>{{ $level->nama }} ({{ $level->rentang_nilai }})</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                    <input type="date" id="tanggal_mulai" name="tanggal_mulai" value="{{ old('tanggal_mulai') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="tanggal_selesai" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                    <input type="date" id="tanggal_selesai" name="tanggal_selesai" value="{{ old('tanggal_selesai') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3">
+                <div>
+                    <label for="harga" class="block text-sm font-medium text-gray-700">Harga</label>
+                    <input type="number" id="harga" name="harga" value="{{ old('harga') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="harga_upi" class="block text-sm font-medium text-gray-700">Harga UPI</label>
+                    <input type="number" id="harga_upi" name="harga_upi" value="{{ old('harga_upi') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="kuota" class="block text-sm font-medium text-gray-700">Kuota</label>
+                    <input type="number" id="kuota" name="kuota" value="{{ old('kuota') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <select id="status" name="status" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                    <option value="buka" {{ old('status') === 'buka' ? 'selected' : '' }}>Buka</option>
+                    <option value="tutup" {{ old('status') === 'tutup' ? 'selected' : '' }}>Tutup</option>
+                    <option value="berjalan" {{ old('status') === 'berjalan' ? 'selected' : '' }}>Berjalan</option>
+                </select>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">Simpan</button>
+                <a href="{{ route('admin.kursus.index') }}" class="rounded-xl bg-gray-200 px-5 py-3 font-semibold text-gray-800 hover:bg-gray-300">Kembali</a>
+            </div>
+        </form>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const programSelect = document.getElementById('program_id');
-    const levelSelect = document.getElementById('level_id');
-
-    // Handle program change
-    programSelect.addEventListener('change', function() {
-        const programId = this.value;
-        
-        // Reset level dropdown
-        levelSelect.innerHTML = '<option value="">-- Pilih Level --</option>';
-        
-        if (programId) {
-            // Fetch levels for selected program
-            fetch(`/admin/program/${programId}/levels`)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(level => {
-                        const option = document.createElement('option');
-                        option.value = level.id;
-                        option.textContent = level.nama;
-                        levelSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    });
-});
-</script>
 @endsection

@@ -1,121 +1,144 @@
 @extends('peserta::layouts.student')
 
-@section('title', 'Kursus Saya - Balai Kursus')
+@section('title', 'Kelas Saya - Balai Kursus')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="mb-12">
-            <h1 class="text-4xl font-bold text-white mb-2">
-                <i class="bi bi-bookmark-check text-yellow-400 mr-3"></i>Kursus Saya
-            </h1>
-            <p class="text-gray-400">Kelola kursus yang telah Anda daftarkan</p>
-        </div>
-
-        <!-- Success Alert -->
-        @if(session('success'))
-        <div class="mb-6 bg-green-500/20 border-l-4 border-green-500 rounded-lg p-4 text-green-400 animate-fade-in-up">
-            <div class="flex items-start">
-                <i class="bi bi-check-circle mr-3 mt-0.5 flex-shrink-0"></i>
-                <div>
-                    <p class="font-semibold">Berhasil</p>
-                    <p class="text-sm">{{ session('success') }}</p>
-                </div>
+    <div class="mx-auto max-w-7xl space-y-8">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-white">
+                    <i class="bi bi-door-open text-yellow-400 mr-3"></i>Kelas Saya
+                </h1>
+                <p class="mt-2 text-gray-400">Daftar kelas yang sudah Anda tempati setelah proses klasifikasi program selesai.</p>
             </div>
+            <a href="{{ route('peserta.program.index') }}" class="inline-flex items-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">
+                <i class="bi bi-diagram-3 mr-2"></i>Lihat Program
+            </a>
         </div>
-        @endif
 
-        @if($pendaftarans && count($pendaftarans) > 0)
-            <!-- Courses Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($pendaftarans as $p)
-                <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer" onclick="window.location.href='/peserta/kursus/{{ $p->kursus->id }}/detail'">
-                    <!-- Course Card -->
-                    <div class="
-                        @if($p->kursus->tanggal_selesai && \Carbon\Carbon::parse($p->kursus->tanggal_selesai)->lt(now()))
-                            bg-gradient-to-r from-gray-700/50 to-gray-800/50
-                        @else
-                            bg-gradient-to-r from-gray-50 to-white
-                        @endif
-                    ">
-                        <!-- Header with Status -->
-                        <div class="relative h-32 bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center">
-                            <i class="bi bi-book text-white" style="font-size: 60px; opacity: 0.3;"></i>
-                            
-                            <!-- Ended Badge -->
-                            @if($p->kursus->tanggal_selesai && \Carbon\Carbon::parse($p->kursus->tanggal_selesai)->lt(now()))
-                            <div class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1">
-                                <i class="bi bi-x-circle"></i>
-                                <span>Selesai</span>
-                            </div>
-                            @endif
-                        </div>
-
-                        <!-- Content -->
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{{ $p->kursus->nama }}</h3>
-
-                            <!-- Course Info -->
-                            <div class="space-y-2 mb-6 text-sm text-gray-600">
-                                <div class="flex items-center">
-                                    <i class="bi bi-diagram-3 text-red-500 mr-2 flex-shrink-0"></i>
-                                    <span>{{ $p->kursus->program->nama }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="bi bi-bar-chart text-yellow-500 mr-2 flex-shrink-0"></i>
-                                    <span>{{ $p->kursus->level->nama }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="bi bi-person text-blue-500 mr-2 flex-shrink-0"></i>
-                                    <span>{{ $p->kursus->instruktur->nama_instr ?? 'N/A' }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Payment Status -->
-                            <div class="pb-6 border-b border-gray-200">
-                                <p class="text-xs text-gray-500 mb-2 font-semibold">Status Pembayaran</p>
-                                @if($p->status_pembayaran === 'selesai')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                                        <i class="bi bi-check-circle mr-1"></i>Selesai
-                                    </span>
-                                @elseif($p->status_pembayaran === 'dp')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-                                        <i class="bi bi-hourglass-split mr-1"></i>DP (Cicilan)
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-700">
-                                        <i class="bi bi-x-circle mr-1"></i>{{ ucfirst($p->status_pembayaran) }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            <!-- Action Button -->
-                            <div class="pt-4">
-                                <button onclick="event.stopPropagation(); window.location.href='/peserta/kursus/{{ $p->kursus->id }}/detail'" class="w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center">
-                                    <i class="bi bi-eye mr-2"></i>
-                                    <span>Lihat Detail</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
+        @if($pendaftarans->isEmpty())
+            <div class="rounded-3xl border border-dashed border-white/10 px-8 py-16 text-center text-gray-400">
+                Anda belum ditempatkan ke kelas manapun.
             </div>
         @else
-            <!-- Empty State -->
-            <div class="text-center py-20">
-                <div class="inline-flex items-center justify-center h-24 w-24 bg-gray-700/50 rounded-full mb-6">
-                    <i class="bi bi-inbox text-4xl text-gray-400"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-white mb-2">Belum Ada Kursus</h2>
-                <p class="text-gray-400 mb-8">Anda belum mendaftar di kursus apapun. Mulai petualangan pembelajaran Anda sekarang!</p>
-                <a href="/peserta/kursus" class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
-                    <i class="bi bi-plus-circle mr-2"></i>
-                    <span>Jelajahi Kursus Sekarang</span>
-                </a>
+            <div class="grid gap-6 lg:grid-cols-2">
+                @foreach($pendaftarans as $pendaftaran)
+                    <div class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <p class="text-xs uppercase tracking-[0.25em] text-gray-400">{{ $pendaftaran->program->nama ?? '-' }}</p>
+                                <h2 class="mt-2 text-2xl font-bold text-white">{{ $pendaftaran->kursus->nama ?? '-' }}</h2>
+                            </div>
+                            <span class="rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase text-white">
+                                {{ $pendaftaran->status_pembayaran }}
+                            </span>
+                        </div>
+
+                        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                            <div class="rounded-2xl bg-black/20 p-4">
+                                <p class="text-xs uppercase tracking-wider text-gray-400">Level</p>
+                                <p class="mt-2 font-semibold text-white">{{ $pendaftaran->level->nama ?? 'Belum ada level' }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-black/20 p-4">
+                                <p class="text-xs uppercase tracking-wider text-gray-400">Periode</p>
+                                <p class="mt-2 font-semibold text-white">{{ $pendaftaran->kursus->periode ?? 'Belum diatur' }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-black/20 p-4">
+                                <p class="text-xs uppercase tracking-wider text-gray-400">Tanggal Mulai</p>
+                                <p class="mt-2 font-semibold text-white">{{ optional($pendaftaran->kursus->tanggal_mulai)->format('d M Y') ?? 'Belum diatur' }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-black/20 p-4">
+                                <p class="text-xs uppercase tracking-wider text-gray-400">Pembayaran</p>
+                                <p class="mt-2 font-semibold text-white">{{ $pendaftaran->progress() }}%</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                            <a href="{{ route('peserta.kursus.detail', $pendaftaran->kursus) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 font-semibold text-white hover:from-red-500 hover:to-red-600 transition">
+                                <i class="bi bi-book mr-2"></i>Masuk Kelas
+                            </a>
+                            <a href="{{ route('peserta.kursus.risalah', $pendaftaran->kursus) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">
+                                <i class="bi bi-journal-text mr-2"></i>Lihat Risalah
+                            </a>
+                        </div>
+
+                        @if($pendaftaran->canBePaid() && $pendaftaran->sisa() > 0)
+                            <div class="mt-3">
+                                <button
+                                    type="button"
+                                    data-pendaftaran-id="{{ $pendaftaran->id }}"
+                                    data-amount="{{ $pendaftaran->sisa() }}"
+                                    class="inline-flex w-full items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition"
+                                    onclick="payAssignedClass(this)"
+                                >
+                                    <i class="bi bi-credit-card mr-2"></i>Bayar Kelas Langsung
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
             </div>
         @endif
     </div>
 </div>
+
+<script>
+function payAssignedClass(button) {
+    const pendaftaranId = Number(button.dataset.pendaftaranId);
+    const amount = Number(button.dataset.amount);
+
+    if (!pendaftaranId || !amount || amount < 1) {
+        alert('Tagihan kelas tidak valid.');
+        return;
+    }
+
+    if (typeof snap === 'undefined') {
+        alert('Midtrans Snap belum termuat. Muat ulang halaman lalu coba lagi.');
+        return;
+    }
+
+    button.disabled = true;
+    const originalHtml = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-arrow-repeat mr-2 animate-spin"></i>Memproses...';
+
+    fetch(`/peserta/pembayaran-online/${pendaftaranId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify({ amount: amount })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        snap.pay(data.snap_token, {
+            onSuccess: function () {
+                window.location.href = '/peserta/pembayaran-success/' + data.order_id;
+            },
+            onPending: function () {
+                window.location.reload();
+            },
+            onError: function () {
+                alert('Pembayaran gagal diproses.');
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            },
+            onClose: function () {
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        });
+    })
+    .catch(error => {
+        alert(error.message);
+        button.disabled = false;
+        button.innerHTML = originalHtml;
+    });
+}
+</script>
 @endsection

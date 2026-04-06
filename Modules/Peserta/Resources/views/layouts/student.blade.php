@@ -87,11 +87,14 @@
                     <a href="/peserta/dashboard" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/dashboard*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
                         <i class="bi bi-speedometer2 mr-2"></i>Dashboard
                     </a>
-                    <a href="/peserta/kursus" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/kursus*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
-                        <i class="bi bi-book mr-2"></i>Kursus
+                    <a href="/peserta/program" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/program*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
+                        <i class="bi bi-diagram-3 mr-2"></i>Program
                     </a>
                     <a href="/peserta/pendaftaran" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/pendaftaran*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
                         <i class="bi bi-clipboard mr-2"></i>Pendaftaran
+                    </a>
+                    <a href="/peserta/kursus/saya" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('peserta/kursus/saya*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
+                        <i class="bi bi-door-open mr-2"></i>Kelas Saya
                     </a>
                 </div>
 
@@ -129,15 +132,16 @@
                     <h4 class="text-white font-semibold mb-4">Navigasi Cepat</h4>
                     <ul class="space-y-2 text-gray-400">
                         <li><a href="/peserta/dashboard" class="hover:text-yellow-400 transition-colors">Dashboard</a></li>
-                        <li><a href="/peserta/kursus" class="hover:text-yellow-400 transition-colors">Daftar Kursus</a></li>
+                        <li><a href="/peserta/program" class="hover:text-yellow-400 transition-colors">Daftar Program</a></li>
                         <li><a href="/peserta/pendaftaran" class="hover:text-yellow-400 transition-colors">Pendaftaran Saya</a></li>
+                        <li><a href="/peserta/kursus/saya" class="hover:text-yellow-400 transition-colors">Kelas Saya</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-white font-semibold mb-4">Hubungi Kami</h4>
                     <ul class="space-y-2 text-gray-400 text-sm">
                         <li><i class="bi bi-telephone mr-2 text-red-500"></i>+62 123 456 789</li>
-                        <li><i class="bi bi-envelope mr-2 text-red-500"></i>info@balaiku rsus.com</li>
+                        <li><i class="bi bi-envelope mr-2 text-red-500"></i>info@balaikursus.com</li>
                         <li><i class="bi bi-geo-alt mr-2 text-red-500"></i>Jakarta, Indonesia</li>
                     </ul>
                 </div>
@@ -151,6 +155,6 @@
     @if($jsFile)
         <script src="{{ asset('build/' . $jsFile) }}" type="module"></script>
     @endif
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 </body>
 </html>

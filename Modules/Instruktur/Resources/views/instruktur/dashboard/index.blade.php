@@ -12,7 +12,11 @@
 
     @php
         $instruktur = auth()->user()->instruktur;
-        $kursus = \App\Models\Kursus::where('instruktur_id', $instruktur->id)->get();
+        $pivotData = \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
+            ->with(['kursus.program', 'level'])
+            ->get();
+        $kursusIds = $pivotData->pluck('kursus_id')->unique();
+        $kursus = \App\Models\Kursus::whereIn('id', $kursusIds)->get();
         $totalPeserta = $kursus->sum(function($k) { return $k->pendaftarans()->count(); });
         $totalRisalah = $kursus->sum(function($k) { return $k->risalahs()->count(); });
     @endphp
@@ -51,9 +55,10 @@
         </div>
     <div class="mb-8 w-full max-w-none px-0">
         <h2 class="text-2xl font-bold text-white mb-6">Kursus yang Anda Ajarkan</h2>
-        @if($kursus->count() > 0)
+        @if($pivotData->count() > 0)
             <div class="flex flex-wrap gap-6">
-            @foreach($kursus as $k)
+            @foreach($pivotData as $pivot)
+                @php $k = $pivot->kursus; @endphp
                 <div class="w-full md:w-1/2 lg:w-1/3">
                     <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-2xl shadow-lg flex flex-col justify-between p-8 mb-6 h-full hover:border-yellow-500/50 transition-colors duration-200">
                         <div class="flex flex-col flex-1 min-w-0">
@@ -64,7 +69,7 @@
                                 <i class="bi bi-folder mr-2"></i>{{ $k->program->nama ?? '-' }}
                             </div>
                             <div class="text-gray-400 flex items-center text-base mb-4 break-words">
-                                <i class="bi bi-bookmark mr-2"></i>{{ $k->level->nama ?? '-' }}
+                                <i class="bi bi-bookmark mr-2"></i>{{ $pivot->level->nama ?? '-' }}
                             </div>
                         </div>
                         <div class="flex flex-row gap-8 items-center flex-shrink-0 mb-4">

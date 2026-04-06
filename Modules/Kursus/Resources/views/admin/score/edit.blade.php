@@ -1,201 +1,78 @@
 @extends('layouts.admin')
 
+@section('title', 'Edit Tes Penempatan')
+
+@section('page-title', 'Edit Tes Penempatan')
+
 @section('content')
-<div class="container-fluid py-4">
-    <div class="mb-4">
-        <h2 class="fw-bold text-dark mb-0"><i class="bi bi-pencil me-2"></i>Edit Nilai Peserta</h2>
-    </div>
+<div class="max-w-5xl space-y-6">
+    <div class="rounded-2xl bg-white p-6 shadow">
+        <form method="POST" action="{{ route('admin.score.update', $score) }}" class="space-y-6">
+            @csrf
+            @method('PUT')
 
-    <div class="row">
-        <div class="col-md-10">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <form method="POST" action="{{ route('admin.score.update', $score->id) }}">
-                        @csrf
-                        @method('PUT')
+            <div>
+                <label for="pendaftaran_id" class="block text-sm font-medium text-gray-700">Pendaftaran Program</label>
+                <select id="pendaftaran_id" name="pendaftaran_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                    @foreach($pendaftarans as $pendaftaran)
+                        <option value="{{ $pendaftaran->id }}" {{ (string) old('pendaftaran_id', $score->pendaftaran_id) === (string) $pendaftaran->id ? 'selected' : '' }}>
+                            {{ $pendaftaran->nomor }} - {{ $pendaftaran->peserta->user->name ?? '-' }} - {{ $pendaftaran->program->nama ?? '-' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-                        <div class="mb-3">
-                            <label for="pendaftaran_id" class="form-label fw-500">Peserta & Kursus</label>
-                            <select class="form-select @error('pendaftaran_id') is-invalid @enderror" id="pendaftaran_id" name="pendaftaran_id" required>
-                                <option value="">-- Pilih Peserta --</option>
-                                @foreach($pendaftarans as $p)
-                                    <option value="{{ $p->id }}" {{ $score->pendaftaran_id == $p->id ? 'selected' : '' }}>
-                                        {{ $p->peserta->user->name }} - {{ $p->kursus->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('pendaftaran_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+            <div class="grid gap-6 md:grid-cols-2">
+                @foreach(['listening', 'speaking', 'reading', 'writing', 'assignment'] as $field)
+                    <div>
+                        <label for="{{ $field }}" class="block text-sm font-medium text-gray-700">{{ ucfirst($field) }}</label>
+                        <input type="number" id="{{ $field }}" name="{{ $field }}" min="0" max="100" value="{{ old($field, $score->{$field}) }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                    </div>
+                @endforeach
+            </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="listening" class="form-label fw-500">Listening</label>
-                                    <input type="number" class="form-control @error('listening') is-invalid @enderror" id="listening" name="listening" min="0" max="100" required value="{{ old('listening', $score->listening) }}">
-                                    @error('listening')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="speaking" class="form-label fw-500">Speaking</label>
-                                    <input type="number" class="form-control @error('speaking') is-invalid @enderror" id="speaking" name="speaking" min="0" max="100" required value="{{ old('speaking', $score->speaking) }}">
-                                    @error('speaking')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="reading" class="form-label fw-500">Reading</label>
-                                    <input type="number" class="form-control @error('reading') is-invalid @enderror" id="reading" name="reading" min="0" max="100" required value="{{ old('reading', $score->reading) }}">
-                                    @error('reading')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="writing" class="form-label fw-500">Writing</label>
-                                    <input type="number" class="form-control @error('writing') is-invalid @enderror" id="writing" name="writing" min="0" max="100" required value="{{ old('writing', $score->writing) }}">
-                                    @error('writing')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="assignment" class="form-label fw-500">Assignment</label>
-                            <input type="number" class="form-control @error('assignment') is-invalid @enderror" id="assignment" name="assignment" min="0" max="100" required value="{{ old('assignment', $score->assignment) }}">
-                            @error('assignment')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <h5 class="fw-bold mt-4 mb-3">Field Tambahan (Legacy)</h5>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="uktp" class="form-label fw-500">UKTP</label>
-                                    <input type="number" class="form-control @error('uktp') is-invalid @enderror" id="uktp" name="uktp" min="0" max="100" value="{{ old('uktp', $score->uktp) }}">
-                                    @error('uktp')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="ukap" class="form-label fw-500">UKAP</label>
-                                    <input type="number" class="form-control @error('ukap') is-invalid @enderror" id="ukap" name="ukap" min="0" max="100" value="{{ old('ukap', $score->ukap) }}">
-                                    @error('ukap')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label for="var1" class="form-label fw-500">Var 1</label>
-                                    <input type="text" class="form-control @error('var1') is-invalid @enderror" id="var1" name="var1" value="{{ old('var1', $score->var1) }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label for="var2" class="form-label fw-500">Var 2</label>
-                                    <input type="text" class="form-control @error('var2') is-invalid @enderror" id="var2" name="var2" value="{{ old('var2', $score->var2) }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label for="var3" class="form-label fw-500">Var 3</label>
-                                    <input type="text" class="form-control @error('var3') is-invalid @enderror" id="var3" name="var3" value="{{ old('var3', $score->var3) }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label for="var4" class="form-label fw-500">Var 4</label>
-                                    <input type="text" class="form-control @error('var4') is-invalid @enderror" id="var4" name="var4" value="{{ old('var4', $score->var4) }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <h5 class="fw-bold mt-4 mb-3">Evaluasi</h5>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="final_score" class="form-label fw-500">Nilai Akhir</label>
-                                    <input type="number" step="0.1" class="form-control @error('final_score') is-invalid @enderror" id="final_score" name="final_score" min="0" max="100" required value="{{ old('final_score', $score->final_score) }}">
-                                    @error('final_score')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="status" class="form-label fw-500">Status</label>
-                                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                        <option value="">-- Pilih Status --</option>
-                                        <option value="pass" {{ (old('status') ?? $score->status) == 'pass' ? 'selected' : '' }}>Lulus</option>
-                                        <option value="fail" {{ (old('status') ?? $score->status) == 'fail' ? 'selected' : '' }}>Gagal</option>
-                                        <option value="pending" {{ (old('status') ?? $score->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    </select>
-                                    @error('status')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="evaluated_by" class="form-label fw-500">Dievaluasi oleh</label>
-                            <select class="form-select @error('evaluated_by') is-invalid @enderror" id="evaluated_by" name="evaluated_by" required>
-                                <option value="">-- Pilih Instruktur --</option>
-                                @foreach($instrukturs as $i)
-                                    <option value="{{ $i->id }}" {{ (old('evaluated_by') ?? $score->evaluated_by) == $i->id ? 'selected' : '' }}>
-                                        {{ $i->nama_instr }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('evaluated_by')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="evaluated_at" class="form-label fw-500">Tanggal Evaluasi</label>
-                            <input type="date" class="form-control @error('evaluated_at') is-invalid @enderror" id="evaluated_at" name="evaluated_at" required value="{{ old('evaluated_at', $score->evaluated_at) }}">
-                            @error('evaluated_at')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="keterangan" class="form-label fw-500">Keterangan</label>
-                            <textarea class="form-control @error('keterangan') is-invalid @enderror" id="keterangan" name="keterangan" rows="3">{{ old('keterangan', $score->keterangan) }}</textarea>
-                            @error('keterangan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-circle me-2"></i>Update</button>
-                            <a href="{{ route('admin.score.index') }}" class="btn btn-secondary btn-lg"><i class="bi bi-arrow-left me-2"></i>Kembali</a>
-                        </div>
-                    </form>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="final_score" class="block text-sm font-medium text-gray-700">Nilai Akhir</label>
+                    <input type="number" step="0.01" id="final_score" name="final_score" min="0" max="100" value="{{ old('final_score', $score->final_score) }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Status Hasil</label>
+                    <select id="status" name="status" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                        <option value="pass" {{ old('status', $score->status) === 'pass' ? 'selected' : '' }}>Pass</option>
+                        <option value="fail" {{ old('status', $score->status) === 'fail' ? 'selected' : '' }}>Fail</option>
+                        <option value="pending" {{ old('status', $score->status) === 'pending' ? 'selected' : '' }}>Pending</option>
+                    </select>
                 </div>
             </div>
-        </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="evaluated_by" class="block text-sm font-medium text-gray-700">Evaluator</label>
+                    <select id="evaluated_by" name="evaluated_by" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                        @foreach($instrukturs as $instruktur)
+                            <option value="{{ $instruktur->id }}" {{ (string) old('evaluated_by', $score->evaluated_by) === (string) $instruktur->id ? 'selected' : '' }}>
+                                {{ $instruktur->nama_instr }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="evaluated_at" class="block text-sm font-medium text-gray-700">Tanggal Evaluasi</label>
+                    <input type="date" id="evaluated_at" name="evaluated_at" value="{{ old('evaluated_at', optional($score->evaluated_at)->format('Y-m-d')) }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="keterangan" class="block text-sm font-medium text-gray-700">Catatan</label>
+                <textarea id="keterangan" name="keterangan" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('keterangan', $score->keterangan) }}</textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700">Update Hasil Tes</button>
+                <a href="{{ route('admin.score.index') }}" class="rounded-xl bg-gray-200 px-5 py-3 font-semibold text-gray-800 hover:bg-gray-300">Kembali</a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

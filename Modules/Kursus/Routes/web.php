@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,8 @@ Route::middleware(['auth'])
         Route::resource('/lokasi', 'Admin\LokasiController');
         Route::resource('/kelas', 'Admin\KelaController');
         Route::resource('/hari', 'Admin\HariController')->except(['show']);
+
+            // Assign/Update Level Peserta
+    Route::get('/kursus/{kursus}/peserta/{pendaftaran}/assign-level', 'Admin\KursusController@assignLevelForm')->name('kursus.assignLevelForm');
+    Route::post('/kursus/{kursus}/peserta/{pendaftaran}/assign-level', 'Admin\KursusController@assignLevel')->name('kursus.assignLevel');
     });

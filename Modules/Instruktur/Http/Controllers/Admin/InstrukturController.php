@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Instruktur;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class InstrukturController extends Controller
 {
     public function index()
     {
         $instrukturs = Instruktur::with('user')->get();
+
         return view('instruktur::admin.instruktur.index', compact('instrukturs'));
     }
 
@@ -23,30 +26,31 @@ class InstrukturController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|unique:users',
-            'password' => 'required|min:6',
-            'nama_instr' => 'required',
-            'spesialisasi' => 'required'
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:6',
+            'nama_instr' => 'required|string|max:255',
+            'spesialisasi' => 'required|string|max:255',
         ]);
 
-        // buat akun login
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'instruktur'
-        ]);
+        DB::transaction(function () use ($validated) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => 'instruktur',
+                'email_verified_at' => now(),
+            ]);
 
-        // buat profil instruktur
-        Instruktur::create([
-            'user_id' => $user->id,
-            'nama_instr' => $request->nama_instr,
-            'spesialisasi' => $request->spesialisasi
-        ]);
+            Instruktur::create([
+                'user_id' => $user->id,
+                'nama_instr' => $validated['nama_instr'],
+                'spesialisasi' => $validated['spesialisasi'],
+            ]);
+        });
 
-        return redirect('/admin/instruktur')->with('success', 'Instruktur berhasil ditambahkan');
+        return redirect()->route('admin.instruktur.index')->with('success', 'Instruktur berhasil ditambahkan');
     }
 
     public function edit(Instruktur $instruktur)
@@ -56,25 +60,32 @@ class InstrukturController extends Controller
 
     public function update(Request $request, Instruktur $instruktur)
     {
-        // update user
-        $instruktur->user->update([
-            'name' => $request->name,
-            'email' => $request->email
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($instruktur->user_id)],
+            'nama_instr' => 'required|string|max:255',
+            'spesialisasi' => 'required|string|max:255',
         ]);
 
-        // update instruktur
-        $instruktur->update([
-            'nama_instr' => $request->nama_instr,
-            'spesialisasi' => $request->spesialisasi
-        ]);
+        DB::transaction(function () use ($validated, $instruktur) {
+            $instruktur->user->update([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+            ]);
 
-        return redirect('/admin/instruktur')->with('success', 'Instruktur berhasil diupdate');
+            $instruktur->update([
+                'nama_instr' => $validated['nama_instr'],
+                'spesialisasi' => $validated['spesialisasi'],
+            ]);
+        });
+
+        return redirect()->route('admin.instruktur.index')->with('success', 'Instruktur berhasil diupdate');
     }
 
     public function destroy(Instruktur $instruktur)
     {
-        // hapus user = otomatis hapus instruktur (cascade)
         $instruktur->user->delete();
+
         return back()->with('success', 'Instruktur dihapus');
     }
 }

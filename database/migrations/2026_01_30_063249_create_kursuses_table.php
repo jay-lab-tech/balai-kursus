@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('kursuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('program_id')->constrained();
-            $table->foreignId('level_id')->constrained();
-            $table->foreignId('instruktur_id')->constrained();
             $table->string('nama');
             $table->integer('harga');
             $table->integer('kuota');

@@ -1,222 +1,257 @@
-@extends('layouts.app')
+@extends('instruktur::layouts.master')
+
+@section('title', 'Nilai Akhir Kelas')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Nilai Peserta - {{ $kursus->nama }}</h1>
-            <div class="flex gap-2">
-                <a href="{{ route('instruktur.kursus.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    Kembali
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl space-y-8">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="text-xs uppercase tracking-[0.35em] text-gray-400">Instruktur Panel</p>
+                <h1 class="mt-2 text-4xl font-bold text-white">Nilai Akhir Kelas</h1>
+                <p class="mt-3 max-w-3xl text-sm text-gray-400">
+                    Halaman ini menyimpan <span class="font-semibold text-white">nilai akhir kursus per peserta</span>.
+                    Jadi saat ini nilainya belum dibuat per pertemuan, melainkan rekap akhir setelah proses belajar di kelas berjalan atau selesai.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('instruktur.kursus.show', $kursus) }}" class="inline-flex items-center rounded-xl bg-white/10 px-4 py-3 font-semibold text-white hover:bg-white/20 transition">
+                    <i class="bi bi-arrow-left mr-2"></i>Kembali ke Detail Kelas
                 </a>
-                <a href="{{ route('instruktur.nilai.export', $kursus->id) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Export Nilai
+                <a href="{{ route('instruktur.nilai.export', $kursus->id) }}" class="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white hover:bg-emerald-500 transition">
+                    <i class="bi bi-download mr-2"></i>Export Nilai
                 </a>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <form method="GET" action="" class="mb-4 flex flex-wrap gap-2">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama peserta..." class="border rounded px-3 py-2" />
-                <select name="filter" class="border rounded px-3 py-2">
-                    <option value="">Semua</option>
-                    <option value="lulus" {{ request('filter')=='lulus' ? 'selected' : '' }}>Lulus</option>
-                    <option value="tidak_lulus" {{ request('filter')=='tidak_lulus' ? 'selected' : '' }}>Tidak Lulus</option>
+        @if(session('success'))
+            <div class="rounded-2xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-green-100">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="grid gap-5 md:grid-cols-3">
+            <div class="rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 p-6 text-white shadow-xl">
+                <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Total Peserta</p>
+                <p class="mt-3 text-4xl font-bold">{{ $pendaftarans->count() }}</p>
+            </div>
+            <div class="rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 text-white shadow-xl">
+                <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Sudah Dinilai</p>
+                <p class="mt-3 text-4xl font-bold">{{ $pendaftarans->filter(fn($item) => $item->score)->count() }}</p>
+            </div>
+            <div class="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-700 p-6 text-white shadow-xl">
+                <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Belum Dinilai</p>
+                <p class="mt-3 text-4xl font-bold">{{ $pendaftarans->filter(fn($item) => !$item->score)->count() }}</p>
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <form method="GET" action="" class="flex flex-col gap-3 lg:flex-row">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama peserta..." class="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white placeholder:text-gray-500 focus:border-yellow-400 focus:outline-none">
+                <select name="filter" class="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none">
+                    <option value="">Semua Status Nilai</option>
+                    <option value="lulus" @selected(request('filter') == 'lulus')>Lulus</option>
+                    <option value="tidak_lulus" @selected(request('filter') == 'tidak_lulus')>Tidak Lulus</option>
                 </select>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Cari/Filter</button>
+                <button type="submit" class="rounded-xl bg-yellow-500 px-5 py-3 font-semibold text-gray-900 hover:bg-yellow-400">Filter</button>
             </form>
-            <table class="min-w-full bg-white">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peserta</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Listening</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Speaking</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reading</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Writing</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Score</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200" id="nilaiTableBody">
-                    @foreach($pendaftarans as $pendaftaran)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">
-                                <span class="text-blue-600">{{ $pendaftaran->peserta->user->name }}</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $pendaftaran->score->listening ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $pendaftaran->score->speaking ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $pendaftaran->score->reading ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $pendaftaran->score->writing ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $pendaftaran->score->final_score ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            @if($pendaftaran->score)
-                                <button id="edit-nilai-{{ $pendaftaran->score->id }}" class="bg-indigo-600 hover:bg-indigo-800 text-white font-bold py-1 px-3 rounded text-sm">Edit Nilai</button>
-                                <form method="POST" action="{{ route('instruktur.nilai.destroy', $pendaftaran->score->id) }}" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus nilai ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                </form>
-                            @else
-                                <button id="create-nilai-{{ $pendaftaran->id }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm">Tambah Nilai</button>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        </div>
+
+        <div class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-black/20 text-left text-xs uppercase tracking-[0.25em] text-gray-400">
+                        <tr>
+                            <th class="px-6 py-4">Peserta</th>
+                            <th class="px-6 py-4">Listening</th>
+                            <th class="px-6 py-4">Speaking</th>
+                            <th class="px-6 py-4">Reading</th>
+                            <th class="px-6 py-4">Writing</th>
+                            <th class="px-6 py-4">Nilai Akhir</th>
+                            <th class="px-6 py-4">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10 text-sm text-gray-200">
+                        @forelse($pendaftarans as $pendaftaran)
+                            <tr class="hover:bg-white/5">
+                                <td class="px-6 py-4">
+                                    <div class="font-semibold text-white">{{ $pendaftaran->peserta->user->name }}</div>
+                                    <div class="text-xs text-gray-400">{{ $pendaftaran->peserta->nomor_peserta ?? '-' }}</div>
+                                </td>
+                                <td class="px-6 py-4">{{ $pendaftaran->score->listening ?? '-' }}</td>
+                                <td class="px-6 py-4">{{ $pendaftaran->score->speaking ?? '-' }}</td>
+                                <td class="px-6 py-4">{{ $pendaftaran->score->reading ?? '-' }}</td>
+                                <td class="px-6 py-4">{{ $pendaftaran->score->writing ?? '-' }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="rounded-full bg-white/10 px-3 py-1 text-xs uppercase text-white">{{ $pendaftaran->score->final_score ?? 'Belum ada' }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        @if($pendaftaran->score)
+                                            <button id="edit-nilai-{{ $pendaftaran->score->id }}" type="button" class="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500">Edit Nilai</button>
+                                            <form method="POST" action="{{ route('instruktur.nilai.destroy', $pendaftaran->score->id) }}" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus nilai ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-500">Hapus</button>
+                                            </form>
+                                        @else
+                                            <button id="create-nilai-{{ $pendaftaran->id }}" type="button" class="rounded-lg bg-yellow-500 px-3 py-2 text-xs font-semibold text-gray-900 hover:bg-yellow-400">Tambah Nilai</button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-6 py-10 text-center text-gray-400">Belum ada peserta pada kelas ini.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Create -->
-<div id="createModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Tambah Nilai Peserta</h3>
-            <form id="createForm" method="POST">
-                @csrf
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Listening</label>
-                        <input type="number" name="listening" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Speaking</label>
-                        <input type="number" name="speaking" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Reading</label>
-                        <input type="number" name="reading" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Writing</label>
-                        <input type="number" name="writing" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Assignment</label>
-                        <input type="number" name="assignment" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">UKTP</label>
-                        <input type="number" name="uktp" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">UKAP</label>
-                        <input type="number" name="ukap" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var1</label>
-                        <input type="number" name="var1" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var2</label>
-                        <input type="number" name="var2" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var3</label>
-                        <input type="number" name="var3" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var4</label>
-                        <input type="number" name="var4" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700">Keterangan</label>
-                    <textarea name="keterangan" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                </div>
-                <div class="flex justify-end mt-4">
-                    <button type="button" onclick="closeCreateModal()" class="mr-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">Simpan</button>
-                </div>
-            </form>
+<div id="createModal" class="fixed inset-0 z-[60] hidden bg-black/70 px-4 py-10">
+    <div class="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-gray-900 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white">Tambah Nilai Akhir</h3>
+            <button type="button" onclick="closeCreateModal()" class="rounded-full bg-white/10 p-2 text-white hover:bg-white/20">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
+        <form id="createForm" method="POST" action="{{ route('instruktur.nilai.store') }}" class="mt-6 space-y-5">
+            @csrf
+            <input type="hidden" id="create_pendaftaran_id" name="pendaftaran_id">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Listening</label>
+                    <input type="number" name="listening" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Speaking</label>
+                    <input type="number" name="speaking" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Reading</label>
+                    <input type="number" name="reading" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Writing</label>
+                    <input type="number" name="writing" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Assignment</label>
+                    <input type="number" name="assignment" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">UKTP</label>
+                    <input type="number" name="uktp" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">UKAP</label>
+                    <input type="number" name="ukap" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var1</label>
+                    <input type="number" name="var1" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var2</label>
+                    <input type="number" name="var2" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var3</label>
+                    <input type="number" name="var3" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var4</label>
+                    <input type="number" name="var4" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300">Keterangan</label>
+                <textarea name="keterangan" rows="3" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white"></textarea>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeCreateModal()" class="rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20">Batal</button>
+                <button type="submit" class="rounded-xl bg-yellow-500 px-5 py-3 font-semibold text-gray-900 hover:bg-yellow-400">Simpan Nilai</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- Modal Edit -->
-<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Edit Nilai Peserta</h3>
-            <form id="editForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Listening</label>
-                        <input type="number" name="listening" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_listening">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Speaking</label>
-                        <input type="number" name="speaking" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_speaking">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Reading</label>
-                        <input type="number" name="reading" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_reading">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Writing</label>
-                        <input type="number" name="writing" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_writing">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Assignment</label>
-                        <input type="number" name="assignment" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_assignment">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">UKTP</label>
-                        <input type="number" name="uktp" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_uktp">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">UKAP</label>
-                        <input type="number" name="ukap" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_ukap">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var1</label>
-                        <input type="number" name="var1" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_var1">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var2</label>
-                        <input type="number" name="var2" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_var2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var3</label>
-                        <input type="number" name="var3" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_var3">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Var4</label>
-                        <input type="number" name="var4" min="0" max="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_var4">
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700">Keterangan</label>
-                    <textarea name="keterangan" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" id="edit_keterangan"></textarea>
-                </div>
-                <div class="flex justify-end mt-4">
-                    <button type="button" onclick="closeEditModal()" class="mr-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">Update</button>
-                </div>
-            </form>
+<div id="editModal" class="fixed inset-0 z-[60] hidden bg-black/70 px-4 py-10">
+    <div class="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-gray-900 p-6 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-white">Edit Nilai Akhir</h3>
+            <button type="button" onclick="closeEditModal()" class="rounded-full bg-white/10 p-2 text-white hover:bg-white/20">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
+        <form id="editForm" method="POST" class="mt-6 space-y-5">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Listening</label>
+                    <input type="number" name="listening" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_listening">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Speaking</label>
+                    <input type="number" name="speaking" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_speaking">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Reading</label>
+                    <input type="number" name="reading" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_reading">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Writing</label>
+                    <input type="number" name="writing" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_writing">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Assignment</label>
+                    <input type="number" name="assignment" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_assignment">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">UKTP</label>
+                    <input type="number" name="uktp" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_uktp">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">UKAP</label>
+                    <input type="number" name="ukap" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_ukap">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var1</label>
+                    <input type="number" name="var1" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_var1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var2</label>
+                    <input type="number" name="var2" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_var2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var3</label>
+                    <input type="number" name="var3" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_var3">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">Var4</label>
+                    <input type="number" name="var4" min="0" max="100" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_var4">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300">Keterangan</label>
+                <textarea name="keterangan" rows="3" class="mt-2 block w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" id="edit_keterangan"></textarea>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeEditModal()" class="rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20">Batal</button>
+                <button type="submit" class="rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-500">Perbarui Nilai</button>
+            </div>
+        </form>
     </div>
 </div>
 
-</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Edit Nilai
     @foreach($pendaftarans as $pendaftaran)
         @if($pendaftaran->score)
             document.getElementById('edit-nilai-{{ $pendaftaran->score->id }}').addEventListener('click', function() {
@@ -237,27 +272,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('edit_keterangan').value = data.keterangan || '';
                         document.getElementById('editForm').action = '/instruktur/nilai/{{ $pendaftaran->score->id }}';
                         document.getElementById('editModal').classList.remove('hidden');
-                    })
-                    .catch(error => alert('Gagal mengambil data nilai: ' + error));
+                    });
             });
-        @endif
-        @if(!$pendaftaran->score)
+        @else
             document.getElementById('create-nilai-{{ $pendaftaran->id }}').addEventListener('click', function() {
-                document.getElementById('createForm').action = '/instruktur/nilai?pendaftaran_id={{ $pendaftaran->id }}';
+                document.getElementById('create_pendaftaran_id').value = '{{ $pendaftaran->id }}';
                 document.getElementById('createModal').classList.remove('hidden');
             });
         @endif
     @endforeach
-    // Close modals
-    document.getElementById('editModal').querySelector('button[onclick="closeEditModal()"]').addEventListener('click', function() {
-        document.getElementById('editModal').classList.add('hidden');
-        document.getElementById('editForm').reset();
-    });
-    document.getElementById('createModal').querySelector('button[onclick="closeCreateModal()"]').addEventListener('click', function() {
-        document.getElementById('createModal').classList.add('hidden');
-        document.getElementById('createForm').reset();
-    });
 });
-</script>
+
+function closeCreateModal() {
+    document.getElementById('createModal').classList.add('hidden');
+    document.getElementById('createForm').reset();
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+    document.getElementById('editForm').reset();
+}
 </script>
 @endsection
