@@ -14,7 +14,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
+            min-height: 100%;
             font-family: 'Inter', sans-serif;
         }
 
@@ -29,10 +34,15 @@
                 linear-gradient(180deg, #020617 0%, #0f172a 48%, #111827 100%);
         }
 
+        .admin-layout {
+            min-height: 100vh;
+        }
+
         .admin-sidebar {
             background:
                 linear-gradient(180deg, rgba(3, 7, 18, 0.98) 0%, rgba(15, 23, 42, 0.96) 100%);
             box-shadow: 24px 0 60px rgba(0, 0, 0, 0.28);
+            overscroll-behavior: contain;
         }
 
         .admin-sidebar-shell {
@@ -350,10 +360,13 @@
         .admin-main {
             background: rgba(255, 255, 255, 0.02);
             min-width: 0;
+            min-height: 0;
         }
 
         .admin-content {
             min-height: calc(100vh - 5.5rem);
+            min-width: 0;
+            overscroll-behavior: contain;
         }
 
         .admin-topbar-actions {
@@ -365,7 +378,46 @@
             max-width: 100%;
         }
 
-        @media (max-width: 1023.98px) {
+        .admin-mobile-only {
+            display: inline-flex;
+        }
+
+        @media (min-width: 960px) {
+            .admin-layout {
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .admin-sidebar {
+                position: sticky;
+                top: 0;
+                left: auto;
+                inset: auto;
+                z-index: 20;
+                height: 100vh;
+                flex: 0 0 min(18.5rem, calc(100vw - 1.5rem));
+                transform: translateX(0) !important;
+            }
+
+            .admin-main {
+                display: flex;
+                flex: 1 1 auto;
+                flex-direction: column;
+            }
+
+            .admin-content {
+                min-height: 0;
+                flex: 1 1 auto;
+            }
+
+            .admin-mobile-only,
+            .admin-sidebar-overlay {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 959.98px) {
             .admin-shell-mobile-lock {
                 overflow: hidden;
                 height: 100vh;
@@ -534,20 +586,24 @@
     <div
         x-data="{
             sidebarOpen: false,
-            isDesktop: window.innerWidth >= 1024,
+            desktopBreakpoint: 960,
+            isDesktop: window.innerWidth >= 960,
             syncLayout() {
-                this.isDesktop = window.innerWidth >= 1024;
+                this.isDesktop = window.innerWidth >= this.desktopBreakpoint;
                 if (this.isDesktop) {
                     this.sidebarOpen = true;
+                    return;
                 }
+
+                this.sidebarOpen = false;
             }
         }"
         x-init="syncLayout(); window.addEventListener('resize', () => syncLayout())"
         :class="{ 'admin-shell-mobile-lock': sidebarOpen && !isDesktop }"
-        class="min-h-screen lg:flex">
+        class="admin-layout min-h-screen">
         <aside
-            class="admin-sidebar admin-sidebar-shell admin-scrollbar fixed inset-y-0 left-0 z-50 flex max-w-full flex-col overflow-y-auto border-r border-white/10 px-4 py-5 transition-transform duration-300 ease-out sm:px-5 lg:static lg:h-screen lg:flex-none lg:translate-x-0"
-            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+            class="admin-sidebar admin-sidebar-shell admin-scrollbar fixed inset-y-0 left-0 z-50 flex max-w-full flex-col overflow-y-auto border-r border-white/10 px-4 py-5 transition-transform duration-300 ease-out sm:px-5"
+            :class="sidebarOpen || isDesktop ? 'translate-x-0' : '-translate-x-full'">
             <div class="flex items-center justify-between gap-3">
                 <a href="{{ route('admin.dashboard') }}" class="flex min-w-0 items-center gap-4">
                     <div class="admin-logo-mark h-14 w-14 rounded-2xl bg-white p-2.5">
@@ -558,7 +614,7 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">Admin Panel</p>
                     </div>
                 </a>
-                <button type="button" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-300 lg:hidden" @click="sidebarOpen = false">
+                <button type="button" class="admin-mobile-only rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-slate-300" @click="sidebarOpen = false">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
@@ -610,13 +666,13 @@
             </div>
         </aside>
 
-        <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-40 bg-slate-950/70 lg:hidden" @click="sidebarOpen = false"></div>
+        <div x-cloak x-show="sidebarOpen && !isDesktop" x-transition.opacity class="admin-sidebar-overlay fixed inset-0 z-40 bg-slate-950/70" @click="sidebarOpen = false"></div>
 
         <div class="admin-main flex min-h-screen flex-1 flex-col">
             <header class="sticky top-0 z-30 border-b border-white/10 bg-slate-950/72 backdrop-blur-xl">
                 <div class="admin-mobile-stack flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                     <div class="flex min-w-0 flex-1 items-center gap-3">
-                        <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-200 lg:hidden" @click="sidebarOpen = true">
+                        <button type="button" class="admin-mobile-only h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-200" @click="sidebarOpen = true">
                             <i class="bi bi-list text-xl"></i>
                         </button>
                         <div class="min-w-0">
