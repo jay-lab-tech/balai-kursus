@@ -60,7 +60,7 @@
             <div class="mt-6 space-y-6">
                 <div>
                     <label class="mb-2 block text-sm font-medium text-slate-300">Kursus</label>
-                    <select name="course_id" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required id="course-select">
+                    <select name="course_id" class="admin-native-select w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required id="course-select">
                         <option value="">Pilih Kursus</option>
                         @foreach($courses as $course)
                             <option value="{{ $course->id }}" {{ old('course_id', $certificate->course_id) == $course->id ? 'selected' : '' }}>{{ $course->nama }}</option>
@@ -69,7 +69,7 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-slate-300">Peserta</label>
-                    <select name="participant_id" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required id="participant-select">
+                    <select name="participant_id" class="admin-native-select w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required id="participant-select">
                         <option value="">Pilih Peserta</option>
                     </select>
                     <small class="mt-2 block text-slate-400">Peserta ditampilkan berdasarkan kursus yang dipilih.</small>
@@ -107,18 +107,38 @@
 <script>
 const courseSelect = document.getElementById('course-select');
 const participantSelect = document.getElementById('participant-select');
+const participantsEndpoint = @json(route('admin.certificates.participants'));
+
 function loadParticipants(courseId, selectedId = null) {
     if (!courseId) {
         participantSelect.innerHTML = '<option value="">Pilih Peserta</option>';
         return;
     }
-    fetch('/admin/get-participants?course_id=' + courseId)
-        .then(res => res.json())
+
+    participantSelect.innerHTML = '<option value="">Memuat peserta...</option>';
+
+    fetch(`${participantsEndpoint}?course_id=${encodeURIComponent(courseId)}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Gagal memuat peserta');
+            }
+
+            return res.json();
+        })
         .then(data => {
             participantSelect.innerHTML = '<option value="">Pilih Peserta</option>';
+
+            if (!Array.isArray(data) || data.length === 0) {
+                participantSelect.innerHTML = '<option value="">Tidak ada peserta pada kursus ini</option>';
+                return;
+            }
+
             data.forEach(peserta => {
                 participantSelect.innerHTML += `<option value="${peserta.id}" ${selectedId == peserta.id ? 'selected' : ''}>${peserta.nomor_peserta} - ${peserta.nama}</option>`;
             });
+        })
+        .catch(() => {
+            participantSelect.innerHTML = '<option value="">Gagal memuat peserta</option>';
         });
 }
 courseSelect.addEventListener('change', function() {

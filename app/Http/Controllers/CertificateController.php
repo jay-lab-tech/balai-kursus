@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use App\Models\Kursus;
 use App\Models\Peserta;
+use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -22,6 +23,39 @@ class CertificateController extends Controller
     {
         $courses = Kursus::all();
         return view('admin.certificates.create', compact('courses'));
+    }
+
+    // ADMIN: Load participants for selected course
+    public function getParticipants(Request $request)
+    {
+        $validated = $request->validate([
+            'course_id' => 'required|exists:kursuses,id',
+        ]);
+
+        $participants = Pendaftaran::query()
+            ->with('peserta.user')
+            ->where('kursus_id', $validated['course_id'])
+            ->latest('id')
+            ->get()
+            ->map(function (Pendaftaran $pendaftaran) {
+                $peserta = $pendaftaran->peserta;
+                $user = $peserta?->user;
+
+                if (!$peserta || !$user) {
+                    return null;
+                }
+
+                return [
+                    'id' => $peserta->id,
+                    'nomor_peserta' => $peserta->nomor_peserta,
+                    'nama' => $user->name,
+                ];
+            })
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        return response()->json($participants);
     }
 
     // ADMIN: Store certificate

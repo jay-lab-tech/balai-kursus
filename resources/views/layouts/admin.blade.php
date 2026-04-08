@@ -222,6 +222,22 @@
             background: rgba(2, 6, 23, 0.62);
         }
 
+        .admin-native-select {
+            color-scheme: dark;
+            color: #fff !important;
+            background-color: rgba(2, 6, 23, 0.72) !important;
+        }
+
+        .admin-native-select option,
+        .admin-native-select optgroup {
+            color: #0f172a;
+            background-color: #fff;
+        }
+
+        .admin-native-select option[value=""] {
+            color: #475569;
+        }
+
         .admin-field-error {
             font-size: 0.85rem;
             color: rgb(253 164 175);

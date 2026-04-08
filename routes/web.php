@@ -86,6 +86,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Sertifikat admin
     Route::get('/certificates', [\App\Http\Controllers\CertificateController::class, 'index'])->name('certificates.index');
     Route::get('/certificates/create', [\App\Http\Controllers\CertificateController::class, 'create'])->name('certificates.create');
+    Route::get('/get-participants', [\App\Http\Controllers\CertificateController::class, 'getParticipants'])->name('certificates.participants');
     Route::post('/certificates', [\App\Http\Controllers\CertificateController::class, 'store'])->name('certificates.store');
     Route::get('/certificates/{id}/edit', [\App\Http\Controllers\CertificateController::class, 'edit'])->name('certificates.edit');
     Route::put('/certificates/{id}', [\App\Http\Controllers\CertificateController::class, 'update'])->name('certificates.update');
