@@ -78,14 +78,6 @@ return new class extends Migration
             $table->index('created_at');
         });
 
-        // Pembayarans table indexes
-        Schema::table('pembayarans', function (Blueprint $table) {
-            $table->index('pendaftaran_id');
-            $table->index('status');
-            $table->index(['pendaftaran_id', 'status']);
-            $table->index('created_at');
-        });
-
         // Lokasis table indexes
         Schema::table('lokasis', function (Blueprint $table) {
             $table->index('kota');
@@ -168,13 +160,6 @@ return new class extends Migration
         });
 
         Schema::table('programs', function (Blueprint $table) {
-            $table->dropIndex(['created_at']);
-        });
-
-        Schema::table('pembayarans', function (Blueprint $table) {
-            $table->dropIndex(['pendaftaran_id']);
-            $table->dropIndex(['status']);
-            $table->dropIndex(['pendaftaran_id', 'status']);
             $table->dropIndex(['created_at']);
         });
 

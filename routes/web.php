@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InformationBoardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CasLoginController;
 
@@ -11,6 +12,8 @@ Route::get('/', function () {
 
     return redirect()->route('login');
 });
+
+Route::get('/papan-informasi', InformationBoardController::class)->name('information-board');
 // Export nilai peserta instruktur
 Route::get('/instruktur/kursus/{kursus}/nilai/export', [\Modules\Instruktur\Http\Controllers\NilaiController::class, 'export'])->name('instruktur.nilai.export');
 
@@ -27,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/certificates', [\App\Http\Controllers\UserCertificateController::class, 'index'])->name('profile.certificates');
     Route::get('/profile/certificates/{id}', [\App\Http\Controllers\UserCertificateController::class, 'detail'])->name('profile.certificate.detail');
     Route::get('/profile/certificates/{id}/download', [\App\Http\Controllers\UserCertificateController::class, 'download'])->name('profile.certificate.download');
+    Route::get('/certificate/{id}/download', [\App\Http\Controllers\UserCertificateController::class, 'download'])
+        ->name('certificate.download');
 });
 
 require __DIR__ . '/auth.php';
@@ -37,7 +42,7 @@ require __DIR__ . '/auth.php';
 |--------------------------------------------------------------------------
 */
 
-Route::get('/redirect', function () {
+Route::middleware('auth')->get('/redirect', function () {
     $role = auth()->user()->role;
 
     if ($role == 'admin') return redirect('/admin/dashboard');
@@ -66,11 +71,9 @@ Route::post('/peserta/pendaftaran/{pendaftaran}/create-payment', [\App\Http\Cont
     ->middleware('auth')
     ->name('peserta.pendaftaran.create-payment');
 
-// certificate verification
-Route::get('/verify/{code}', [\App\Http\Controllers\CertificateController::class, 'verify'])->name('certificate.verify');
-
-Route::get('/certificate/{id}/download', [\App\Http\Controllers\CertificateController::class, 'download'])
-    ->name('certificate.download');
+if (method_exists(\App\Http\Controllers\CertificateController::class, 'verify')) {
+    Route::get('/verify/{code}', [\App\Http\Controllers\CertificateController::class, 'verify'])->name('certificate.verify');
+}
 
 /*
 |--------------------------------------------------------------------------

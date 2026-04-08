@@ -6,53 +6,29 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="max-w-2xl">
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Edit Lokasi</h2>
-                <form method="POST" action="{{ route('admin.lokasi.update', $lokasi->id) }}">
-                    @csrf
-                    @method('PUT')
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nama Lokasi</label>
-                            <input type="text" name="nama" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('nama') border-red-500 @enderror" required value="{{ old('nama', $lokasi->nama) }}">
-                            @error('nama') <div class="text-red-600 text-sm mt-1">{{ $message }}</div> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Alamat</label>
-                            <textarea name="alamat" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('alamat') border-red-500 @enderror" rows="2" required>{{ old('alamat', $lokasi->alamat) }}</textarea>
-                            @error('alamat') <div class="text-red-600 text-sm mt-1">{{ $message }}</div> @enderror
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Kota</label>
-                                <input type="text" name="kota" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('kota') border-red-500 @enderror" required value="{{ old('kota', $lokasi->kota) }}">
-                                @error('kota') <div class="text-red-600 text-sm mt-1">{{ $message }}</div> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Provinsi</label>
-                                <input type="text" name="provinsi" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('provinsi') border-red-500 @enderror" required value="{{ old('provinsi', $lokasi->provinsi) }}">
-                                @error('provinsi') <div class="text-red-600 text-sm mt-1">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">No Telp</label>
-                            <input type="text" name="no_telp" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('no_telp') border-red-500 @enderror" required value="{{ old('no_telp', $lokasi->no_telp) }}">
-                            @error('no_telp') <div class="text-red-600 text-sm mt-1">{{ $message }}</div> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Keterangan</label>
-                            <textarea name="keterangan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" rows="2">{{ old('keterangan', $lokasi->keterangan) }}</textarea>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">Update</button>
-                            <a href="{{ route('admin.lokasi.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
+    <section class="admin-panel admin-panel--hero">
+        <span class="admin-eyebrow"><i class="bi bi-pencil-square"></i>Form Lokasi</span>
+        <div class="space-y-3">
+            <h2 class="text-3xl font-semibold tracking-tight text-white">Perbarui data lokasi {{ $lokasi->nama }}.</h2>
+            <p class="max-w-2xl text-sm leading-6 text-slate-300">Pastikan alamat dan kontak lokasi tetap mutakhir agar penjadwalan dan operasional kelas tidak terganggu.</p>
         </div>
-    </div>
+    </section>
+
+    <section class="admin-panel max-w-4xl">
+        <div class="admin-panel__header"><div><h3 class="admin-panel__title">Edit Informasi Lokasi</h3><p class="admin-panel__subtitle">Perubahan akan langsung dipakai oleh modul jadwal, kelas, dan operasional lainnya.</p></div></div>
+        <form method="POST" action="{{ route('admin.lokasi.update', $lokasi->id) }}" class="space-y-6">
+            @csrf
+            @method('PUT')
+            <div class="space-y-2"><label class="admin-label">Nama Lokasi</label><input type="text" name="nama" class="admin-input @error('nama') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" required value="{{ old('nama', $lokasi->nama) }}">@error('nama') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="space-y-2"><label class="admin-label">Alamat</label><textarea name="alamat" class="admin-input min-h-[110px] @error('alamat') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" rows="3" required>{{ old('alamat', $lokasi->alamat) }}</textarea>@error('alamat') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-2"><label class="admin-label">Kota</label><input type="text" name="kota" class="admin-input @error('kota') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" required value="{{ old('kota', $lokasi->kota) }}">@error('kota') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+                <div class="space-y-2"><label class="admin-label">Provinsi</label><input type="text" name="provinsi" class="admin-input @error('provinsi') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" required value="{{ old('provinsi', $lokasi->provinsi) }}">@error('provinsi') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            </div>
+            <div class="space-y-2"><label class="admin-label">No Telp</label><input type="text" name="no_telp" class="admin-input @error('no_telp') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" required value="{{ old('no_telp', $lokasi->no_telp) }}">@error('no_telp') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="space-y-2"><label class="admin-label">Keterangan</label><textarea name="keterangan" class="admin-input min-h-[110px] @error('keterangan') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" rows="3">{{ old('keterangan', $lokasi->keterangan) }}</textarea>@error('keterangan') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="flex flex-wrap gap-3"><button type="submit" class="admin-btn admin-btn-primary"><i class="bi bi-save2"></i>Update Lokasi</button><a href="{{ route('admin.lokasi.index') }}" class="admin-btn admin-btn-secondary"><i class="bi bi-arrow-left"></i>Batal</a></div>
+        </form>
+    </section>
 </div>
 @endsection

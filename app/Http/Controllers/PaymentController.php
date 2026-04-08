@@ -6,7 +6,6 @@ use App\Models\Pendaftaran;
 use App\Models\Payment;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class PaymentController extends Controller
 {

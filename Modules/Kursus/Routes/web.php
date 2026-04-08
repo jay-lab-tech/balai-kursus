@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Admin Routes
-Route::middleware(['auth'])
+Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {

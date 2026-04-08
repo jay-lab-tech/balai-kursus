@@ -3,12 +3,9 @@
 namespace Modules\Kursus\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Pendaftaran;
-use App\Models\Peserta;
 use App\Models\Kursus;
-use App\Models\Pembayaran;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -21,18 +18,18 @@ class DashboardController extends Controller
         });
         
         $totalKursus = \Illuminate\Support\Facades\Cache::remember('total_kursus', 3600, function() {
-            return \App\Models\Kursus::count();
+            return Kursus::count();
         });
         
-        $totalPemasukan = Pembayaran::where('status', 'verified')
+        $totalPemasukan = Payment::where('status', 'success')
             ->whereDate('created_at', '>=', now()->subMonth())
-            ->sum('jumlah');
+            ->sum('amount');
 
-        $grafik = Pembayaran::select(
+        $grafik = Payment::select(
             DB::raw('MONTH(created_at) as bulan'),
-            DB::raw('SUM(jumlah) as total')
+            DB::raw('SUM(amount) as total')
         )
-            ->where('status', 'verified')
+            ->where('status', 'success')
             ->whereYear('created_at', now()->year)
             ->groupBy('bulan')
             ->orderBy('bulan')

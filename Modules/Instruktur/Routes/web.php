@@ -45,7 +45,7 @@ Route::middleware(['auth', 'role:instruktur'])
     });
 
 // Admin Routes for Instruktur Management
-Route::middleware(['auth'])
+Route::middleware(['auth', 'admin'])
     ->prefix('admin/instruktur')
     ->name('admin.instruktur.')
     ->group(function () {

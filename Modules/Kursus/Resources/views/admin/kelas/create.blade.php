@@ -6,42 +6,24 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="max-w-2xl">
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Tambah Kelas</h2>
-                <form method="POST" action="{{ route('admin.kelas.store') }}">
-                    @csrf
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nama Kelas</label>
-                            <input type="text" name="nama" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('nama') border-red-500 @enderror" required value="{{ old('nama') }}">
-                            @error('nama') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Kapasitas (orang)</label>
-                            <input type="number" name="kapasitas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('kapasitas') border-red-500 @enderror" min="1" required value="{{ old('kapasitas') }}">
-                            @error('kapasitas') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Fasilitas</label>
-                            <input type="text" name="fasilitas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('fasilitas') border-red-500 @enderror" required value="{{ old('fasilitas') }}" placeholder="Contoh: Proyektor, AC, Whiteboard">
-                            @error('fasilitas') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Keterangan</label>
-                            <textarea name="keterangan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm @error('keterangan') border-red-500 @enderror" rows="2">{{ old('keterangan') }}</textarea>
-                            @error('keterangan') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="flex gap-3 pt-4">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">Simpan</button>
-                            <a href="{{ route('admin.kelas.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">Batal</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
+    <section class="admin-panel admin-panel--hero">
+        <span class="admin-eyebrow"><i class="bi bi-plus-square"></i>Form Kelas</span>
+        <div class="space-y-3">
+            <h2 class="text-3xl font-semibold tracking-tight text-white">Tambahkan ruang kelas baru.</h2>
+            <p class="max-w-2xl text-sm leading-6 text-slate-300">Atur nama ruang, kapasitas, serta fasilitas utama agar admin mudah memilih kelas yang paling sesuai.</p>
         </div>
-    </div>
+    </section>
+
+    <section class="admin-panel max-w-4xl">
+        <div class="admin-panel__header"><div><h3 class="admin-panel__title">Informasi Kelas</h3><p class="admin-panel__subtitle">Pastikan kapasitas realistis dan fasilitas menggambarkan kondisi ruang sebenarnya.</p></div></div>
+        <form method="POST" action="{{ route('admin.kelas.store') }}" class="space-y-6">
+            @csrf
+            <div class="space-y-2"><label class="admin-label">Nama Kelas</label><input type="text" name="nama" class="admin-input @error('nama') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" required value="{{ old('nama') }}">@error('nama') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="space-y-2"><label class="admin-label">Kapasitas (orang)</label><input type="number" name="kapasitas" class="admin-input @error('kapasitas') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" min="1" required value="{{ old('kapasitas') }}">@error('kapasitas') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="space-y-2"><label class="admin-label">Fasilitas</label><input type="text" name="fasilitas" class="admin-input @error('fasilitas') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" required value="{{ old('fasilitas') }}" placeholder="Contoh: Proyektor, AC, Whiteboard">@error('fasilitas') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="space-y-2"><label class="admin-label">Keterangan</label><textarea name="keterangan" class="admin-input min-h-[110px] @error('keterangan') border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/30 @enderror" rows="3">{{ old('keterangan') }}</textarea>@error('keterangan') <p class="admin-field-error">{{ $message }}</p> @enderror</div>
+            <div class="flex flex-wrap gap-3"><button type="submit" class="admin-btn admin-btn-primary"><i class="bi bi-check2-circle"></i>Simpan Kelas</button><a href="{{ route('admin.kelas.index') }}" class="admin-btn admin-btn-secondary"><i class="bi bi-arrow-left"></i>Batal</a></div>
+        </form>
+    </section>
 </div>
 @endsection

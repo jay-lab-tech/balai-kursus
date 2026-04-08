@@ -34,11 +34,15 @@ class CasLoginController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $user = User::where('name', $username)->first();
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            $user = User::where('name', $username)->first();
+        }
 
         if (!$user) {
             $user = User::create([
-                'name' => $username,
+                'name' => $name,
                 'email'    => $email,
                 'role'     => $role,
                 'password' => bcrypt(uniqid()), // dummy password
