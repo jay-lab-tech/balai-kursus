@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Admin Routes for Program Management
-Route::middleware(['auth'])
+Route::middleware(['auth', 'admin'])
     ->prefix('admin/program')
     ->name('admin.program.')
     ->group(function () {

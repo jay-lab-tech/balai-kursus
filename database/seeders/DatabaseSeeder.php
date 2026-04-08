@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             AbsensiSeeder::class,
             PesertaKursusLevelSeeder::class,
             PesertaKursusSeeder::class,
-            PembayaranSeeder::class,
             CertificateSeeder::class,
         ]);
     }

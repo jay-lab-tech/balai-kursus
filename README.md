@@ -1,66 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Balai Kursus
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen kursus berbasis Laravel untuk mengelola peserta, program, kelas, penempatan level, pembayaran, absensi, nilai, dan sertifikat.
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Login Laravel Breeze dan SSO CAS.
+- Dashboard terpisah untuk admin, instruktur, dan peserta.
+- Manajemen program, level, kursus, lokasi, kelas, dan jadwal.
+- Pendaftaran peserta dan penempatan ke kursus.
+- Pembayaran online Midtrans.
+- Absensi, risalah, dan penilaian instruktur.
+- Penerbitan sertifikat dan unduh sertifikat peserta.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1+
+- Laravel 10
+- MySQL
+- Blade, Vite, Tailwind
+- `nwidart/laravel-modules`
+- Midtrans Snap
+- DOMPDF
+- Laravel Sanctum
 
-## Learning Laravel
+## Struktur
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- `app/` berisi model inti, controller umum, middleware, observer, service, dan export.
+- `Modules/` berisi fitur domain per area seperti `Kursus`, `Peserta`, `Instruktur`, `Program`, dan lain-lain.
+- `routes/web.php` berisi route global lintas modul.
+- `database/migrations/` menyimpan histori schema proyek.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Alur Aktif yang Perlu Diketahui
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Role
 
-## Laravel Sponsors
+- `admin` untuk area administrasi.
+- `instruktur` untuk absensi, risalah, nilai, dan jadwal.
+- `peserta` untuk kursus, pendaftaran, pembayaran, dan sertifikat milik sendiri.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Pembayaran
 
-### Premium Partners
+- Alur pembayaran aktif menggunakan tabel `payments` dan model `App\Models\Payment`.
+- Webhook Midtrans masuk ke `/peserta/pembayaran-notification`.
+- Artefak pembayaran manual lama sudah dihapus dari alur aktif aplikasi.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Sertifikat
 
-## Contributing
+- Admin mengelola sertifikat dari `/admin/certificates`.
+- Peserta melihat sertifikat pada halaman profil.
+- Sertifikat harus berstatus `published` agar dapat diunduh peserta.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Menjalankan Proyek
 
-## Code of Conduct
+```bash
+composer install
+npm install
+php artisan migrate
+php artisan serve
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Sesuaikan `.env` untuk database, CAS, dan Midtrans sebelum menjalankan aplikasi.
 
-## Security Vulnerabilities
+## Konfigurasi Penting
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Midtrans
 
-## License
+Variabel `.env` yang umum dipakai:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `MIDTRANS_SERVER_KEY`
+- `MIDTRANS_CLIENT_KEY`
+- `MIDTRANS_MERCHANT_ID`
+- `MIDTRANS_IS_PRODUCTION`
+- `MIDTRANS_NOTIFICATION_URL`
+- `MIDTRANS_FINISH_REDIRECT_URL`
+- `MIDTRANS_UNFINISH_REDIRECT_URL`
+- `MIDTRANS_ERROR_REDIRECT_URL`
+
+Referensi setup tambahan tersedia di `MIDTRANS_SETUP.md`.
+
+### CAS
+
+Login CAS tersedia di route `login/cas`. Pastikan atribut identitas CAS sesuai kebutuhan aplikasi.
+
+## Testing
+
+Menjalankan seluruh suite:
+
+```bash
+php artisan test
+```
+
+## Catatan Teknis
+
+- Histori migration memuat beberapa refactor lama, terutama di area `level`, pembayaran, dan flow pendaftaran. Jangan menghapus migration lama sembarangan pada proyek yang sudah memiliki data.
+- Saat mengembangkan fitur baru, prioritaskan alur yang aktif dipakai route dan test saat ini, terutama area pembayaran online berbasis `payments`.
+- Jika command Laravel gagal karena log file atau cache, periksa permission folder `storage/` dan `bootstrap/cache/`.

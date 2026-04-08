@@ -48,7 +48,7 @@ Route::middleware(['auth'])
 Route::post('/peserta/pembayaran-notification', 'Modules\Peserta\Http\Controllers\PembayaranController@handleMidtransNotification')->name('pembayaran-notification');
 
 // Admin Routes for Peserta Module
-Route::middleware(['auth'])
+Route::middleware(['auth', 'admin'])
     ->prefix('admin/peserta')
     ->name('admin.peserta.')
     ->group(function () {

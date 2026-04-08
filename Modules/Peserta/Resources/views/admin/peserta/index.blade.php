@@ -1,173 +1,204 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Management Peserta')
+@section('title', 'Manajemen Peserta')
+
+@section('page-title', 'Manajemen Peserta')
+
+@section('page-description', 'Kelola data peserta, pencarian cepat, dan aksi operasional dari satu tampilan yang lebih terstruktur.')
 
 @section('content')
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Manajemen Peserta</h1>
-        <div class="flex gap-2">
-            <a href="/admin/peserta/create" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-                Tambah Peserta
-            </a>
-            <a href="/admin/peserta/export" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16h16V4H4zm4 4h8v8H8V8z" />
-                </svg>
-                Export Peserta
-            </a>
-        </div>
-    </div>
+<div class="space-y-8">
+    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
+        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-people-fill text-red-400"></i>
+                    Direktori Peserta
+                </div>
+                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Kelola seluruh data peserta dengan tampilan yang lebih cepat dibaca.</h1>
+                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">
+                    Gunakan halaman ini untuk menambah peserta baru, mencari data berdasarkan identitas, dan menjaga data peserta tetap rapi serta mudah ditelusuri.
+                </p>
+            </div>
 
-    <!-- Success Message -->
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('admin.peserta.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                    <i class="bi bi-person-plus-fill"></i>
+                    Tambah Peserta
+                </a>
+                <a href="{{ route('admin.peserta.export') }}" class="inline-flex items-center gap-2 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-5 py-3 text-sm font-semibold text-yellow-300 transition hover:bg-yellow-400/15">
+                    <i class="bi bi-download"></i>
+                    Export Peserta
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Data</p>
+                <p class="mt-3 text-4xl font-bold">{{ $pesertas->count() }}</p>
+                <p class="mt-2 text-sm text-red-100/90">Peserta tampil berdasarkan filter aktif saat ini.</p>
+            </div>
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Pencarian</p>
+                <p class="mt-3 text-xl font-bold text-white">{{ request('search') ? 'Aktif' : 'Semua data' }}</p>
+                <p class="mt-2 text-sm text-slate-300">{{ request('search') ?: 'Belum ada kata kunci pencarian.' }}</p>
+            </div>
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Filter Status</p>
+                <p class="mt-3 text-xl font-bold text-white">{{ request('filter') ? ucfirst(request('filter')) : 'Semua status' }}</p>
+                <p class="mt-2 text-sm text-slate-300">Pilih status untuk mempersempit daftar peserta yang ditampilkan.</p>
+            </div>
+        </div>
+    </section>
+
     @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
+        <div class="rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 px-5 py-4 text-emerald-200 shadow-lg">
+            <div class="flex items-start gap-3">
+                <i class="bi bi-check-circle-fill mt-0.5 text-lg text-emerald-300"></i>
+                <div>
+                    <p class="font-semibold">Perubahan berhasil disimpan</p>
+                    <p class="mt-1 text-sm text-emerald-100/90">{{ session('success') }}</p>
+                </div>
+            </div>
         </div>
     @endif
 
-    <!-- Search and Filter -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Cari</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, nomor peserta, instansi..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Filter Status</label>
-                    <select name="filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-                        <option value="">Semua</option>
-                        <option value="aktif" {{ request('filter')=='aktif' ? 'selected' : '' }}>Aktif</option>
-                        <option value="nonaktif" {{ request('filter')=='nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                        Cari/Filter
-                    </button>
-                </div>
-            </form>
+    <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-white">
+                    <i class="bi bi-funnel-fill mr-3 text-yellow-300"></i>Filter dan Pencarian
+                </h2>
+                <p class="mt-2 text-slate-400">Cari peserta berdasarkan nama, email, nomor peserta, nomor HP, atau instansi.</p>
+            </div>
+            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
+                {{ $pesertas->count() }} hasil tampil
+            </span>
         </div>
-    </div>
 
-    <!-- Table -->
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-300">
-                <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                    <tr>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-hash mr-2 text-gray-400"></i>
-                                No
-                            </div>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-person mr-2 text-gray-400"></i>
-                                Nama Peserta
-                            </div>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-envelope mr-2 text-gray-400"></i>
-                                Email
-                            </div>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-upc mr-2 text-gray-400"></i>
-                                No Peserta
-                            </div>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-telephone mr-2 text-gray-400"></i>
-                                No HP
-                            </div>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-building mr-2 text-gray-400"></i>
-                                Instansi
-                            </div>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-300">
-                            <div class="flex items-center">
-                                <i class="bi bi-gear mr-2 text-gray-400"></i>
-                                Aksi
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($pesertas as $p)
-                        <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 hover:shadow-sm">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $loop->iteration }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                                            <i class="bi bi-person-fill text-white text-sm"></i>
+        <form method="GET" action="" class="mt-6 grid gap-4 lg:grid-cols-[1.6fr_0.8fr_0.6fr]">
+            <div>
+                <label class="mb-2 block text-sm font-medium text-slate-300">Cari peserta</label>
+                <div class="relative">
+                    <i class="bi bi-search pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Cari nama, email, nomor peserta, instansi..."
+                        class="w-full rounded-2xl border border-white/10 bg-slate-950/70 py-3 pl-12 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10">
+                </div>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-medium text-slate-300">Status peserta</label>
+                <select name="filter" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10">
+                    <option value="">Semua</option>
+                    <option value="aktif" {{ request('filter') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                    <option value="nonaktif" {{ request('filter') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                </select>
+            </div>
+            <div class="flex items-end gap-3">
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-4 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                    <i class="bi bi-search"></i>
+                    Terapkan
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="admin-panel overflow-hidden rounded-[2rem]">
+        <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-white">
+                    <i class="bi bi-table mr-3 text-yellow-300"></i>Daftar Peserta
+                </h2>
+                <p class="mt-2 text-slate-400">Tabel ini menampilkan data peserta lengkap beserta aksi edit dan hapus.</p>
+            </div>
+            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
+                {{ $pesertas->count() }} baris data
+            </span>
+        </div>
+
+        @if($pesertas->isEmpty())
+            <div class="px-6 py-16 text-center">
+                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-4xl text-yellow-300">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3 class="mt-6 text-2xl font-bold text-white">Belum ada peserta yang cocok</h3>
+                <p class="mt-3 text-slate-400">Coba ubah filter atau tambahkan peserta baru untuk mulai mengisi daftar ini.</p>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">No</th>
+                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Peserta</th>
+                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Nomor Peserta</th>
+                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Kontak</th>
+                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Instansi</th>
+                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($pesertas as $p)
+                            <tr class="transition hover:bg-white/[0.03]">
+                                <td class="px-6 py-5 text-sm font-semibold text-slate-300">{{ $loop->iteration }}</td>
+                                <td class="px-6 py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-white">{{ $p->user->name }}</p>
+                                            <p class="mt-1 text-sm text-slate-400">{{ $p->user->email }}</p>
                                         </div>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-semibold text-gray-900">{{ $p->user->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $p->user->email }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="inline-flex items-center rounded-full border border-yellow-400/20 bg-yellow-400/10 px-3 py-2 font-mono text-sm font-semibold text-yellow-300">
+                                        {{ $p->nomor_peserta }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-5 text-sm text-slate-300">
+                                    <div class="space-y-1">
+                                        <p class="flex items-center gap-2"><i class="bi bi-envelope text-slate-500"></i>{{ $p->user->email }}</p>
+                                        <p class="flex items-center gap-2"><i class="bi bi-telephone text-slate-500"></i>{{ $p->no_hp }}</p>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <div class="flex items-center">
-                                    <i class="bi bi-envelope text-gray-400 mr-2"></i>
-                                    {{ $p->user->email }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <code class="bg-gradient-to-r from-purple-100 to-purple-200 px-3 py-2 rounded-lg text-sm font-mono font-semibold text-purple-800 border border-purple-300">
-                                    {{ $p->nomor_peserta }}
-                                </code>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <div class="flex items-center">
-                                    <i class="bi bi-telephone text-gray-400 mr-2"></i>
-                                    {{ $p->no_hp }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                    <i class="bi bi-building mr-1"></i>
-                                    {{ $p->instansi }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center space-x-3">
-                                    <a href="/admin/peserta/{{ $p->id }}/edit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors duration-150">
-                                        <i class="bi bi-pencil-square mr-1"></i>
-                                        Edit
-                                    </a>
-                                    <form action="/admin/peserta/{{ $p->id }}" method="POST" style="display:inline" onsubmit="return confirm('Yakin hapus peserta ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150">
-                                            <i class="bi bi-trash mr-1"></i>
-                                            Hapus
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300">
+                                        <i class="bi bi-building"></i>
+                                        {{ $p->instansi ?: 'Belum diisi' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="{{ route('admin.peserta.edit', $p->id) }}" class="admin-btn admin-btn-ghost admin-btn-sm">
+                                            <i class="bi bi-pencil-square text-yellow-300"></i>
+                                            Edit
+                                        </a>
+                                        <form action="{{ route('admin.peserta.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Yakin hapus peserta ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </section>
 </div>
 @endsection
+
+
+
+

@@ -6,7 +6,6 @@ use App\Models\Certificate;
 use App\Models\Kursus;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class CertificateController extends Controller
@@ -71,6 +70,7 @@ class CertificateController extends Controller
             'certificate_name' => $request->certificate_name,
             'course_id' => $request->course_id,
             'participant_id' => $request->participant_id,
+            'user_id' => Peserta::whereKey($request->participant_id)->value('user_id'),
         ];
         if ($request->hasFile('certificate_image')) {
             $path = $request->file('certificate_image')->store('certificates', 'public');
@@ -102,6 +102,10 @@ class CertificateController extends Controller
     {
         $user = auth()->user();
         $peserta = Peserta::where('user_id', $user->id)->first();
+        if (!$peserta) {
+            return view('user.certificates.index', ['certificates' => collect()]);
+        }
+
         $certificates = Certificate::where('participant_id', $peserta->id)
             ->where('status', 'published')
             ->with('course')
@@ -115,7 +119,7 @@ class CertificateController extends Controller
         $certificate = Certificate::findOrFail($id);
         $user = auth()->user();
         $peserta = Peserta::where('user_id', $user->id)->first();
-        if ($certificate->participant_id != $peserta->id || $certificate->status !== 'published') {
+        if (!$peserta || $certificate->participant_id != $peserta->id || $certificate->status !== 'published') {
             abort(403);
         }
         $pdf = Pdf::loadView('user.certificates.pdf', [

@@ -13,20 +13,9 @@ class MidtransService
      */
     public function __construct()
     {
-        $serverKey = config('midtrans.server_key');
-        $clientKey = config('midtrans.client_key');
-        $isProduction = config('midtrans.is_production');
-        
-        \Log::info('Midtrans Config Loaded', [
-            'server_key_set' => !empty($serverKey),
-            'client_key_set' => !empty($clientKey),
-            'is_production' => $isProduction,
-            'server_key_length' => strlen($serverKey),
-        ]);
-        
-        Config::$serverKey = $serverKey;
-        Config::$clientKey = $clientKey;
-        Config::$isProduction = $isProduction;
+        Config::$serverKey = (string) config('midtrans.server_key');
+        Config::$clientKey = (string) config('midtrans.client_key');
+        Config::$isProduction = (bool) config('midtrans.is_production');
         Config::$isSanitized = config('midtrans.sanitize');
         Config::$is3ds = config('midtrans.enable_3d_secure');
     }
@@ -41,15 +30,6 @@ class MidtransService
     public function getSnapToken(array $transaction)
     {
         try {
-            // Log transaction data
-            \Log::info('Snap Token Request', [
-                'transaction' => $transaction,
-                'config' => [
-                    'is_production' => Config::$isProduction,
-                    'server_key_set' => !empty(Config::$serverKey),
-                ]
-            ]);
-            
             return Snap::getSnapToken($transaction);
         } catch (\Exception $e) {
             \Log::error('Snap Token Error: ' . $e->getMessage(), [
@@ -105,7 +85,7 @@ class MidtransService
         }
 
         // Setup callbacks for Midtrans notifications
-        $notificationUrl = config('midtrans.notification_url') ?: route('pembayaran-notification');
+        $notificationUrl = config('midtrans.notification_url') ?: url('/peserta/pembayaran-notification');
         
         $transaction['callbacks'] = [
             'finish' => config('midtrans.finish_redirect_url'),

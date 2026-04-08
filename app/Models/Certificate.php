@@ -11,6 +11,7 @@ class Certificate extends Model
         'certificate_image_path',
         'course_id',
         'participant_id',
+        'user_id',
         'status',
     ];
 
@@ -22,5 +23,10 @@ class Certificate extends Model
     public function participant()
     {
         return $this->belongsTo(Peserta::class, 'participant_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

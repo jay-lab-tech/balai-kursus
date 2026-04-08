@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Peserta;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Certificate;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserCertificateController extends Controller
 {
@@ -22,15 +24,14 @@ class UserCertificateController extends Controller
 
     public function download($id)
     {
-        $peserta = \App\Models\Peserta::where('user_id', Auth::id())->first();
+        $peserta = Peserta::where('user_id', Auth::id())->first();
         $certificate = Certificate::where('id', $id)
             ->where('participant_id', $peserta ? $peserta->id : null)
             ->where('status', 'published')
             ->firstOrFail();
         $course = $certificate->course;
         $participant = $peserta;
-        $pdf = app('dompdf.wrapper');
-        $pdf->loadView('user.certificates.pdf', compact('certificate', 'participant', 'course'));
+        $pdf = Pdf::loadView('user.certificates.pdf', compact('certificate', 'participant', 'course'));
         return $pdf->download('certificate-'.$certificate->id.'.pdf');
     }
 
