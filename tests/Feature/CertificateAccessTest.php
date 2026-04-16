@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Certificate;
+use App\Models\CertificateTemplate;
 use App\Models\Kursus;
 use App\Models\Level;
 use App\Models\Peserta;
@@ -50,19 +51,49 @@ class CertificateAccessTest extends TestCase
             'periode' => '2026-A',
             'tanggal_mulai' => now()->toDateString(),
             'tanggal_selesai' => now()->addMonth()->toDateString(),
+            'jam_pelajaran' => 72,
             'harga' => 100000,
             'harga_upi' => 90000,
             'kuota' => 20,
             'status' => 'buka',
         ]);
 
+        $template = CertificateTemplate::create([
+            'name' => 'Template Resmi',
+            'institution_name' => 'UNIVERSITAS PENDIDIKAN INDONESIA',
+            'unit_name' => 'BALAI BAHASA',
+            'city' => 'Bandung',
+            'header_logo_path' => 'images/certificate/logo_upi_ttd.png',
+            'background_image_path' => 'images/certificate/border_backgorund.png',
+            'signature_image_path' => 'images/certificate/ttd.png',
+            'stamp_image_path' => 'images/certificate/label_ttd.png',
+            'signer_name' => 'Prof. Ika Lestari Damayanti, M.A., Ph.D.',
+            'signer_title' => 'Kepala Balai Bahasa',
+            'signer_nip' => '197709192001122001',
+            'certificate_prefix' => 'UN40.J7/TA.05.00',
+            'is_active' => true,
+        ]);
+
         $certificate = Certificate::create([
+            'template_id' => $template->id,
             'certificate_name' => 'Sertifikat',
-            'certificate_image_path' => 'certificates/sample.jpg',
+            'certificate_number' => '1/UN40.J7/TA.05.00/2026',
+            'serial_number' => '001',
+            'issued_date' => now()->toDateString(),
             'course_id' => $course->id,
             'participant_id' => $participant->id,
             'user_id' => $user->id,
-            'status' => 'published',
+            'status' => Certificate::STATUS_PUBLISHED,
+            'participant_name_snapshot' => $user->name,
+            'program_name_snapshot' => $program->nama,
+            'course_name_snapshot' => $course->nama,
+            'hours_snapshot' => 72,
+            'start_date_snapshot' => $course->tanggal_mulai,
+            'end_date_snapshot' => $course->tanggal_selesai,
+            'signer_name_snapshot' => $template->signer_name,
+            'signer_title_snapshot' => $template->signer_title,
+            'signer_nip_snapshot' => $template->signer_nip,
+            'city_snapshot' => $template->city,
         ]);
 
         $this->actingAs($otherUser)
@@ -73,17 +104,30 @@ class CertificateAccessTest extends TestCase
             ->get(route('certificate.download', $certificate->id))
             ->assertOk();
 
-        $unpublishedCertificate = Certificate::create([
+        $draftCertificate = Certificate::create([
+            'template_id' => $template->id,
             'certificate_name' => 'Draft Sertifikat',
-            'certificate_image_path' => 'certificates/sample-2.jpg',
+            'certificate_number' => '2/UN40.J7/TA.05.00/2026',
+            'serial_number' => '002',
+            'issued_date' => now()->toDateString(),
             'course_id' => $course->id,
             'participant_id' => $otherParticipant->id,
             'user_id' => $otherUser->id,
-            'status' => 'pending',
+            'status' => Certificate::STATUS_DRAFT,
+            'participant_name_snapshot' => $otherUser->name,
+            'program_name_snapshot' => $program->nama,
+            'course_name_snapshot' => $course->nama,
+            'hours_snapshot' => 72,
+            'start_date_snapshot' => $course->tanggal_mulai,
+            'end_date_snapshot' => $course->tanggal_selesai,
+            'signer_name_snapshot' => $template->signer_name,
+            'signer_title_snapshot' => $template->signer_title,
+            'signer_nip_snapshot' => $template->signer_nip,
+            'city_snapshot' => $template->city,
         ]);
 
         $this->actingAs($otherUser)
-            ->get(route('certificate.download', $unpublishedCertificate->id))
+            ->get(route('certificate.download', $draftCertificate->id))
             ->assertNotFound();
     }
 }

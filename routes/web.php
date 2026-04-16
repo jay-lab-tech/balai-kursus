@@ -86,12 +86,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Sertifikat admin
     Route::get('/certificates', [\App\Http\Controllers\CertificateController::class, 'index'])->name('certificates.index');
     Route::get('/certificates/create', [\App\Http\Controllers\CertificateController::class, 'create'])->name('certificates.create');
+    Route::get('/certificates/batch/create', [\App\Http\Controllers\CertificateController::class, 'batchCreate'])->name('certificates.batch.create');
+    Route::post('/certificates/batch', [\App\Http\Controllers\CertificateController::class, 'batchStore'])->name('certificates.batch.store');
+    Route::post('/certificates/batch/publish', [\App\Http\Controllers\CertificateController::class, 'batchPublish'])->name('certificates.batch.publish');
     Route::get('/get-participants', [\App\Http\Controllers\CertificateController::class, 'getParticipants'])->name('certificates.participants');
     Route::post('/certificates', [\App\Http\Controllers\CertificateController::class, 'store'])->name('certificates.store');
+    Route::get('/certificates/{id}/preview', [\App\Http\Controllers\CertificateController::class, 'preview'])->name('certificates.preview');
     Route::get('/certificates/{id}/edit', [\App\Http\Controllers\CertificateController::class, 'edit'])->name('certificates.edit');
     Route::put('/certificates/{id}', [\App\Http\Controllers\CertificateController::class, 'update'])->name('certificates.update');
     Route::delete('/certificates/{id}', [\App\Http\Controllers\CertificateController::class, 'destroy'])->name('certificates.destroy');
     Route::post('/certificates/{id}/publish', [\App\Http\Controllers\CertificateController::class, 'publish'])->name('certificates.publish');
+    Route::post('/certificates/{id}/revoke', [\App\Http\Controllers\CertificateController::class, 'revoke'])->name('certificates.revoke');
+    Route::post('/certificates/{id}/restore-draft', [\App\Http\Controllers\CertificateController::class, 'restoreDraft'])->name('certificates.restore-draft');
 
     if (class_exists(\App\Http\Controllers\Admin\CertificateTemplateController::class)) {
         Route::get('/certificate-templates', [\App\Http\Controllers\Admin\CertificateTemplateController::class, 'index'])->name('templates.index');

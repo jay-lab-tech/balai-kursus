@@ -4,96 +4,120 @@
 
 @section('page-title', 'Template Sertifikat')
 
-@section('content')
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Template Sertifikat</h1>
-        <a href="{{ route('admin.templates.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Buat Template Baru
-        </a>
-    </div>
+@section('page-description', 'Atur template resmi, aset visual, dan penandatangan sertifikat yang dipakai sistem.')
 
-    <!-- Success Message -->
-    @if ($message = Session::get('success'))
-        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative" role="alert">
-            <span class="block sm:inline">{{ $message }}</span>
+@section('content')
+<div class="space-y-8">
+    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
+        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-easel2-fill text-red-400"></i>
+                    Template Sertifikat
+                </div>
+                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Kelola tampilan resmi sertifikat.</h1>
+                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Template menentukan aset logo, background, tanda tangan, cap, nama penandatangan, dan format prefix nomor sertifikat yang dipakai saat PDF digenerate.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('admin.templates.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                    <i class="bi bi-plus-circle"></i>
+                    Buat Template Baru
+                </a>
+            </div>
+        </div>
+    </section>
+
+    @if(session('success'))
+        <div class="rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 px-5 py-4 text-emerald-200 shadow-lg">
+            <div class="flex items-start gap-3">
+                <i class="bi bi-check-circle-fill mt-0.5 text-lg text-emerald-300"></i>
+                <div>
+                    <p class="font-semibold">Perubahan berhasil disimpan</p>
+                    <p class="mt-1 text-sm text-emerald-100/90">{{ session('success') }}</p>
+                </div>
+            </div>
         </div>
     @endif
 
-    <!-- Table -->
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Nama Template
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Kursus
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Default
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Digunakan
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Aksi
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($templates as $template)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $template->name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $template->kursus->nama ?? $template->kursus->judul ?? '(Global Default)' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                @if ($template->is_default)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Ya
-                                    </span>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {{ $template->certificates()->count() }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                <a href="{{ route('admin.templates.edit', $template) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
-                                <form method="post" action="{{ route('admin.templates.destroy', $template) }}" style="display: inline;" onsubmit="return confirm('Hapus template ini? Tindakan tidak dapat dibatalkan.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                Belum ada template. <a href="{{ route('admin.templates.create') }}" class="text-blue-600 hover:text-blue-900">Buat template baru</a>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <section class="admin-panel overflow-hidden rounded-[2rem]">
+        <div class="border-b border-white/10 px-6 py-5">
+            <h2 class="text-2xl font-bold text-white">
+                <i class="bi bi-card-image mr-3 text-yellow-300"></i>Daftar Template
+            </h2>
+            <p class="mt-2 text-slate-400">Pastikan selalu ada satu template aktif yang menjadi sumber resmi untuk penerbitan sertifikat peserta.</p>
         </div>
-    </div>
 
-    <!-- Pagination -->
-    <div class="mt-4">
-        {{ $templates->links() }}
-    </div>
+        @if($templates->isEmpty())
+            <div class="px-6 py-16 text-center">
+                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-4xl text-yellow-300">
+                    <i class="bi bi-card-image"></i>
+                </div>
+                <h3 class="mt-6 text-2xl font-bold text-white">Belum ada template</h3>
+                <p class="mt-3 text-slate-400">Buat template pertama untuk mulai menerbitkan sertifikat resmi.</p>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Template</th>
+                            <th class="px-4 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Penandatangan</th>
+                            <th class="px-4 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Prefix</th>
+                            <th class="px-4 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Digunakan</th>
+                            <th class="px-4 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($templates as $template)
+                            <tr>
+                                <td class="px-4 py-4">
+                                    <div class="flex flex-col gap-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-semibold text-white">{{ $template->name }}</span>
+                                            @if($template->is_active)
+                                                <span class="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">Aktif</span>
+                                            @endif
+                                        </div>
+                                        <span class="text-sm text-slate-300">{{ $template->institution_name }}</span>
+                                        <span class="text-xs text-slate-400">{{ $template->unit_name }} • {{ $template->city }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="font-medium text-white">{{ $template->signer_name }}</span>
+                                        <span class="text-sm text-slate-300">{{ $template->signer_title }}</span>
+                                        <span class="text-xs text-slate-400">NIP {{ $template->signer_nip }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-sm text-slate-300">{{ $template->certificate_prefix }}</td>
+                                <td class="px-4 py-4 text-sm text-slate-300">{{ $template->certificates_count }} sertifikat</td>
+                                <td class="px-4 py-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="{{ route('admin.templates.edit', $template) }}" class="admin-btn admin-btn-ghost admin-btn-sm">
+                                            <i class="bi bi-pencil-square text-yellow-300"></i>
+                                            Edit
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.templates.destroy', $template) }}" onsubmit="return confirm('Hapus template ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="admin-btn admin-btn-sm border border-red-500/20 bg-red-600/10 text-red-200 hover:bg-red-600/20">
+                                                <i class="bi bi-trash"></i>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="border-t border-white/10 px-6 py-4">
+                {{ $templates->links() }}
+            </div>
+        @endif
+    </section>
 </div>
 @endsection

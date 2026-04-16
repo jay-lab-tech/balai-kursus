@@ -24,6 +24,7 @@ class Kursus extends Model
         'periode',
         'tanggal_mulai',
         'tanggal_selesai',
+        'jam_pelajaran',
         'harga',
         'harga_upi',
         'kuota',

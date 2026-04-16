@@ -10,10 +10,10 @@ class UserCertificateController extends Controller
 {
     public function index()
     {
-        $peserta = \App\Models\Peserta::where('user_id', Auth::id())->first();
+        $peserta = Peserta::where('user_id', Auth::id())->first();
         if ($peserta) {
             $certificates = Certificate::where('participant_id', $peserta->id)
-                ->where('status', 'published')
+                ->where('status', Certificate::STATUS_PUBLISHED)
                 ->latest()
                 ->get();
         } else {
@@ -25,22 +25,25 @@ class UserCertificateController extends Controller
     public function download($id)
     {
         $peserta = Peserta::where('user_id', Auth::id())->first();
-        $certificate = Certificate::where('id', $id)
+        $certificate = Certificate::with(['course.program', 'template'])
+            ->where('id', $id)
             ->where('participant_id', $peserta ? $peserta->id : null)
-            ->where('status', 'published')
+            ->where('status', Certificate::STATUS_PUBLISHED)
             ->firstOrFail();
         $course = $certificate->course;
         $participant = $peserta;
-        $pdf = Pdf::loadView('user.certificates.pdf', compact('certificate', 'participant', 'course'));
+        $template = $certificate->template;
+        $pdf = Pdf::loadView('user.certificates.pdf', compact('certificate', 'participant', 'course', 'template'))
+            ->setPaper('a4', 'landscape');
         return $pdf->download('certificate-'.$certificate->id.'.pdf');
     }
 
     public function detail($id)
     {
-        $peserta = \App\Models\Peserta::where('user_id', Auth::id())->first();
+        $peserta = Peserta::where('user_id', Auth::id())->first();
         $certificate = Certificate::where('id', $id)
             ->where('participant_id', $peserta ? $peserta->id : null)
-            ->where('status', 'published')
+            ->where('status', Certificate::STATUS_PUBLISHED)
             ->firstOrFail();
         return view('profile.certificate-detail', compact('certificate'));
     }
