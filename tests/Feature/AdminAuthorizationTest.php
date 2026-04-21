@@ -30,6 +30,6 @@ class AdminAuthorizationTest extends TestCase
 
     public function test_redirect_route_requires_authentication(): void
     {
-        $this->get('/redirect')->assertRedirect(route('login.cas'));
+        $this->get('/redirect')->assertRedirect(route('login'));
     }
 }

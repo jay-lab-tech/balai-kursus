@@ -79,6 +79,7 @@ class ProgramController extends Controller
 
         Pendaftaran::create([
             'peserta_id' => $peserta->id,
+            'participant_email_snapshot' => Auth::user()->email,
             'program_id' => $program->id,
             'status_pendaftaran' => Pendaftaran::STATUS_MENUNGGU_TES,
             'status_pembayaran' => Pendaftaran::PAYMENT_PENDING,

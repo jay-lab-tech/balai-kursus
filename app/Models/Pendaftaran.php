@@ -24,6 +24,7 @@ class Pendaftaran extends Model
     protected $fillable = [
         'nomor',
         'peserta_id',
+        'participant_email_snapshot',
         'program_id',
         'level_id',
         'kursus_id',
@@ -56,6 +57,13 @@ class Pendaftaran extends Model
 
             $pendaftaran->total_bayar ??= 0;
             $pendaftaran->terbayar ??= 0;
+
+            if (!$pendaftaran->participant_email_snapshot && $pendaftaran->peserta_id) {
+                $pendaftaran->participant_email_snapshot = Peserta::query()
+                    ->join('users', 'users.id', '=', 'pesertas.user_id')
+                    ->where('pesertas.id', $pendaftaran->peserta_id)
+                    ->value('users.email');
+            }
 
             if (!$pendaftaran->program_id && $pendaftaran->kursus_id) {
                 $pendaftaran->program_id = Kursus::query()->whereKey($pendaftaran->kursus_id)->value('program_id');

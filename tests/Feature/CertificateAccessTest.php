@@ -20,7 +20,7 @@ class CertificateAccessTest extends TestCase
     {
         $response = $this->get(route('certificate.download', ['id' => 1]));
 
-        $response->assertRedirect(route('login.cas'));
+        $response->assertRedirect(route('login'));
     }
 
     public function test_authenticated_user_can_only_download_their_own_published_certificate(): void

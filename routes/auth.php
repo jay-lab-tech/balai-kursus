@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\GoogleLoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -19,6 +20,11 @@ Route::get('login/cas', [CasLoginController::class, 'redirectToCas'])->name('log
 Route::get('logout/cas', [CasLoginController::class, 'logout'])->name('logout.cas');
 
 Route::middleware('guest')->group(function () {
+    Route::get('login/google', [GoogleLoginController::class, 'redirect'])
+                ->name('login.google');
+    Route::get('auth/google/callback', [GoogleLoginController::class, 'callback'])
+                ->name('login.google.callback');
+
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 

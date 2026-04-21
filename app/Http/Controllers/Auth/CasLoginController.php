@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Peserta;
+use App\Services\Auth\TrustedDeviceManager;
 
 class CasLoginController extends Controller
 {
-    public function redirectToCas()
+    public function redirectToCas(Request $request, TrustedDeviceManager $trustedDeviceManager)
     {
         // Jika belum login ke CAS, redirect ke server CAS
         if (!\Cas::isAuthenticated()) {
@@ -81,6 +82,7 @@ class CasLoginController extends Controller
         */
 
         Auth::login($user);
+        $trustedDeviceManager->remember($user, $request);
 
         return redirect()->intended('/');
     }

@@ -16,6 +16,28 @@
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+            @if (Route::has('login'))
+                <div class="w-full max-w-5xl px-6 flex justify-end">
+                    <div class="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-2 shadow-sm">
+                        <a
+                            href="{{ route('login') }}"
+                            class="rounded-full px-4 py-2 text-sm font-medium transition {{ request()->routeIs('login') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900' }}"
+                        >
+                            Masuk
+                        </a>
+
+                        @if (Route::has('register'))
+                            <a
+                                href="{{ route('register') }}"
+                                class="rounded-full px-4 py-2 text-sm font-medium transition {{ request()->routeIs('register') ? 'bg-yellow-500 text-white' : 'text-gray-600 hover:text-gray-900' }}"
+                            >
+                                Register
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <div>
                 <a href="/">
                     <x-application-logo class="w-20 h-20 fill-current text-gray-500" />

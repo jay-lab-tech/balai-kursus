@@ -51,6 +51,10 @@
                                     <div>
                                         <p class="text-xs uppercase tracking-[0.25em] text-gray-400">{{ $pendaftaran->nomor }}</p>
                                         <h2 class="mt-3 text-3xl font-bold text-white">{{ $pendaftaran->program->nama ?? 'Program tidak ditemukan' }}</h2>
+                                        <p class="mt-2 text-sm text-gray-400">
+                                            Email terdaftar:
+                                            <span class="font-medium text-white">{{ $pendaftaran->participant_email_snapshot ?? auth()->user()?->email ?? '-' }}</span>
+                                        </p>
                                         <p class="mt-3 text-sm leading-7 text-gray-400">
                                             Setelah nilai placement test diinput admin, sistem menempatkan Anda ke level dan kelas yang paling sesuai.
                                         </p>

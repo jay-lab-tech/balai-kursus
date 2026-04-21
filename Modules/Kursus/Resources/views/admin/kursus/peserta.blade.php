@@ -84,7 +84,7 @@
                         @foreach($peserta as $item)
                             <tr class="transition hover:bg-white/[0.03]">
                                 <td class="px-6 py-5 text-sm font-semibold text-white">{{ $item->peserta->user->name ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $item->peserta->user->email ?? '-' }}</td>
+                                <td class="px-6 py-5 text-sm text-slate-300">{{ $item->participant_email_snapshot ?? $item->peserta->user->email ?? '-' }}</td>
                                 <td class="px-6 py-5 text-sm text-slate-300">{{ $item->level->nama ?? 'Belum ada level' }}</td>
                                 <td class="px-6 py-5 text-sm text-slate-300">{{ $item->placementScore?->final_score ?? 'Belum ada nilai tes' }}</td>
                                 <td class="px-6 py-5">
@@ -112,4 +112,3 @@
     </section>
 </div>
 @endsection
-

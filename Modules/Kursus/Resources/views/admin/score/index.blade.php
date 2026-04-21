@@ -114,7 +114,7 @@
                                 <td class="px-6 py-5 text-sm text-slate-300">{{ $pendaftaran->nomor }}</td>
                                 <td class="px-6 py-5">
                                     <p class="font-semibold text-white">{{ $pendaftaran->peserta->user->name ?? '-' }}</p>
-                                    <p class="mt-1 text-sm text-slate-400">{{ $pendaftaran->peserta->user->email ?? '-' }}</p>
+                                    <p class="mt-1 text-sm text-slate-400">{{ $pendaftaran->participant_email_snapshot ?? $pendaftaran->peserta->user->email ?? '-' }}</p>
                                 </td>
                                 <td class="px-6 py-5 text-sm text-slate-300">{{ $pendaftaran->program->nama ?? '-' }}</td>
                                 <td class="px-6 py-5 text-sm text-slate-300">{{ $pendaftaran->placementScore?->final_score ?? 'Belum diinput' }}</td>
@@ -155,5 +155,4 @@
     </section>
 </div>
 @endsection
-
 
