@@ -239,6 +239,95 @@
             opacity: 0.78;
         }
 
+        .admin-content form :is(
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            input[type="date"],
+            input[type="datetime-local"],
+            input[type="month"],
+            input[type="search"],
+            input[type="tel"],
+            input[type="time"],
+            input[type="url"],
+            input[type="week"],
+            select,
+            textarea
+        ) {
+            border-color: rgba(148, 163, 184, 0.28) !important;
+            background: #fff !important;
+            color: #0f172a !important;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            color-scheme: light;
+        }
+
+        .admin-content form :is(
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            input[type="date"],
+            input[type="datetime-local"],
+            input[type="month"],
+            input[type="search"],
+            input[type="tel"],
+            input[type="time"],
+            input[type="url"],
+            input[type="week"],
+            textarea
+        )::placeholder {
+            color: rgb(100 116 139) !important;
+        }
+
+        .admin-content form :is(select) option,
+        .admin-content form :is(select) optgroup {
+            color: #0f172a;
+            background: #fff;
+        }
+
+        .admin-content form :is(
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            input[type="date"],
+            input[type="datetime-local"],
+            input[type="month"],
+            input[type="search"],
+            input[type="tel"],
+            input[type="time"],
+            input[type="url"],
+            input[type="week"],
+            select,
+            textarea
+        ):focus {
+            border-color: rgba(248, 113, 113, 0.75) !important;
+            background: #fff !important;
+            color: #0f172a !important;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14), 0 12px 28px rgba(15, 23, 42, 0.1) !important;
+        }
+
+        .admin-content form :is(
+            input[type="date"],
+            input[type="datetime-local"],
+            input[type="month"],
+            input[type="time"],
+            input[type="week"]
+        )::-webkit-calendar-picker-indicator,
+        .admin-content form :is(
+            input[type="search"]
+        )::-webkit-search-cancel-button,
+        .admin-content form :is(
+            input[type="date"],
+            input[type="datetime-local"],
+            input[type="month"],
+            input[type="time"],
+            input[type="week"]
+        )::-webkit-clear-button {
+            opacity: 0.78;
+        }
+
         .admin-field-error {
             font-size: 0.85rem;
             color: rgb(253 164 175);
