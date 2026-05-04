@@ -40,22 +40,22 @@
             <h2 class="text-xl font-bold text-white">Detail Pertemuan</h2>
             <div class="mt-6 grid gap-6 md:grid-cols-2">
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Pertemuan Ke</label>
-                    <input type="number" name="pertemuan_ke" value="{{ old('pertemuan_ke') }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10">
+                    <label class="admin-label mb-2">Pertemuan Ke</label>
+                    <input type="number" name="pertemuan_ke" value="{{ old('pertemuan_ke') }}" class="admin-input">
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Tanggal Pertemuan</label>
-                    <input type="date" name="tgl_pertemuan" value="{{ old('tgl_pertemuan') }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
+                    <label class="admin-label mb-2">Tanggal Pertemuan</label>
+                    <input type="date" name="tgl_pertemuan" value="{{ old('tgl_pertemuan') }}" class="admin-input" required>
                 </div>
             </div>
             <div class="mt-6 grid gap-6 md:grid-cols-2">
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Jam Mulai</label>
-                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai') }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10">
+                    <label class="admin-label mb-2">Jam Mulai</label>
+                    <input type="time" name="jam_mulai" value="{{ old('jam_mulai') }}" class="admin-input">
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Jam Selesai</label>
-                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai') }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10">
+                    <label class="admin-label mb-2">Jam Selesai</label>
+                    <input type="time" name="jam_selesai" value="{{ old('jam_selesai') }}" class="admin-input">
                 </div>
             </div>
         </section>
@@ -64,8 +64,8 @@
             <h2 class="text-xl font-bold text-white">Lokasi dan Ruang</h2>
             <div class="mt-6 grid gap-6 md:grid-cols-3">
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Lokasi</label>
-                    <select name="lokasi_id" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
+                    <label class="admin-label mb-2">Lokasi</label>
+                    <select name="lokasi_id" class="admin-input" required>
                         <option value="">Pilih Lokasi</option>
                         @foreach($lokasis as $lokasi)
                             <option value="{{ $lokasi->id }}" @selected(old('lokasi_id') == $lokasi->id)>{{ $lokasi->nama }} - {{ $lokasi->kota }}</option>
@@ -73,8 +73,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Kelas</label>
-                    <select name="kela_id" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
+                    <label class="admin-label mb-2">Kelas</label>
+                    <select name="kela_id" class="admin-input" required>
                         <option value="">Pilih Kelas</option>
                         @foreach($kelas as $k)
                             <option value="{{ $k->id }}" @selected(old('kela_id') == $k->id)>{{ $k->nama }} ({{ $k->kapasitas ?? '-' }} kursi)</option>
@@ -82,8 +82,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-300">Hari</label>
-                    <select name="hari_id" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
+                    <label class="admin-label mb-2">Hari</label>
+                    <select name="hari_id" class="admin-input" required>
                         <option value="">Pilih Hari</option>
                         @foreach($haris as $hari)
                             <option value="{{ $hari->id }}" @selected(old('hari_id') == $hari->id)>{{ $hari->nama }}</option>

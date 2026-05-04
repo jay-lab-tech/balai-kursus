@@ -208,34 +208,35 @@
         .admin-input {
             width: 100%;
             border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            background: rgba(2, 6, 23, 0.42);
-            color: #fff;
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            background: #fff !important;
+            color: #0f172a !important;
             padding: 0.9rem 1rem;
             outline: none;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            color-scheme: light;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .admin-input::placeholder {
+            color: rgb(100 116 139);
+        }
+
+        .admin-input option,
+        .admin-input optgroup {
+            color: #0f172a;
+            background: #fff;
         }
 
         .admin-input:focus {
             border-color: rgba(248, 113, 113, 0.75);
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14);
-            background: rgba(2, 6, 23, 0.62);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14), 0 12px 28px rgba(15, 23, 42, 0.1);
+            background: #fff !important;
         }
 
-        .admin-native-select {
-            color-scheme: dark;
-            color: #fff !important;
-            background-color: rgba(2, 6, 23, 0.72) !important;
-        }
-
-        .admin-native-select option,
-        .admin-native-select optgroup {
-            color: #0f172a;
-            background-color: #fff;
-        }
-
-        .admin-native-select option[value=""] {
-            color: #475569;
+        .admin-input::-webkit-calendar-picker-indicator,
+        .admin-input::-webkit-clear-button {
+            opacity: 0.78;
         }
 
         .admin-field-error {

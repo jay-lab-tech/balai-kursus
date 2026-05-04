@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Jadwal extends Model
@@ -16,6 +17,24 @@ class Jadwal extends Model
     protected $casts = [
         'tgl_pertemuan' => 'date',
     ];
+
+    public function scopeConflictingSlot(
+        Builder $query,
+        int $lokasiId,
+        string $tanggalPertemuan,
+        string $jamMulai,
+        string $jamSelesai,
+        ?int $ignoreJadwalId = null
+    ): Builder {
+        return $query
+            ->where('lokasi_id', $lokasiId)
+            ->whereDate('tgl_pertemuan', $tanggalPertemuan)
+            ->whereNotNull('jam_mulai')
+            ->whereNotNull('jam_selesai')
+            ->where('jam_mulai', '<', $jamSelesai)
+            ->where('jam_selesai', '>', $jamMulai)
+            ->when($ignoreJadwalId, fn (Builder $query) => $query->whereKeyNot($ignoreJadwalId));
+    }
 
     public function kursus()
     {

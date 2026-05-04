@@ -11,6 +11,7 @@ use App\Models\Hari;
 use App\Models\Risalah;
 use App\Models\InstrukturKursusLevel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class JadwalController extends Controller
 {
@@ -50,25 +51,17 @@ class JadwalController extends Controller
 
     public function store(Request $request, Kursus $kursus)
     {
-        $request->validate([
-            'pertemuan_ke' => 'nullable|integer',
-            'tgl_pertemuan' => 'required|date',
-            'jam_mulai' => 'nullable',
-            'jam_selesai' => 'nullable',
-            'lokasi_id' => 'required|exists:lokasis,id',
-            'kela_id' => 'required|exists:kelas,id',
-            'hari_id' => 'required|exists:haris,id'
-        ]);
+        $validated = $this->validateJadwal($request);
 
         $jadwal = Jadwal::create([
             'kursus_id' => $kursus->id,
-            'pertemuan_ke' => $request->pertemuan_ke,
-            'tgl_pertemuan' => $request->tgl_pertemuan,
-            'jam_mulai' => $request->jam_mulai,
-            'jam_selesai' => $request->jam_selesai,
-            'lokasi_id' => $request->lokasi_id,
-            'kela_id' => $request->kela_id,
-            'hari_id' => $request->hari_id,
+            'pertemuan_ke' => $validated['pertemuan_ke'] ?? null,
+            'tgl_pertemuan' => $validated['tgl_pertemuan'],
+            'jam_mulai' => $validated['jam_mulai'] ?? null,
+            'jam_selesai' => $validated['jam_selesai'] ?? null,
+            'lokasi_id' => $validated['lokasi_id'],
+            'kela_id' => $validated['kela_id'],
+            'hari_id' => $validated['hari_id'],
             'created_by' => auth()->id()
         ]);
 
@@ -87,15 +80,9 @@ class JadwalController extends Controller
 
     public function update(Request $request, Kursus $kursus, Jadwal $jadwal)
     {
-        $request->validate([
-            'pertemuan_ke' => 'nullable|integer',
-            'tgl_pertemuan' => 'required|date',
-            'lokasi_id' => 'required|exists:lokasis,id',
-            'kela_id' => 'required|exists:kelas,id',
-            'hari_id' => 'required|exists:haris,id'
-        ]);
+        $validated = $this->validateJadwal($request, $jadwal);
 
-        $jadwal->update($request->only(['pertemuan_ke','tgl_pertemuan','jam_mulai','jam_selesai','lokasi_id','kela_id','hari_id']));
+        $jadwal->update($validated);
 
         $this->syncRisalahFromJadwal($kursus, $jadwal);
 
@@ -129,5 +116,65 @@ class JadwalController extends Controller
             'materi' => 'Materi pertemuan ' . ($jadwal->pertemuan_ke ?: '-'),
             'catatan' => null,
         ]);
+    }
+
+    private function validateJadwal(Request $request, ?Jadwal $jadwal = null): array
+    {
+        $validator = Validator::make($request->all(), [
+            'pertemuan_ke' => 'nullable|integer|min:1',
+            'tgl_pertemuan' => 'required|date',
+            'jam_mulai' => 'nullable|date_format:H:i',
+            'jam_selesai' => 'nullable|date_format:H:i|after:jam_mulai',
+            'lokasi_id' => 'required|exists:lokasis,id',
+            'kela_id' => 'required|exists:kelas,id',
+            'hari_id' => 'required|exists:haris,id',
+        ], [
+            'jam_mulai.date_format' => 'Jam mulai harus memakai format HH:MM.',
+            'jam_selesai.date_format' => 'Jam selesai harus memakai format HH:MM.',
+            'jam_selesai.after' => 'Jam selesai harus lebih besar dari jam mulai.',
+        ]);
+
+        $validator->after(function ($validator) use ($request, $jadwal) {
+            $jamMulai = $request->input('jam_mulai');
+            $jamSelesai = $request->input('jam_selesai');
+
+            if (($jamMulai && !$jamSelesai) || (!$jamMulai && $jamSelesai)) {
+                $validator->errors()->add('jam_mulai', 'Jam mulai dan jam selesai harus diisi bersamaan.');
+                return;
+            }
+
+            if (!$jamMulai || !$jamSelesai || $validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $jadwalBentrok = Jadwal::query()
+                ->with(['kursus', 'lokasi'])
+                ->conflictingSlot(
+                    (int) $request->input('lokasi_id'),
+                    (string) $request->input('tgl_pertemuan'),
+                    $jamMulai,
+                    $jamSelesai,
+                    $jadwal?->id
+                )
+                ->first();
+
+            if (!$jadwalBentrok) {
+                return;
+            }
+
+            $validator->errors()->add(
+                'jam_mulai',
+                sprintf(
+                    'Jadwal bentrok dengan kelas %s di %s pada %s pukul %s-%s.',
+                    $jadwalBentrok->kursus?->nama ?? 'lain',
+                    $jadwalBentrok->lokasi?->nama ?? 'lokasi yang sama',
+                    $jadwalBentrok->tgl_pertemuan?->format('d/m/Y') ?? '-',
+                    substr((string) $jadwalBentrok->jam_mulai, 0, 5),
+                    substr((string) $jadwalBentrok->jam_selesai, 0, 5)
+                )
+            );
+        });
+
+        return $validator->validate();
     }
 }
