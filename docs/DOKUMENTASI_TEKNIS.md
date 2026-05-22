@@ -260,17 +260,17 @@ Aplikasi akan tersedia di `http://localhost:8000`
 
 ```
 Admin:
-  Email: admin@balai.local
+  Email: admin@balai.com
   Password: password123
   Role: Administrator
 
 Instruktur:
-  Email: instruktur@balai.local
+  Email: instruktur@balai.com
   Password: password123
   Role: Pengajar Bahasa
 
 Peserta:
-  Email: peserta@balai.local
+  Email: peserta@balai.com
   Password: password123
   Role: Pelajar Bahasa
 ```
