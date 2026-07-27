@@ -27,7 +27,7 @@ class JadwalSeeder extends Seeder
             ['jam_mulai' => '15:30:00', 'jam_selesai' => '17:30:00'],
         ];
 
-        if (!$adminId || $haris->isEmpty() || $lokasis->isEmpty() || $kelas->isEmpty()) {
+        if (! $adminId || $haris->isEmpty() || $lokasis->isEmpty() || $kelas->isEmpty()) {
             return;
         }
 
@@ -50,7 +50,7 @@ class JadwalSeeder extends Seeder
                 $hariUrutan
             );
 
-            foreach (range(1, 4) as $pertemuan) {
+            foreach (range(1, 2) as $pertemuan) {
                 $tanggal = $tanggalPertama->copy()->addWeeks($pertemuan - 1);
                 $hari = $haris->get($tanggal->dayOfWeekIso);
 

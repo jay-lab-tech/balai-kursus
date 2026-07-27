@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('kursuses', function (Blueprint $table) {
             // Kolom level_id sudah dihapus, cukup tambahkan enum jika perlu
-            if (!Schema::hasColumn('kursuses', 'level')) {
+            if (! Schema::hasColumn('kursuses', 'level')) {
                 $table->enum('level', ['Dasar', 'Menengah', 'Lanjutan'])->after('program_id');
             }
         });

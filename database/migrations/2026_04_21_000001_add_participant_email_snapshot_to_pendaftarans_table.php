@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pendaftarans', function (Blueprint $table) {
-            if (!Schema::hasColumn('pendaftarans', 'participant_email_snapshot')) {
+            if (! Schema::hasColumn('pendaftarans', 'participant_email_snapshot')) {
                 $table->string('participant_email_snapshot')->nullable()->after('peserta_id');
             }
         });
@@ -23,7 +23,7 @@ return new class extends Migration
             ->get();
 
         foreach ($pendaftarans as $pendaftaran) {
-            if (!$pendaftaran->email) {
+            if (! $pendaftaran->email) {
                 continue;
             }
 

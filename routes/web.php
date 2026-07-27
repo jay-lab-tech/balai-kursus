@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InformationBoardController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\CasLoginController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -34,7 +33,7 @@ Route::middleware('auth')->group(function () {
         ->name('certificate.download');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -45,9 +44,15 @@ require __DIR__ . '/auth.php';
 Route::middleware('auth')->get('/redirect', function () {
     $role = auth()->user()->role;
 
-    if ($role == 'admin') return redirect('/admin/dashboard');
-    if ($role == 'instruktur') return redirect('/instruktur/dashboard');
-    if ($role == 'peserta') return redirect('/peserta/dashboard');
+    if ($role == 'admin') {
+        return redirect('/admin/dashboard');
+    }
+    if ($role == 'instruktur') {
+        return redirect('/instruktur/dashboard');
+    }
+    if ($role == 'peserta') {
+        return redirect('/peserta/dashboard');
+    }
 
     abort(403);
 })->name('redirect');

@@ -24,7 +24,7 @@ class CertificateTemplateController extends Controller
     {
         $data = $this->validateData($request);
 
-        if (!empty($data['is_active'])) {
+        if (! empty($data['is_active'])) {
             CertificateTemplate::query()->update(['is_active' => false]);
         }
 
@@ -42,7 +42,7 @@ class CertificateTemplateController extends Controller
     {
         $data = $this->validateData($request);
 
-        if (!empty($data['is_active'])) {
+        if (! empty($data['is_active'])) {
             CertificateTemplate::query()->whereKeyNot($template->id)->update(['is_active' => false]);
         }
 

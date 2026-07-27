@@ -311,7 +311,7 @@ class CertificateAdminWorkflowTest extends TestCase
                 'instruktur_id' => $instruktur->id,
                 'pertemuan_ke' => $index + 1,
                 'tgl_pertemuan' => now()->addDays($index)->toDateString(),
-                'materi' => 'Materi ' . ($index + 1),
+                'materi' => 'Materi '.($index + 1),
             ]);
 
             Absensi::create([

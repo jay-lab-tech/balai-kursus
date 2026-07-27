@@ -20,8 +20,10 @@ Route::middleware(['auth', 'admin'])
         // Kursus Resource
         Route::get('/kursus/{kursus}/peserta', 'Admin\KursusController@peserta')->name('kursus.peserta');
         Route::resource('/kursus', 'Admin\KursusController')->parameters(['kursus' => 'kursus']);
-        Route::get('/kursus/{kursus}/risalah', 'Admin\KursusController@risalahs');
-        Route::get('/kursus/{kursus}/absensi', 'Admin\KursusController@absensi');
+        Route::get('/kursus/{kursus}/risalah', 'Admin\KursusController@risalahs')
+            ->name('kursus.risalah');
+        Route::get('/kursus/{kursus}/absensi', 'Admin\KursusController@absensi')
+            ->name('kursus.absensi');
 
         // Jadwal Routes
         Route::prefix('kursus/{kursus}/jadwal')->name('jadwal.')->group(function () {
@@ -47,7 +49,9 @@ Route::middleware(['auth', 'admin'])
         Route::resource('/kelas', 'Admin\KelaController');
         Route::resource('/hari', 'Admin\HariController')->except(['show']);
 
-            // Assign/Update Level Peserta
-    Route::get('/kursus/{kursus}/peserta/{pendaftaran}/assign-level', 'Admin\KursusController@assignLevelForm')->name('kursus.assignLevelForm');
-    Route::post('/kursus/{kursus}/peserta/{pendaftaran}/assign-level', 'Admin\KursusController@assignLevel')->name('kursus.assignLevel');
+        // Assign/Update Level Peserta
+        Route::get('/kursus/{kursus}/peserta/{pendaftaran}/assign-level', 'Admin\KursusController@assignLevelForm')
+            ->name('kursus.assignLevelForm');
+        Route::post('/kursus/{kursus}/peserta/{pendaftaran}/assign-level', 'Admin\KursusController@assignLevel')
+            ->name('kursus.assignLevel');
     });

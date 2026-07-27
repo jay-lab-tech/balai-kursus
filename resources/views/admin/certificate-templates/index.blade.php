@@ -11,8 +11,8 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-easel2-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-easel2-fill text-sky-400"></i>
                     Template Sertifikat
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Kelola tampilan resmi sertifikat.</h1>
@@ -20,7 +20,7 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.templates.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                <a href="{{ route('admin.templates.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                     <i class="bi bi-plus-circle"></i>
                     Buat Template Baru
                 </a>
@@ -80,7 +80,7 @@
                                             @endif
                                         </div>
                                         <span class="text-sm text-slate-300">{{ $template->institution_name }}</span>
-                                        <span class="text-xs text-slate-400">{{ $template->unit_name }} • {{ $template->city }}</span>
+                                        <span class="text-xs text-slate-400">{{ $template->unit_name }} â€¢ {{ $template->city }}</span>
                                     </div>
                                 </td>
                                 <td class="px-4 py-4">
@@ -101,7 +101,7 @@
                                         <form method="POST" action="{{ route('admin.templates.destroy', $template) }}" onsubmit="return confirm('Hapus template ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="admin-btn admin-btn-sm border border-red-500/20 bg-red-600/10 text-red-200 hover:bg-red-600/20">
+                                            <button type="submit" class="admin-btn admin-btn-sm border border-sky-500/20 bg-sky-600/10 text-sky-200 hover:bg-sky-600/20">
                                                 <i class="bi bi-trash"></i>
                                                 Hapus
                                             </button>

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Peserta')
 
@@ -11,8 +11,8 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-people-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-people-fill text-sky-400"></i>
                     Direktori Peserta
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Kelola seluruh data peserta dengan tampilan yang lebih cepat dibaca.</h1>
@@ -22,7 +22,7 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.peserta.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                <a href="{{ route('admin.peserta.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                     <i class="bi bi-person-plus-fill"></i>
                     Tambah Peserta
                 </a>
@@ -34,10 +34,10 @@
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Data</p>
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Data</p>
                 <p class="mt-3 text-4xl font-bold">{{ $pesertas->count() }}</p>
-                <p class="mt-2 text-sm text-red-100/90">Peserta tampil berdasarkan filter aktif saat ini.</p>
+                <p class="mt-2 text-sm text-sky-100/90">Peserta tampil berdasarkan filter aktif saat ini.</p>
             </div>
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Pencarian</p>
@@ -99,7 +99,7 @@
                 </select>
             </div>
             <div class="flex items-end gap-3">
-                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-4 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-4 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                     <i class="bi bi-search"></i>
                     Terapkan
                 </button>
@@ -147,7 +147,7 @@
                                 <td class="px-6 py-5 text-sm font-semibold text-slate-300">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-4">
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-600 to-sky-700 text-white shadow-lg">
                                             <i class="bi bi-person-fill"></i>
                                         </div>
                                         <div>

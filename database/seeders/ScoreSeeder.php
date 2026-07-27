@@ -47,7 +47,7 @@ class ScoreSeeder extends Seeder
                 'status' => $nilaiAkhir >= 55 ? 'pass' : 'pending',
                 'evaluated_by' => $instruktur->id,
                 'evaluated_at' => now()->subDays(($index % 5) + 1),
-                'keterangan' => 'Hasil tes penempatan seed untuk ' . ($pendaftaran->program->nama ?? 'program'),
+                'keterangan' => 'Hasil tes penempatan seed untuk '.($pendaftaran->program->nama ?? 'program'),
             ]);
         }
 
@@ -80,7 +80,7 @@ class ScoreSeeder extends Seeder
                 'status' => $nilaiAkhir >= 75 ? 'pass' : 'pending',
                 'evaluated_by' => $instruktur->id,
                 'evaluated_at' => now()->subDays($index % 3),
-                'keterangan' => 'Nilai kelas seed untuk ' . ($pendaftaran->kursus->nama ?? 'kelas'),
+                'keterangan' => 'Nilai kelas seed untuk '.($pendaftaran->kursus->nama ?? 'kelas'),
             ]);
         }
     }

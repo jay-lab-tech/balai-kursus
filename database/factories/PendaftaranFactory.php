@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Kursus;
 use App\Models\Pendaftaran;
 use App\Models\Peserta;
-use App\Models\Kursus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PendaftaranFactory extends Factory
@@ -15,13 +15,13 @@ class PendaftaranFactory extends Factory
     {
         $kursus = Kursus::factory();
         $totalBayar = $kursus->harga;
-        
+
         $statusPembayaran = $this->faker->randomElement(['pending', 'dp', 'cicil', 'lunas']);
-        
+
         $terbayar = match ($statusPembayaran) {
             'pending' => 0,
-            'dp' => (int)($totalBayar * 0.3),
-            'cicil' => (int)($totalBayar * 0.7),
+            'dp' => (int) ($totalBayar * 0.3),
+            'cicil' => (int) ($totalBayar * 0.7),
             'lunas' => $totalBayar,
         };
 

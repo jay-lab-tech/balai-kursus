@@ -14,8 +14,8 @@ class PesertaFactory extends Factory
     {
         return [
             'user_id' => User::factory()->create(['role' => 'peserta'])->id,
-            'nomor_peserta' => 'PS-' . str_pad($this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
-            'no_hp' => '08' . $this->faker->numerify('##########'),
+            'nomor_peserta' => 'PS-'.str_pad($this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
+            'no_hp' => '08'.$this->faker->numerify('##########'),
             'instansi' => $this->faker->randomElement([
                 'UPI',
                 'ITB',

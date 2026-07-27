@@ -17,6 +17,7 @@ class KelaController extends Controller
     public function index()
     {
         $kelas = Kela::latest('id')->paginate(15);
+
         return view('kursus::admin.kelas.index', compact('kelas'));
     }
 
@@ -31,10 +32,11 @@ class KelaController extends Controller
             'nama' => 'required|string|unique:kelas',
             'kapasitas' => 'required|integer|min:1',
             'fasilitas' => 'required|string',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         Kela::create($request->all());
+
         return redirect('/admin/kelas')->with('success', 'Kelas berhasil ditambahkan');
     }
 
@@ -51,19 +53,21 @@ class KelaController extends Controller
     public function update(Request $request, Kela $kela)
     {
         $request->validate([
-            'nama' => 'required|string|unique:kelas,nama,' . $kela->id,
+            'nama' => 'required|string|unique:kelas,nama,'.$kela->id,
             'kapasitas' => 'required|integer|min:1',
             'fasilitas' => 'required|string',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         $kela->update($request->all());
+
         return redirect('/admin/kelas')->with('success', 'Kelas berhasil diperbarui');
     }
 
     public function destroy(Kela $kela)
     {
         $kela->delete();
+
         return back()->with('success', 'Kelas berhasil dihapus');
     }
 }

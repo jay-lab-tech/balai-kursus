@@ -18,7 +18,7 @@ class KursusController extends Controller
     {
         $peserta = Auth::user()->peserta;
 
-        if (!$peserta) {
+        if (! $peserta) {
             abort(403, 'Bukan peserta');
         }
 
@@ -34,7 +34,7 @@ class KursusController extends Controller
     {
         $peserta = Auth::user()->peserta;
 
-        if (!$peserta) {
+        if (! $peserta) {
             abort(403, 'Bukan peserta');
         }
 
@@ -43,7 +43,7 @@ class KursusController extends Controller
             ->where('kursus_id', $kursus->id)
             ->first();
 
-        if (!$pendaftaran) {
+        if (! $pendaftaran) {
             abort(403, 'Anda tidak terdaftar di kelas ini');
         }
 
@@ -74,7 +74,7 @@ class KursusController extends Controller
     {
         $peserta = Auth::user()->peserta;
 
-        if (!$peserta) {
+        if (! $peserta) {
             abort(403, 'Bukan peserta');
         }
 
@@ -82,7 +82,7 @@ class KursusController extends Controller
             ->where('kursus_id', $kursus->id)
             ->first();
 
-        if (!$pendaftaran) {
+        if (! $pendaftaran) {
             abort(403, 'Anda tidak terdaftar di kelas ini');
         }
 

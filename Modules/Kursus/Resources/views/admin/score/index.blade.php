@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Tes Penempatan')
 
@@ -11,8 +11,8 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-clipboard-data-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-clipboard-data-fill text-sky-400"></i>
                     Placement Control
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Antrian tes penempatan peserta dalam satu panel.</h1>
@@ -34,7 +34,7 @@
                     <i class="bi bi-download"></i>
                     Export
                 </a>
-                <a href="{{ route('admin.score.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-4 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                <a href="{{ route('admin.score.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-4 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                     <i class="bi bi-plus-circle"></i>
                     Input Hasil Tes
                 </a>
@@ -42,10 +42,10 @@
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Pendaftaran</p>
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Pendaftaran</p>
                 <p class="mt-3 text-4xl font-bold">{{ $pendaftarans->total() }}</p>
-                <p class="mt-2 text-sm text-red-100/90">Total baris antrian placement yang sedang dipantau.</p>
+                <p class="mt-2 text-sm text-sky-100/90">Total baris antrian placement yang sedang dipantau.</p>
             </div>
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Pencarian Aktif</p>

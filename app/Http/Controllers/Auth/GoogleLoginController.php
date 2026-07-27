@@ -19,7 +19,7 @@ class GoogleLoginController extends Controller
 {
     public function redirect(Request $request): RedirectResponse
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return redirect()->route('login')->with('error', $this->missingConfigurationMessage());
         }
 
@@ -37,18 +37,18 @@ class GoogleLoginController extends Controller
             'state' => $state,
         ]);
 
-        return redirect()->away('https://accounts.google.com/o/oauth2/v2/auth?' . $query);
+        return redirect()->away('https://accounts.google.com/o/oauth2/v2/auth?'.$query);
     }
 
     public function callback(Request $request, TrustedDeviceManager $trustedDeviceManager): RedirectResponse
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return redirect()->route('login')->with('error', $this->missingConfigurationMessage());
         }
 
         $expectedState = $request->session()->pull('google_oauth_state');
 
-        if (!$expectedState || !hash_equals($expectedState, (string) $request->string('state'))) {
+        if (! $expectedState || ! hash_equals($expectedState, (string) $request->string('state'))) {
             return redirect()->route('login')->with('error', 'Sesi login Google tidak valid. Silakan coba lagi.');
         }
 
@@ -70,7 +70,7 @@ class GoogleLoginController extends Controller
             'grant_type' => 'authorization_code',
         ]);
 
-        if ($tokenResponse->failed() || !$tokenResponse->json('access_token')) {
+        if ($tokenResponse->failed() || ! $tokenResponse->json('access_token')) {
             return redirect()->route('login')->with('error', 'Gagal memproses login Google.');
         }
 
@@ -84,14 +84,14 @@ class GoogleLoginController extends Controller
         $googleUser = $userInfoResponse->json();
         $email = Str::lower((string) ($googleUser['email'] ?? ''));
 
-        if ($email === '' || !($googleUser['email_verified'] ?? false)) {
+        if ($email === '' || ! ($googleUser['email_verified'] ?? false)) {
             return redirect()->route('login')->with('error', 'Akun Google harus memiliki email yang valid dan terverifikasi.');
         }
 
         $user = DB::transaction(function () use ($googleUser, $email) {
             $user = User::where('email', $email)->first();
 
-            if (!$user) {
+            if (! $user) {
                 $user = User::create([
                     'name' => $googleUser['name'] ?? $email,
                     'email' => $email,
@@ -100,13 +100,13 @@ class GoogleLoginController extends Controller
                 ]);
             }
 
-            if (!$user->email_verified_at) {
+            if (! $user->email_verified_at) {
                 $user->forceFill([
                     'email_verified_at' => now(),
                 ])->save();
             }
 
-            if ($user->role === 'peserta' && !$user->peserta) {
+            if ($user->role === 'peserta' && ! $user->peserta) {
                 Peserta::create([
                     'user_id' => $user->id,
                     'nomor_peserta' => $this->generateParticipantNumber($user->id),
@@ -133,7 +133,7 @@ class GoogleLoginController extends Controller
     protected function missingConfigurationMessage(): string
     {
         return 'Login Google belum siap. Isi GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET di file .env, lalu pastikan redirect URI Google adalah '
-            . $this->redirectUri();
+            .$this->redirectUri();
     }
 
     protected function redirectUri(): string
@@ -143,6 +143,6 @@ class GoogleLoginController extends Controller
 
     protected function generateParticipantNumber(int $userId): string
     {
-        return 'PS-' . now()->format('Y') . '-' . str_pad((string) $userId, 5, '0', STR_PAD_LEFT);
+        return 'PS-'.now()->format('Y').'-'.str_pad((string) $userId, 5, '0', STR_PAD_LEFT);
     }
 }

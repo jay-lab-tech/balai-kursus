@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pendaftaran;
 use App\Models\Payment;
+use App\Models\Pendaftaran;
 use App\Services\MidtransService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -18,21 +21,17 @@ class PaymentController extends Controller
 
     /**
      * Create payment for Pendaftaran (Web)
-     *
-     * @param Request $request
-     * @param \App\Models\Pendaftaran $pendaftaran
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function createPaymentForPendaftaran(Request $request, Pendaftaran $pendaftaran)
+    public function createPaymentForPendaftaran(Request $request, Pendaftaran $pendaftaran): JsonResponse
     {
         try {
             $user = auth()->user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return response()->json(['error' => 'User tidak login'], 401);
             }
 
-            if (!$user->peserta || $pendaftaran->peserta_id !== $user->peserta->id) {
+            if (! $user->peserta || $pendaftaran->peserta_id !== $user->peserta->id) {
                 return response()->json(['error' => 'Pendaftaran ini tidak dapat diakses.'], 403);
             }
 
@@ -56,15 +55,15 @@ class PaymentController extends Controller
                 return response()->json(['error' => 'Jumlah pembayaran melebihi sisa yang harus dibayar'], 400);
             }
 
-            if (!$pendaftaran->canBePaid()) {
+            if (! $pendaftaran->canBePaid()) {
                 return response()->json(['error' => 'Pembayaran baru tersedia setelah admin menempatkan peserta ke kelas.'], 400);
             }
 
-            if (!$pendaftaran->kursus) {
+            if (! $pendaftaran->kursus) {
                 return response()->json(['error' => 'Peserta belum mendapatkan kelas untuk dibayar.'], 400);
             }
 
-            $orderId = 'KELAS-' . $pendaftaran->id . '-' . str_replace('.', '', (string) microtime(true));
+            $orderId = 'KELAS-'.$pendaftaran->id.'-'.str_replace('.', '', (string) microtime(true));
 
             // Get phone - safe fallback
             $phone = '-';
@@ -72,7 +71,7 @@ class PaymentController extends Controller
                 $phone = $user->peserta->no_hp;
             }
 
-            $courseDescription = 'Pembayaran Kelas: ' . $pendaftaran->kursus->nama;
+            $courseDescription = 'Pembayaran Kelas: '.$pendaftaran->kursus->nama;
 
             // Create transaction
             $transaction = $this->midtransService->createTransaction(
@@ -83,10 +82,9 @@ class PaymentController extends Controller
                     'first_name' => $user->name,
                     'email' => $user->email,
                     'phone' => $phone,
-                ]
-                ,
+                ],
                 [[
-                    'id' => 'kursus-' . $pendaftaran->kursus_id,
+                    'id' => 'kursus-'.$pendaftaran->kursus_id,
                     'price' => $amount,
                     'quantity' => 1,
                     'name' => substr($pendaftaran->kursus->nama, 0, 50),
@@ -114,18 +112,21 @@ class PaymentController extends Controller
                 'order_id' => $orderId,
             ]);
         } catch (\Exception $e) {
-            \Log::error('PaymentController Error: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
-            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Payment creation failed.', [
+                'pendaftaran_id' => $pendaftaran->id,
+                'exception' => $e,
+            ]);
+
+            return response()->json(['error' => 'Pembayaran tidak dapat dibuat.'], 500);
         }
     }
 
     /**
      * Create payment and redirect to Midtrans (API)
      *
-     * @param Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function createPayment(Request $request)
+    public function createPayment(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
@@ -157,31 +158,38 @@ class PaymentController extends Controller
                 'order_id' => $validated['order_id'],
             ]);
         } catch (\Exception $e) {
+            Log::error('Generic payment creation failed.', ['exception' => $e]);
+
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => 'Pembayaran tidak dapat dibuat.',
             ], 500);
         }
     }
 
     /**
      * Handle Midtrans notification/webhook
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function notification(Request $request)
+    public function notification(Request $request): JsonResponse
     {
         try {
             $notif = $request->all();
-            
+
             if (empty($notif)) {
                 return response()->json(['message' => 'No notification data'], 400);
             }
 
+            if (! $this->midtransService->isValidNotification($notif)) {
+                Log::warning('Invalid Midtrans notification signature.', [
+                    'order_id' => $notif['order_id'] ?? null,
+                ]);
+
+                return response()->json(['message' => 'Invalid notification signature'], 403);
+            }
+
             $orderId = $notif['order_id'] ?? null;
             $transactionStatus = $notif['transaction_status'] ?? null;
-            
-            if (!$orderId) {
+
+            if (! $orderId) {
                 return response()->json(['message' => 'Invalid notification data'], 400);
             }
 
@@ -230,23 +238,31 @@ class PaymentController extends Controller
 
             return response()->json(['message' => 'Notification processed']);
         } catch (\Exception $e) {
+            Log::error('Midtrans notification processing failed.', ['exception' => $e]);
+
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => 'Notification tidak dapat diproses.',
             ], 500);
         }
     }
 
     /**
      * Check payment status
-     *
-     * @param string $orderId
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function checkStatus($orderId)
+    public function checkStatus(string $orderId): JsonResponse
     {
         try {
+            $payment = Payment::query()
+                ->where('order_id', $orderId)
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if (! $payment) {
+                return response()->json(['error' => 'Pembayaran tidak ditemukan.'], 404);
+            }
+
             $status = $this->midtransService->getStatus($orderId);
-            
+
             return response()->json([
                 'order_id' => $orderId,
                 'status' => $status->transaction_status,
@@ -254,47 +270,46 @@ class PaymentController extends Controller
                 'fraud_status' => $status->fraud_status ?? null,
             ]);
         } catch (\Exception $e) {
+            Log::error('Payment status check failed.', [
+                'order_id' => $orderId,
+                'exception' => $e,
+            ]);
+
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => 'Status pembayaran tidak dapat diperiksa.',
             ], 500);
         }
     }
 
     /**
      * Update payment status in database and linked Pendaftaran
-     *
-     * @param string $orderId
-     * @param string $status
-     * @return void
      */
-    protected function updatePaymentStatus(string $orderId, string $status)
+    protected function updatePaymentStatus(string $orderId, string $status): void
     {
         $payment = Payment::where('order_id', $orderId)->first();
-        
-        if (!$payment) {
+
+        if (! $payment) {
             return;
         }
 
-        // Update payment status
+        $previousStatus = $payment->status;
         $payment->update(['status' => $status]);
 
-        // Only update pendaftaran if payment is successful
-        if ($status === 'success') {
+        // Notification Midtrans dapat dikirim ulang. Update pendaftaran hanya
+        // dilakukan saat payment baru berubah menjadi success.
+        if ($status === 'success' && $previousStatus !== 'success') {
             $this->updatePendaftaranStatus($payment);
         }
     }
 
     /**
      * Payment success callback (Web)
-     *
-     * @param string $orderId
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function paymentSuccess($orderId)
+    public function paymentSuccess(string $orderId): RedirectResponse
     {
         $payment = Payment::where('order_id', $orderId)->first();
 
-        if (!$payment) {
+        if (! $payment) {
             return redirect()->route('peserta.pendaftaran.index')->with('error', 'Pembayaran tidak ditemukan');
         }
 
@@ -309,7 +324,13 @@ class PaymentController extends Controller
                 return redirect()->route('peserta.pendaftaran.index')->with('success', 'Pembayaran berhasil! Terima kasih.');
             }
         } catch (\Exception $e) {
-            return redirect()->route('peserta.pendaftaran.index')->with('error', 'Gagal memverifikasi pembayaran: ' . $e->getMessage());
+            Log::error('Payment success callback verification failed.', [
+                'order_id' => $orderId,
+                'exception' => $e,
+            ]);
+
+            return redirect()->route('peserta.pendaftaran.index')
+                ->with('error', 'Gagal memverifikasi pembayaran. Silakan coba lagi.');
         }
 
         return redirect()->route('peserta.pendaftaran.index')->with('error', 'Status pembayaran tidak valid');
@@ -317,11 +338,8 @@ class PaymentController extends Controller
 
     /**
      * Payment failed callback (Web)
-     *
-     * @param string $orderId
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function paymentFailed($orderId)
+    public function paymentFailed(string $orderId): RedirectResponse
     {
         $payment = Payment::where('order_id', $orderId)->first();
 
@@ -335,13 +353,10 @@ class PaymentController extends Controller
     /**
      * Handle payment with lunas/cicilan flow
      * Update pendaftaran status based on payment completion
-     *
-     * @param Payment $payment
-     * @return void
      */
-    protected function updatePendaftaranStatus(Payment $payment)
+    protected function updatePendaftaranStatus(Payment $payment): void
     {
-        if (!$payment->pendaftaran_id) {
+        if (! $payment->pendaftaran_id) {
             return;
         }
 

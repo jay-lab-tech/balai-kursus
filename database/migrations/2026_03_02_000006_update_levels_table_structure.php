@@ -16,7 +16,8 @@ return new class extends Migration
             if (Schema::hasColumn('levels', 'program_id')) {
                 try {
                     $table->dropForeign(['program_id']);
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
                 $table->dropColumn('program_id');
             }
         });

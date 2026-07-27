@@ -41,7 +41,7 @@ class JadwalSeederTest extends TestCase
 
         $this->assertNotEmpty($jadwals);
 
-        foreach ($jadwals->groupBy(fn (Jadwal $jadwal) => $jadwal->lokasi_id . '|' . $jadwal->tgl_pertemuan->toDateString()) as $key => $group) {
+        foreach ($jadwals->groupBy(fn (Jadwal $jadwal) => $jadwal->lokasi_id.'|'.$jadwal->tgl_pertemuan->toDateString()) as $key => $group) {
             $ordered = $group->sortBy('jam_mulai')->values();
 
             for ($index = 1; $index < $ordered->count(); $index++) {

@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('risalah')->group(function() {
+Route::prefix('risalah')->group(function () {
     Route::get('/', 'RisalahController@index');
 });

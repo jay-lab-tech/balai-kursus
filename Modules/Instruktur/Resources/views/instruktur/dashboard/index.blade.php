@@ -14,22 +14,23 @@
     $totalRisalah = $kursus->sum(fn ($item) => $item->risalahs()->count());
 @endphp
 
-<div class="min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4 py-8 sm:px-6 lg:px-8">
+<div class="min-h-screen overflow-x-hidden bg-[#0b2035] px-4 py-10 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
         <div class="mb-8 flex items-center gap-4">
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600/15 text-yellow-400">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/15 text-amber-300">
                 <i class="bi bi-speedometer2 text-3xl"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-bold text-white">Dashboard Instruktur</h1>
-                <p class="mt-1 text-sm text-gray-400">Ringkasan kelas dan aktivitas mengajar Anda.</p>
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-300">Ruang Instruktur</p>
+                <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-white">Ringkasan mengajar</h1>
+                <p class="mt-1 text-sm text-slate-400">Pantau kursus, peserta, dan materi yang sedang Anda kelola.</p>
             </div>
         </div>
 
         <div class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            <div class="rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg">
+            <div class="rounded-2xl border border-white/10 bg-[#102a43] p-6 shadow-xl shadow-black/10">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-400">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300">
                         <i class="bi bi-book text-3xl"></i>
                     </div>
                     <div>
@@ -39,9 +40,9 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg">
+            <div class="rounded-2xl border border-white/10 bg-[#102a43] p-6 shadow-xl shadow-black/10">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 text-green-400">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-300">
                         <i class="bi bi-people text-3xl"></i>
                     </div>
                     <div>
@@ -51,9 +52,9 @@
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg">
+            <div class="rounded-2xl border border-white/10 bg-[#102a43] p-6 shadow-xl shadow-black/10">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-300">
                         <i class="bi bi-calendar-event text-3xl"></i>
                     </div>
                     <div>
@@ -86,7 +87,7 @@
                                         <i class="bi bi-bookmark text-2xl"></i>
                                     </div>
 
-                                    <h3 class="mb-4 break-words text-2xl font-bold leading-tight text-white">
+                            <h3 class="mb-4 break-words text-xl font-bold leading-tight text-white">
                                         {{ $k->nama }}
                                     </h3>
 

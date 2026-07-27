@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Kursus;
 use App\Models\Level;
-use App\Models\Pendaftaran;
 use App\Models\Payment;
+use App\Models\Pendaftaran;
 use App\Models\Peserta;
 use App\Models\Program;
 use App\Models\User;
@@ -75,6 +75,14 @@ class PaymentWebhookTest extends TestCase
         ]);
 
         $midtrans = Mockery::mock(MidtransService::class);
+        $midtrans->shouldReceive('isValidNotification')
+            ->once()
+            ->with(Mockery::on(function (array $notification): bool {
+                return $notification['order_id'] === 'ORDER-WEBHOOK-1'
+                    && $notification['status_code'] === '200'
+                    && $notification['gross_amount'] === '150000.00';
+            }))
+            ->andReturnTrue();
         $midtrans->shouldReceive('getStatus')
             ->once()
             ->with('ORDER-WEBHOOK-1')
@@ -85,6 +93,9 @@ class PaymentWebhookTest extends TestCase
         $response = $this->post('/peserta/pembayaran-notification', [
             'order_id' => 'ORDER-WEBHOOK-1',
             'transaction_status' => 'settlement',
+            'status_code' => '200',
+            'gross_amount' => '150000.00',
+            'signature_key' => 'test-signature',
         ]);
 
         $response->assertOk();

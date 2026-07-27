@@ -17,7 +17,7 @@ class Lokasi extends Model
         'no_telp',
         'kota',
         'provinsi',
-        'keterangan'
+        'keterangan',
     ];
 
     public function jadwals()

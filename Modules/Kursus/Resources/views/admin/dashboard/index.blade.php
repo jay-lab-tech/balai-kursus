@@ -11,8 +11,8 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-lightning-charge-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-lightning-charge-fill text-sky-400"></i>
                     Pusat Kendali
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Panel admin yang lebih fokus, modern, dan siap dipakai setiap hari.</h1>
@@ -21,7 +21,7 @@
                 </p>
 
                 <div class="mt-6 flex flex-wrap gap-3">
-                    <a href="{{ route('admin.kursus.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                    <a href="{{ route('admin.kursus.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                         <i class="bi bi-plus-circle"></i>
                         Tambah Kelas Program
                     </a>
@@ -64,12 +64,12 @@
     </section>
 
     <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-[1.75rem] bg-gradient-to-br from-red-600 to-red-700 p-6 text-white shadow-2xl">
+        <div class="rounded-[1.75rem] bg-gradient-to-br from-sky-600 to-sky-700 p-6 text-white shadow-2xl">
             <div class="flex items-start justify-between gap-3">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Peserta</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Peserta</p>
                     <p class="mt-4 text-4xl font-bold">{{ number_format($totalPeserta) }}</p>
-                    <p class="mt-2 text-sm text-red-100/90">Pengguna yang sudah terdaftar dalam sistem.</p>
+                    <p class="mt-2 text-sm text-sky-100/90">Pengguna yang sudah terdaftar dalam sistem.</p>
                 </div>
                 <div class="rounded-2xl bg-white/10 p-3 text-2xl">
                     <i class="bi bi-people-fill"></i>
@@ -110,7 +110,7 @@
                     <p class="mt-4 text-4xl font-bold">{{ $grafik->count() }}</p>
                     <p class="mt-2 text-sm text-slate-300">Jumlah titik data yang tersedia untuk tren pemasukan.</p>
                 </div>
-                <div class="rounded-2xl bg-red-600/15 p-3 text-2xl text-red-300">
+                <div class="rounded-2xl bg-sky-600/15 p-3 text-2xl text-sky-300">
                     <i class="bi bi-graph-up-arrow"></i>
                 </div>
             </div>

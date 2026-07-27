@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -17,7 +18,6 @@ return [
     | balanced hosts, then separate each with a comma.
     */
     'cas_real_hosts' => env('CAS_REAL_HOSTS', 'cas.myuniv.edu'),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -66,7 +66,6 @@ return [
     | Example: 'http://localhost', 'https://example.com:8888'
     */
     'cas_client_service' => env('CAS_CLIENT_SERVICE', 'http://localhost:8000'),
-
 
     /*
     |--------------------------------------------------------------------------
@@ -148,7 +147,7 @@ return [
     | will override this configuration.
     |--------------------------------------------------------------------------
     */
-    'cas_version' => env('CAS_VERSION', "3.0"),
+    'cas_version' => env('CAS_VERSION', '3.0'),
 
     /*
     |--------------------------------------------------------------------------
@@ -190,5 +189,4 @@ return [
      */
     'cas_session_secure' => env('HTTPS_ONLY_COOKIES', false),
 
-    
 ];

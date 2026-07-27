@@ -15,6 +15,6 @@ class Kela extends Model
         'nama',
         'kapasitas',
         'fasilitas',
-        'keterangan'
+        'keterangan',
     ];
 }

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Kelas')
 
@@ -11,8 +11,8 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-book-half text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-book-half text-sky-400"></i>
                     Kelas Program
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Daftar kelas yang menjadi tempat penempatan peserta aktif.</h1>
@@ -22,7 +22,7 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.kursus.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                <a href="{{ route('admin.kursus.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                     <i class="bi bi-plus-circle"></i>
                     Tambah Kelas
                 </a>
@@ -34,10 +34,10 @@
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Kelas</p>
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Kelas</p>
                 <p class="mt-3 text-4xl font-bold">{{ $kursus->total() }}</p>
-                <p class="mt-2 text-sm text-red-100/90">Jumlah seluruh kelas program yang terdaftar.</p>
+                <p class="mt-2 text-sm text-sky-100/90">Jumlah seluruh kelas program yang terdaftar.</p>
             </div>
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Halaman Saat Ini</p>
@@ -120,7 +120,7 @@
                                         $statusClass = match($kelas->status) {
                                             'buka' => 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300',
                                             'berjalan' => 'border-yellow-400/20 bg-yellow-400/10 text-yellow-300',
-                                            'tutup' => 'border-red-500/20 bg-red-600/10 text-red-200',
+                                            'tutup' => 'border-sky-500/20 bg-sky-600/10 text-sky-200',
                                             default => 'border-white/10 bg-white/5 text-slate-300',
                                         };
                                     @endphp

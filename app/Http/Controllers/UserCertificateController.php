@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Peserta;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Certificate;
+use App\Models\Peserta;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class UserCertificateController extends Controller
 {
@@ -19,6 +20,7 @@ class UserCertificateController extends Controller
         } else {
             $certificates = collect([]);
         }
+
         return view('profile.certificates', compact('certificates'));
     }
 
@@ -35,6 +37,7 @@ class UserCertificateController extends Controller
         $template = $certificate->template;
         $pdf = Pdf::loadView('user.certificates.pdf', compact('certificate', 'participant', 'course', 'template'))
             ->setPaper('a4', 'landscape');
+
         return $pdf->download('certificate-'.$certificate->id.'.pdf');
     }
 
@@ -45,6 +48,7 @@ class UserCertificateController extends Controller
             ->where('participant_id', $peserta ? $peserta->id : null)
             ->where('status', Certificate::STATUS_PUBLISHED)
             ->firstOrFail();
+
         return view('profile.certificate-detail', compact('certificate'));
     }
 }

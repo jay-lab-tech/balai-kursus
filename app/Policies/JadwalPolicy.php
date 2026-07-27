@@ -12,7 +12,9 @@ class JadwalPolicy
      */
     public function before(User $user, $ability)
     {
-        if ($user->role === 'admin') return true;
+        if ($user->role === 'admin') {
+            return true;
+        }
     }
 
     public function viewAny(User $user)

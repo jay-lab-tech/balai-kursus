@@ -4,14 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Program;
-use App\Models\Level;
-use App\Models\Instruktur;
-use App\Models\Pendaftaran;
-use App\Models\Risalah;
-use App\Models\Absensi;
-use App\Models\Peserta;
-use App\Models\User;
 
 class Kursus extends Model
 {

@@ -159,7 +159,7 @@ class AdminJadwalConflictTest extends TestCase
 
     private function createCourse(string $name): Kursus
     {
-        $program = Program::create(['nama' => $name . ' Program']);
+        $program = Program::create(['nama' => $name.' Program']);
         $level = Level::create([
             'program_id' => $program->id,
             'nama' => 'Dasar',

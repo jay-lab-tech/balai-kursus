@@ -11,12 +11,12 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-file-earmark-bar-graph-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-file-earmark-bar-graph-fill text-sky-400"></i>
                     Detail Placement
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">{{ $score->pendaftaran->peserta->user->name ?? '-' }}</h1>
-                <p class="mt-3 text-base text-slate-300">{{ $score->pendaftaran->nomor }} • {{ $score->pendaftaran->program->nama ?? '-' }}</p>
+                <p class="mt-3 text-base text-slate-300">{{ $score->pendaftaran->nomor }} â€¢ {{ $score->pendaftaran->program->nama ?? '-' }}</p>
                 <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Lihat ringkasan lengkap hasil tes, keputusan placement, evaluator yang menilai, dan status pendaftaran peserta setelah proses evaluasi.</p>
             </div>
 
@@ -28,7 +28,7 @@
                 <form action="{{ route('admin.score.destroy', $score) }}" method="POST" onsubmit="return confirm('Hapus hasil tes penempatan ini?')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-600/10 px-4 py-3 text-sm font-semibold text-red-200 transition hover:bg-red-600/20">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-sky-600/10 px-4 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-600/20">
                         <i class="bi bi-trash"></i>
                         Hapus
                     </button>
@@ -78,9 +78,9 @@
                 </div>
             </div>
 
-            <div class="rounded-[2rem] bg-gradient-to-br from-red-600 to-red-700 p-6 text-white shadow-2xl">
+            <div class="rounded-[2rem] bg-gradient-to-br from-sky-600 to-sky-700 p-6 text-white shadow-2xl">
                 <h2 class="text-xl font-bold">Tindakan Lanjut</h2>
-                <p class="mt-3 text-sm leading-6 text-red-100/90">Jika hasil placement berubah, sistem akan memperbarui data level dan mencoba menempatkan ulang peserta sesuai kelas yang masih tersedia.</p>
+                <p class="mt-3 text-sm leading-6 text-sky-100/90">Jika hasil placement berubah, sistem akan memperbarui data level dan mencoba menempatkan ulang peserta sesuai kelas yang masih tersedia.</p>
                 <a href="{{ route('admin.score.index') }}" class="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20">Kembali ke Daftar</a>
             </div>
         </div>

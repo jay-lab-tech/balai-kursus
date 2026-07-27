@@ -42,16 +42,16 @@ class InformationBoardController extends Controller
     private function transformJadwal(Jadwal $jadwal, Carbon $now): Jadwal
     {
         $mulaiAt = $jadwal->jam_mulai
-            ? Carbon::parse($jadwal->tgl_pertemuan->format('Y-m-d') . ' ' . $jadwal->jam_mulai)
+            ? Carbon::parse($jadwal->tgl_pertemuan->format('Y-m-d').' '.$jadwal->jam_mulai)
             : null;
         $selesaiAt = $jadwal->jam_selesai
-            ? Carbon::parse($jadwal->tgl_pertemuan->format('Y-m-d') . ' ' . $jadwal->jam_selesai)
+            ? Carbon::parse($jadwal->tgl_pertemuan->format('Y-m-d').' '.$jadwal->jam_selesai)
             : null;
 
         $jadwal->status_key = 'upcoming';
         $jadwal->status_label = 'Akan mulai';
 
-        if (!$mulaiAt || !$selesaiAt) {
+        if (! $mulaiAt || ! $selesaiAt) {
             $jadwal->status_key = 'unscheduled';
             $jadwal->status_label = 'Jam belum diatur';
         } elseif ($now->between($mulaiAt, $selesaiAt)) {
@@ -63,7 +63,7 @@ class InformationBoardController extends Controller
         }
 
         $jadwal->jam_label = $mulaiAt && $selesaiAt
-            ? $mulaiAt->format('H:i') . ' - ' . $selesaiAt->format('H:i')
+            ? $mulaiAt->format('H:i').' - '.$selesaiAt->format('H:i')
             : 'Jam belum diatur';
 
         $jadwal->program_level_label = collect([

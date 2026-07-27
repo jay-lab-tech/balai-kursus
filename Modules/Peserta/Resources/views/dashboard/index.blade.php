@@ -3,16 +3,17 @@
 @section('title', 'Dashboard Peserta - Balai Kursus')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-[#0b2035] px-4 py-10 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto space-y-8">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <h1 class="text-4xl font-bold text-white">
-                    <i class="bi bi-speedometer2 text-yellow-400 mr-3"></i>Dashboard Peserta
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-300">Ruang Peserta</p>
+                <h1 class="mt-1 text-4xl font-extrabold tracking-tight text-white">
+                    Ringkasan belajar
                 </h1>
-                <p class="mt-2 text-gray-400">Pantau status pendaftaran program, hasil tes penempatan, dan kelas yang sudah ditentukan.</p>
+                <p class="mt-2 text-slate-400">Pantau pendaftaran program, hasil placement, dan kelas yang sudah ditentukan.</p>
             </div>
-            <a href="{{ route('peserta.program.index') }}" class="inline-flex items-center rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 font-semibold text-white hover:from-red-500 hover:to-red-600 transition">
+            <a href="{{ route('peserta.program.index') }}" class="inline-flex items-center rounded-xl bg-amber-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-amber-300">
                 <i class="bi bi-plus-circle mr-2"></i>Daftar Program Baru
             </a>
         </div>
@@ -67,7 +68,7 @@
                                             {{ strtoupper($pendaftaran->status_pembayaran) }}
                                         </span>
                                         @if($pendaftaran->canBePaid())
-                                            <a href="{{ route('peserta.pendaftaran.index') }}" class="rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 text-sm font-semibold text-white hover:from-red-500 hover:to-red-600 transition">
+                                            <a href="{{ route('peserta.pendaftaran.index') }}" class="rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-500">
                                                 Buka Halaman Bayar
                                             </a>
                                         @endif
@@ -98,7 +99,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-3xl bg-gradient-to-br from-red-600 to-red-800 p-6 text-white shadow-2xl">
+                <div class="rounded-3xl bg-gradient-to-br from-sky-600 to-sky-800 p-6 text-white shadow-2xl">
                     <h2 class="text-xl font-bold">Alur Baru Pendaftaran</h2>
                     <div class="mt-4 space-y-3 text-sm text-white/90">
                         <p>1. Pilih dan daftar program.</p>

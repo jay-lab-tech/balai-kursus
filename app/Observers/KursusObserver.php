@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Kursus;
+
 // use App\Models\CertificateTemplate; // dihapus
 
 class KursusObserver

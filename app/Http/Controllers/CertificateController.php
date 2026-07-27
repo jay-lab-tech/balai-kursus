@@ -20,6 +20,26 @@ class CertificateController extends Controller
         return view('admin.certificates.index', compact('certificates'));
     }
 
+    /**
+     * Halaman publik untuk memverifikasi keaslian sertifikat berdasarkan
+     * nomor seri atau nomor sertifikat. Tidak memerlukan login.
+     */
+    public function verify($code)
+    {
+        $certificate = Certificate::with(['course.program', 'template'])
+            ->where('serial_number', $code)
+            ->orWhere('certificate_number', $code)
+            ->first();
+
+        $valid = $certificate && $certificate->status === Certificate::STATUS_PUBLISHED;
+
+        return view('certificates.verify', [
+            'code' => $code,
+            'certificate' => $certificate,
+            'valid' => $valid,
+        ]);
+    }
+
     public function create()
     {
         $courses = Kursus::with('program')->orderBy('nama')->get();
@@ -71,7 +91,7 @@ class CertificateController extends Controller
         $course = Kursus::with('program')->findOrFail($data['course_id']);
         $participant = Peserta::with('user')->findOrFail($data['participant_id']);
 
-        $certificate = new Certificate();
+        $certificate = new Certificate;
         $certificate->fill([
             'certificate_name' => $data['certificate_name'],
             'course_id' => $course->id,
@@ -110,7 +130,7 @@ class CertificateController extends Controller
         foreach ($registrations as $registration) {
             $participant = $registration->peserta;
 
-            if (!$participant || !$participant->user) {
+            if (! $participant || ! $participant->user) {
                 continue;
             }
 
@@ -121,15 +141,16 @@ class CertificateController extends Controller
 
             if ($certificate && $certificate->status === Certificate::STATUS_PUBLISHED) {
                 $skipped++;
+
                 continue;
             }
 
-            $isNew = !$certificate;
+            $isNew = ! $certificate;
             $oldIssuedDate = $certificate?->issued_date?->toDateString();
-            $certificate ??= new Certificate();
+            $certificate ??= new Certificate;
 
             $certificate->fill([
-                'certificate_name' => $data['certificate_name'] ?: ('Sertifikat ' . $course->nama),
+                'certificate_name' => $data['certificate_name'] ?: ('Sertifikat '.$course->nama),
                 'course_id' => $course->id,
                 'participant_id' => $participant->id,
                 'user_id' => $participant->user_id,
@@ -168,7 +189,7 @@ class CertificateController extends Controller
         $published = 0;
 
         foreach ($certificates as $certificate) {
-            if (!$certificate->course || !$certificate->participant) {
+            if (! $certificate->course || ! $certificate->participant) {
                 continue;
             }
 
@@ -212,7 +233,7 @@ class CertificateController extends Controller
             'issued_date' => $data['issued_date'],
         ]);
 
-        $this->applyCertificateSnapshot($certificate, $course, $participant, $template, !filled($certificate->certificate_number));
+        $this->applyCertificateSnapshot($certificate, $course, $participant, $template, ! filled($certificate->certificate_number));
         $certificate->save();
 
         return redirect()->route('admin.certificates.index')->with('success', 'Draft sertifikat berhasil diperbarui.');
@@ -267,7 +288,7 @@ class CertificateController extends Controller
     {
         $user = auth()->user();
         $peserta = Peserta::where('user_id', $user->id)->first();
-        if (!$peserta) {
+        if (! $peserta) {
             return view('user.certificates.index', ['certificates' => collect()]);
         }
 
@@ -285,7 +306,7 @@ class CertificateController extends Controller
         $user = auth()->user();
         $peserta = Peserta::where('user_id', $user->id)->first();
 
-        if (!$peserta || $certificate->participant_id != $peserta->id || $certificate->status !== Certificate::STATUS_PUBLISHED) {
+        if (! $peserta || $certificate->participant_id != $peserta->id || $certificate->status !== Certificate::STATUS_PUBLISHED) {
             abort(Response::HTTP_FORBIDDEN);
         }
 
@@ -346,7 +367,7 @@ class CertificateController extends Controller
     {
         $absensis = $pendaftaran->absensis;
 
-        if (!$absensis || $absensis->isEmpty()) {
+        if (! $absensis || $absensis->isEmpty()) {
             return 0;
         }
 

@@ -29,7 +29,7 @@
 
         .admin-shell {
             background:
-                radial-gradient(circle at top left, rgba(220, 38, 38, 0.16), transparent 24%),
+                radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 24%),
                 radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.12), transparent 20%),
                 linear-gradient(180deg, #020617 0%, #0f172a 48%, #111827 100%);
         }
@@ -168,9 +168,9 @@
         }
 
         .admin-btn-primary {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            background: linear-gradient(135deg, #0284c7, #0369a1);
             color: #fff;
-            box-shadow: 0 16px 30px rgba(220, 38, 38, 0.22);
+            box-shadow: 0 16px 30px rgba(14, 165, 233, 0.22);
         }
 
         .admin-btn-secondary {
@@ -229,8 +229,8 @@
         }
 
         .admin-input:focus {
-            border-color: rgba(248, 113, 113, 0.75);
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14), 0 12px 28px rgba(15, 23, 42, 0.1);
+            border-color: rgba(56, 189, 248, 0.75);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14), 0 12px 28px rgba(15, 23, 42, 0.1);
             background: #fff !important;
         }
 
@@ -302,10 +302,10 @@
             select,
             textarea
         ):focus {
-            border-color: rgba(248, 113, 113, 0.75) !important;
+            border-color: rgba(56, 189, 248, 0.75) !important;
             background: #fff !important;
             color: #0f172a !important;
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14), 0 12px 28px rgba(15, 23, 42, 0.1) !important;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14), 0 12px 28px rgba(15, 23, 42, 0.1) !important;
         }
 
         .admin-content form :is(
@@ -442,8 +442,8 @@
 
         .admin-nav-link.active {
             color: #fff;
-            background: linear-gradient(90deg, rgba(220, 38, 38, 0.2), rgba(234, 179, 8, 0.14));
-            border: 1px solid rgba(248, 113, 113, 0.16);
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.2), rgba(234, 179, 8, 0.14));
+            border: 1px solid rgba(56, 189, 248, 0.16);
             box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.08);
         }
 
@@ -455,7 +455,7 @@
             bottom: 0.7rem;
             width: 4px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #facc15, #ef4444);
+            background: linear-gradient(180deg, #facc15, #0ea5e9);
         }
 
         .admin-nav-group-title {
@@ -633,7 +633,7 @@
         }
 
         .admin-logo-mark {
-            box-shadow: 0 18px 30px rgba(239, 68, 68, 0.18);
+            box-shadow: 0 18px 30px rgba(14, 165, 233, 0.18);
         }
 
         .admin-logo-mark img {
@@ -651,12 +651,12 @@
         }
 
         .admin-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(239, 68, 68, 0.75);
+            background: rgba(14, 165, 233, 0.75);
             border-radius: 999px;
         }
 
         .admin-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(220, 38, 38, 0.95);
+            background: rgba(2, 132, 199, 0.95);
         }
     </style>
 
@@ -728,7 +728,7 @@
             <div class="admin-panel mt-6 rounded-[1.5rem] p-4">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Akun Aktif</p>
                 <div class="mt-3 flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-red-700 text-base font-bold text-white">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-sky-700 text-base font-bold text-white">
                         {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
                     </div>
                     <div class="min-w-0">
@@ -797,7 +797,7 @@
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                                 <i class="bi bi-box-arrow-right"></i>
                                 Keluar
                             </button>

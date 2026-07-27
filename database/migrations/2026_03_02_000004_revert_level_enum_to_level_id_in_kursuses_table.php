@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('kursuses', function (Blueprint $table) {
-            if (!Schema::hasColumn('kursuses', 'level')) {
+            if (! Schema::hasColumn('kursuses', 'level')) {
                 $table->enum('level', ['Beginner', 'Elementary', 'Intermediate', 'Upper Intermediate', 'Advanced'])->after('program_id');
             }
             // Tidak perlu drop level_id

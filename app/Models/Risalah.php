@@ -10,19 +10,21 @@ class Risalah extends Model
     use HasFactory;
 
     protected $fillable = [
-        'kursus_id','instruktur_id','jadwal_id',
-        'pertemuan_ke','tgl_pertemuan','materi','catatan','dokumen'
+        'kursus_id', 'instruktur_id', 'jadwal_id',
+        'pertemuan_ke', 'tgl_pertemuan', 'materi', 'catatan', 'dokumen',
     ];
 
     protected $casts = [
         'tgl_pertemuan' => 'date',
     ];
 
-    public function kursus() {
+    public function kursus()
+    {
         return $this->belongsTo(Kursus::class);
     }
 
-    public function instruktur() {
+    public function instruktur()
+    {
         return $this->belongsTo(Instruktur::class);
     }
 
@@ -31,7 +33,8 @@ class Risalah extends Model
         return $this->belongsTo(Jadwal::class);
     }
 
-    public function absensis() {
+    public function absensis()
+    {
         return $this->hasMany(Absensi::class);
     }
 }

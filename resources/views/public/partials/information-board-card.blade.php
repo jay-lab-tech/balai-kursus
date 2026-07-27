@@ -10,7 +10,7 @@
     </div>
 
     <div class="mt-5 flex items-start gap-3">
-        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-red-600 to-red-700 text-2xl text-white shadow-lg">
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-600 to-sky-700 text-2xl text-white shadow-lg">
             <i class="bi bi-mortarboard-fill"></i>
         </div>
         <div class="min-w-0">
@@ -36,14 +36,14 @@
         </div>
         <div class="grid gap-3 sm:grid-cols-2">
             <div class="flex items-start gap-3 rounded-2xl bg-black/20 px-4 py-3">
-                <i class="bi bi-geo-alt-fill mt-0.5 text-lg text-red-300"></i>
+                <i class="bi bi-geo-alt-fill mt-0.5 text-lg text-sky-300"></i>
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Lokasi</p>
                     <p class="mt-1 text-sm font-medium text-white">{{ $jadwal->lokasi_label }}</p>
                 </div>
             </div>
             <div class="flex items-start gap-3 rounded-2xl bg-black/20 px-4 py-3">
-                <i class="bi bi-door-open-fill mt-0.5 text-lg text-red-300"></i>
+                <i class="bi bi-door-open-fill mt-0.5 text-lg text-sky-300"></i>
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Kelas</p>
                     <p class="mt-1 text-sm font-medium text-white">{{ $jadwal->kelas_label }}</p>

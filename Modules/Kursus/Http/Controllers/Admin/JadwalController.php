@@ -3,13 +3,13 @@
 namespace Modules\Kursus\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Hari;
+use App\Models\InstrukturKursusLevel;
 use App\Models\Jadwal;
+use App\Models\Kela;
 use App\Models\Kursus;
 use App\Models\Lokasi;
-use App\Models\Kela;
-use App\Models\Hari;
 use App\Models\Risalah;
-use App\Models\InstrukturKursusLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,12 +23,14 @@ class JadwalController extends Controller
         // map resource authorization to policy
         $this->authorizeResource(\App\Models\Jadwal::class, 'jadwal');
     }
+
     public function index(Kursus $kursus)
     {
         $jadwals = $kursus->jadwals()
             ->with('lokasi', 'kela', 'hari')
             ->latest('id')
             ->paginate(15);
+
         return view('kursus::admin.jadwal.index', compact('kursus', 'jadwals'));
     }
 
@@ -38,6 +40,7 @@ class JadwalController extends Controller
         $jadwals = Jadwal::with('kursus.program', 'lokasi', 'kela', 'hari')
             ->latest('id')
             ->paginate(15);
+
         return view('kursus::admin.jadwal.all', compact('jadwals'));
     }
 
@@ -46,6 +49,7 @@ class JadwalController extends Controller
         $lokasis = Lokasi::all();
         $kelas = Kela::all();
         $haris = Hari::all();
+
         return view('kursus::admin.jadwal.create', compact('kursus', 'lokasis', 'kelas', 'haris'));
     }
 
@@ -62,7 +66,7 @@ class JadwalController extends Controller
             'lokasi_id' => $validated['lokasi_id'],
             'kela_id' => $validated['kela_id'],
             'hari_id' => $validated['hari_id'],
-            'created_by' => auth()->id()
+            'created_by' => auth()->id(),
         ]);
 
         $this->syncRisalahFromJadwal($kursus, $jadwal);
@@ -75,6 +79,7 @@ class JadwalController extends Controller
         $lokasis = Lokasi::all();
         $kelas = Kela::all();
         $haris = Hari::all();
+
         return view('kursus::admin.jadwal.edit', compact('kursus', 'jadwal', 'lokasis', 'kelas', 'haris'));
     }
 
@@ -93,7 +98,8 @@ class JadwalController extends Controller
     {
         Risalah::where('jadwal_id', $jadwal->id)->delete();
         $jadwal->delete();
-        return back()->with('success','Jadwal dihapus');
+
+        return back()->with('success', 'Jadwal dihapus');
     }
 
     private function syncRisalahFromJadwal(Kursus $kursus, Jadwal $jadwal): void
@@ -102,7 +108,7 @@ class JadwalController extends Controller
             ->orderBy('id')
             ->value('instruktur_id');
 
-        if (!$instrukturId) {
+        if (! $instrukturId) {
             return;
         }
 
@@ -113,7 +119,7 @@ class JadwalController extends Controller
             'instruktur_id' => $instrukturId,
             'pertemuan_ke' => $jadwal->pertemuan_ke,
             'tgl_pertemuan' => $jadwal->tgl_pertemuan,
-            'materi' => 'Materi pertemuan ' . ($jadwal->pertemuan_ke ?: '-'),
+            'materi' => 'Materi pertemuan '.($jadwal->pertemuan_ke ?: '-'),
             'catatan' => null,
         ]);
     }
@@ -138,12 +144,13 @@ class JadwalController extends Controller
             $jamMulai = $request->input('jam_mulai');
             $jamSelesai = $request->input('jam_selesai');
 
-            if (($jamMulai && !$jamSelesai) || (!$jamMulai && $jamSelesai)) {
+            if (($jamMulai && ! $jamSelesai) || (! $jamMulai && $jamSelesai)) {
                 $validator->errors()->add('jam_mulai', 'Jam mulai dan jam selesai harus diisi bersamaan.');
+
                 return;
             }
 
-            if (!$jamMulai || !$jamSelesai || $validator->errors()->isNotEmpty()) {
+            if (! $jamMulai || ! $jamSelesai || $validator->errors()->isNotEmpty()) {
                 return;
             }
 
@@ -158,7 +165,7 @@ class JadwalController extends Controller
                 )
                 ->first();
 
-            if (!$jadwalBentrok) {
+            if (! $jadwalBentrok) {
                 return;
             }
 

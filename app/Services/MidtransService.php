@@ -21,49 +21,64 @@ class MidtransService
     }
 
     /**
+     * Memastikan notifikasi yang datang benar-benar dibuat oleh Midtrans.
+     * Midtrans membuat signature dari order_id, status_code, gross_amount,
+     * dan server key aplikasi.
+     */
+    public function isValidNotification(array $notification): bool
+    {
+        $signatureKey = $notification['signature_key'] ?? null;
+        $orderId = $notification['order_id'] ?? null;
+        $statusCode = $notification['status_code'] ?? null;
+        $grossAmount = $notification['gross_amount'] ?? null;
+
+        if (! $signatureKey || ! $orderId || ! $statusCode || $grossAmount === null) {
+            return false;
+        }
+
+        $expectedSignature = hash(
+            'sha512',
+            $orderId.$statusCode.$grossAmount.config('midtrans.server_key')
+        );
+
+        return hash_equals($expectedSignature, $signatureKey);
+    }
+
+    /**
      * Get Snap Token for creating payment page
      *
-     * @param array $transaction
-     * @return string
+     *
      * @throws \Exception
      */
-    public function getSnapToken(array $transaction)
+    public function getSnapToken(array $transaction): string
     {
         try {
             return Snap::getSnapToken($transaction);
         } catch (\Exception $e) {
-            \Log::error('Snap Token Error: ' . $e->getMessage(), [
-                'transaction' => $transaction
+            \Log::error('Snap Token Error: '.$e->getMessage(), [
+                'transaction' => $transaction,
             ]);
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 
     /**
      * Get Snap Redirect URL
      *
-     * @param array $transaction
-     * @return string
+     *
      * @throws \Exception
      */
-    public function getSnapRedirectUrl(array $transaction)
+    public function getSnapRedirectUrl(array $transaction): string
     {
         try {
             return Snap::getSnapRedirectUrl($transaction);
         } catch (\Exception $e) {
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 
     /**
      * Create transaction with basic parameters
-     *
-     * @param string $orderId
-     * @param int $amount
-     * @param string $description
-     * @param array $customerDetails
-     * @param array $itemDetails
-     * @return array
      */
     public function createTransaction(
         string $orderId,
@@ -80,21 +95,17 @@ class MidtransService
             'customer_details' => $customerDetails,
         ];
 
-        if (!empty($itemDetails)) {
+        if (! empty($itemDetails)) {
             $transaction['item_details'] = $itemDetails;
         }
 
-        // Setup callbacks for Midtrans notifications
-        $notificationUrl = config('midtrans.notification_url') ?: url('/peserta/pembayaran-notification');
-        
+        // Callback ini untuk browser user. Webhook server-to-server Midtrans
+        // dikonfigurasi melalui Payment Notification URL, bukan callback Snap.
         $transaction['callbacks'] = [
             'finish' => config('midtrans.finish_redirect_url'),
+            'unfinish' => config('midtrans.unfinish_redirect_url'),
             'error' => config('midtrans.error_redirect_url'),
-            'pending' => $notificationUrl,
         ];
-        
-        // Add notification URL (for server-to-server notification)
-        $transaction['custom_field1'] = 'payment';
 
         return $transaction;
     }
@@ -102,84 +113,79 @@ class MidtransService
     /**
      * Get transaction status
      *
-     * @param string $orderId
-     * @return array|object
+     *
      * @throws \Exception
      */
-    public function getStatus(string $orderId)
+    public function getStatus(string $orderId): array|object
     {
         try {
             return Transaction::status($orderId);
         } catch (\Exception $e) {
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 
     /**
      * Approve transaction
      *
-     * @param string $orderId
-     * @return array|object
+     *
      * @throws \Exception
      */
-    public function approve(string $orderId)
+    public function approve(string $orderId): array|object
     {
         try {
             return Transaction::approve($orderId);
         } catch (\Exception $e) {
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 
     /**
      * Cancel transaction
      *
-     * @param string $orderId
-     * @return array|object
+     *
      * @throws \Exception
      */
-    public function cancel(string $orderId)
+    public function cancel(string $orderId): array|object
     {
         try {
             return Transaction::cancel($orderId);
         } catch (\Exception $e) {
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 
     /**
      * Refund transaction
      *
-     * @param string $orderId
-     * @param int|null $amount
-     * @return array|object
+     *
      * @throws \Exception
      */
-    public function refund(string $orderId, ?int $amount = null)
+    public function refund(string $orderId, ?int $amount = null): array|object
     {
         try {
             if ($amount) {
                 return Transaction::refund($orderId, $amount);
             }
+
             return Transaction::refund($orderId);
         } catch (\Exception $e) {
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 
     /**
      * Deny transaction
      *
-     * @param string $orderId
-     * @return array|object
+     *
      * @throws \Exception
      */
-    public function deny(string $orderId)
+    public function deny(string $orderId): array|object
     {
         try {
             return Transaction::deny($orderId);
         } catch (\Exception $e) {
-            throw new \Exception('Midtrans Error: ' . $e->getMessage());
+            throw new \Exception('Midtrans Error: '.$e->getMessage());
         }
     }
 }

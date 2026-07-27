@@ -42,8 +42,8 @@ return [
      * Midtrans Finish Redirect URLs
      */
     'finish_redirect_url' => env('MIDTRANS_FINISH_REDIRECT_URL', ''),
-    
+
     'unfinish_redirect_url' => env('MIDTRANS_UNFINISH_REDIRECT_URL', ''),
-    
+
     'error_redirect_url' => env('MIDTRANS_ERROR_REDIRECT_URL', ''),
 ];

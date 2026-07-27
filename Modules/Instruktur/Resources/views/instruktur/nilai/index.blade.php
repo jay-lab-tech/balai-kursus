@@ -92,7 +92,7 @@
                                             <form method="POST" action="{{ route('instruktur.nilai.destroy', $pendaftaran->score->id) }}" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus nilai ini?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-500">Hapus</button>
+                                                <button type="submit" class="rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-500">Hapus</button>
                                             </form>
                                         @else
                                             <button id="create-nilai-{{ $pendaftaran->id }}" type="button" class="rounded-lg bg-yellow-500 px-3 py-2 text-xs font-semibold text-gray-900 hover:bg-yellow-400">Tambah Nilai</button>

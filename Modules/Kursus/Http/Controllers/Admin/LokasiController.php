@@ -17,6 +17,7 @@ class LokasiController extends Controller
     public function index()
     {
         $lokasis = Lokasi::latest('id')->paginate(15);
+
         return view('kursus::admin.lokasi.index', compact('lokasis'));
     }
 
@@ -33,10 +34,11 @@ class LokasiController extends Controller
             'no_telp' => 'required|string',
             'kota' => 'required|string',
             'provinsi' => 'required|string',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         Lokasi::create($request->all());
+
         return redirect('/admin/lokasi')->with('success', 'Lokasi berhasil ditambahkan');
     }
 
@@ -53,21 +55,23 @@ class LokasiController extends Controller
     public function update(Request $request, Lokasi $lokasi)
     {
         $request->validate([
-            'nama' => 'required|string|unique:lokasis,nama,' . $lokasi->id,
+            'nama' => 'required|string|unique:lokasis,nama,'.$lokasi->id,
             'alamat' => 'required|string',
             'no_telp' => 'required|string',
             'kota' => 'required|string',
             'provinsi' => 'required|string',
-            'keterangan' => 'nullable|string'
+            'keterangan' => 'nullable|string',
         ]);
 
         $lokasi->update($request->all());
+
         return redirect('/admin/lokasi')->with('success', 'Lokasi berhasil diperbarui');
     }
 
     public function destroy(Lokasi $lokasi)
     {
         $lokasi->delete();
+
         return back()->with('success', 'Lokasi berhasil dihapus');
     }
 }

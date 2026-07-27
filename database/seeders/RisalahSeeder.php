@@ -24,7 +24,7 @@ class RisalahSeeder extends Seeder
             foreach ($jadwals as $index => $jadwal) {
                 $instrukturId = $instrukturIds[$index] ?? $fallbackInstrukturId;
 
-                if (!$instrukturId) {
+                if (! $instrukturId) {
                     continue;
                 }
 
@@ -35,7 +35,7 @@ class RisalahSeeder extends Seeder
                     'instruktur_id' => $instrukturId,
                     'jadwal_id' => $jadwal->id,
                     'tgl_pertemuan' => $jadwal->tgl_pertemuan,
-                    'materi' => 'Materi pertemuan ' . $jadwal->pertemuan_ke . ' untuk ' . $kursus->nama,
+                    'materi' => 'Materi pertemuan '.$jadwal->pertemuan_ke.' untuk '.$kursus->nama,
                     'catatan' => 'Kelas demo aktif dengan peserta hasil klasifikasi.',
                     'dokumen' => null,
                 ]);

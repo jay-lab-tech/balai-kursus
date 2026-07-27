@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
+use App\Models\Peserta;
+use App\Models\User;
+use App\Services\Auth\TrustedDeviceManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Peserta;
-use App\Services\Auth\TrustedDeviceManager;
 
 class CasLoginController extends Controller
 {
     public function redirectToCas(Request $request, TrustedDeviceManager $trustedDeviceManager)
     {
         // Jika belum login ke CAS, redirect ke server CAS
-        if (!\Cas::isAuthenticated()) {
+        if (! \Cas::isAuthenticated()) {
             return \Cas::authenticate();
         }
 
@@ -25,9 +25,9 @@ class CasLoginController extends Controller
         */
 
         $username = \Cas::user(); // Biasanya NIM (unik)
-        $email    = \Cas::getAttribute('email') ?? $username . '@upi.edu';
-        $name     = \Cas::getAttribute('nama') ?? $username;
-        $role     = \Cas::getAttribute('role') ?? 'peserta';
+        $email = \Cas::getAttribute('email') ?? $username.'@upi.edu';
+        $name = \Cas::getAttribute('nama') ?? $username;
+        $role = \Cas::getAttribute('role') ?? 'peserta';
 
         /*
         |--------------------------------------------------------------------------
@@ -37,22 +37,22 @@ class CasLoginController extends Controller
 
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $user = User::where('name', $username)->first();
         }
 
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'name' => $name,
-                'email'    => $email,
-                'role'     => $role,
+                'email' => $email,
+                'role' => $role,
                 'password' => bcrypt(uniqid()), // dummy password
             ]);
         } else {
             $user->update([
-                'name'  => $name,
+                'name' => $name,
                 'email' => $email,
-                'role'  => $role,
+                'role' => $role,
             ]);
         }
 
@@ -63,14 +63,14 @@ class CasLoginController extends Controller
         */
 
         if ($role === 'peserta') {
-            if (!$user->peserta) {
-                $nomorPeserta = 'PS-' . date('Y') . '-' . str_pad($user->id, 5, '0', STR_PAD_LEFT);
+            if (! $user->peserta) {
+                $nomorPeserta = 'PS-'.date('Y').'-'.str_pad($user->id, 5, '0', STR_PAD_LEFT);
                 Peserta::create([
                     'user_id' => $user->id,
                     'nomor_peserta' => $nomorPeserta,
                     'no_hp' => '-',
-                    'instansi'      => 'Belum diisi'
-                    
+                    'instansi' => 'Belum diisi',
+
                 ]);
             }
         }

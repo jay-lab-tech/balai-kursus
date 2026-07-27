@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Certificate extends Model
 {
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_PUBLISHED = 'published';
+
     public const STATUS_REVOKED = 'revoked';
 
     protected $fillable = [

@@ -15,7 +15,6 @@ class CertificateRecipientSeeder extends Seeder
             'peserta1@balai.test',
             'peserta2@balai.test',
             'peserta3@balai.test',
-            'peserta4@balai.test',
         ];
 
         $pesertas = Peserta::with('user')
@@ -42,7 +41,7 @@ class CertificateRecipientSeeder extends Seeder
                 : now()->subDays(3);
 
             Pendaftaran::updateOrCreate([
-                'nomor' => 'REG-SERTIF-' . $sequence,
+                'nomor' => 'REG-SERTIF-'.$sequence,
             ], [
                 'peserta_id' => $peserta->id,
                 'program_id' => $kursus->program_id,
@@ -52,7 +51,7 @@ class CertificateRecipientSeeder extends Seeder
                 'status_pembayaran' => Pendaftaran::PAYMENT_LUNAS,
                 'total_bayar' => $kursus->harga,
                 'terbayar' => $kursus->harga,
-                'catatan_admin' => 'Penerima sertifikat seed ' . ($index + 1),
+                'catatan_admin' => 'Penerima sertifikat seed '.($index + 1),
                 'diklasifikasikan_at' => $diklasifikasikanAt,
             ]);
         }

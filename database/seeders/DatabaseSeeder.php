@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PesertaSeeder::class,
             PendaftaranSeeder::class,
             CertificateRecipientSeeder::class,
+            PaymentSeeder::class,
             ScoreSeeder::class,
             JadwalSeeder::class,
             RisalahSeeder::class,

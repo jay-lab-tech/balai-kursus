@@ -17,6 +17,7 @@ class HariController extends Controller
     public function index()
     {
         $haris = Hari::orderBy('urutan')->paginate(15);
+
         return view('kursus::admin.hari.index', compact('haris'));
     }
 
@@ -29,10 +30,11 @@ class HariController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|unique:haris',
-            'urutan' => 'required|integer|min:1|max:7|unique:haris'
+            'urutan' => 'required|integer|min:1|max:7|unique:haris',
         ]);
 
         Hari::create($request->all());
+
         return redirect('/admin/hari')->with('success', 'Hari berhasil ditambahkan');
     }
 
@@ -44,17 +46,19 @@ class HariController extends Controller
     public function update(Request $request, Hari $hari)
     {
         $request->validate([
-            'nama' => 'required|string|unique:haris,nama,' . $hari->id,
-            'urutan' => 'required|integer|min:1|max:7|unique:haris,urutan,' . $hari->id
+            'nama' => 'required|string|unique:haris,nama,'.$hari->id,
+            'urutan' => 'required|integer|min:1|max:7|unique:haris,urutan,'.$hari->id,
         ]);
 
         $hari->update($request->all());
+
         return redirect('/admin/hari')->with('success', 'Hari berhasil diperbarui');
     }
 
     public function destroy(Hari $hari)
     {
         $hari->delete();
+
         return back()->with('success', 'Hari berhasil dihapus');
     }
 }

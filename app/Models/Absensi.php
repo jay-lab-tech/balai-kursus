@@ -10,15 +10,17 @@ class Absensi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'risalah_id','pendaftaran_id',
-        'status','jam_datang','catatan'
+        'risalah_id', 'pendaftaran_id',
+        'status', 'jam_datang', 'catatan',
     ];
 
-    public function risalah() {
+    public function risalah()
+    {
         return $this->belongsTo(Risalah::class);
     }
 
-    public function pendaftaran() {
+    public function pendaftaran()
+    {
         return $this->belongsTo(Pendaftaran::class);
     }
 }

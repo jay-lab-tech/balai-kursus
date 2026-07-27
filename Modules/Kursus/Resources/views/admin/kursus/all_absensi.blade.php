@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Semua Absensi')
 
@@ -9,18 +9,18 @@
 @section('content')
 <div class="space-y-8">
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-            <i class="bi bi-clipboard-check-fill text-red-400"></i>
+        <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+            <i class="bi bi-clipboard-check-fill text-sky-400"></i>
             Kehadiran Peserta
         </div>
         <h1 class="mt-5 text-3xl font-bold text-white">Semua absensi peserta dalam satu daftar operasional.</h1>
         <p class="mt-3 max-w-3xl text-base leading-7 text-slate-300">Halaman ini merangkum status kehadiran peserta di setiap pertemuan, termasuk referensi risalah dan jam datang.</p>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Absensi</p>
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Absensi</p>
                 <p class="mt-3 text-4xl font-bold">{{ $absensis->count() }}</p>
-                <p class="mt-2 text-sm text-red-100/90">Jumlah seluruh kehadiran yang tercatat.</p>
+                <p class="mt-2 text-sm text-sky-100/90">Jumlah seluruh kehadiran yang tercatat.</p>
             </div>
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 md:col-span-2">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Fokus Halaman</p>
@@ -72,7 +72,7 @@
                                         $statusClass = match(strtolower($a->status)) {
                                             'hadir' => 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300',
                                             'izin' => 'border-yellow-400/20 bg-yellow-400/10 text-yellow-300',
-                                            'alpha', 'tidak hadir' => 'border-red-500/20 bg-red-600/10 text-red-200',
+                                            'alpha', 'tidak hadir' => 'border-sky-500/20 bg-sky-600/10 text-sky-200',
                                             default => 'border-white/10 bg-white/5 text-slate-300',
                                         };
                                     @endphp

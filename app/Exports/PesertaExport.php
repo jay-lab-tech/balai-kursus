@@ -5,24 +5,25 @@ namespace App\Exports;
 use App\Models\Peserta;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PesertaExport implements FromCollection, WithHeadings, WithStyles
 {
     public $date;
+
     public function __construct()
     {
         $this->date = date('d-m-Y H:i:s');
     }
+
     public function collection()
     {
         $data = [];
         // Tambahkan 3 baris kosong untuk judul, subjudul, tanggal
-        $data[] = ["BALAI KURSUS UPI", '', '', '', ''];
-        $data[] = ["Data Peserta", '', '', '', ''];
-        $data[] = ["Tanggal Export: " . $this->date, '', '', '', ''];
+        $data[] = ['BALAI KURSUS UPI', '', '', '', ''];
+        $data[] = ['Data Peserta', '', '', '', ''];
+        $data[] = ['Tanggal Export: '.$this->date, '', '', '', ''];
         // Header data
         $data[] = [
             'Nama Peserta',
@@ -41,6 +42,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithStyles
                 $p->instansi ?? '-',
             ];
         }
+
         return collect($data);
     }
 
@@ -55,7 +57,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithStyles
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
         // Border untuk seluruh data
-        $sheet->getStyle('A4:' . $highestColumn . $highestRow)
+        $sheet->getStyle('A4:'.$highestColumn.$highestRow)
             ->getBorders()->getAllBorders()->setBorderStyle('thin');
         // Auto-size columns
         foreach (range('A', $highestColumn) as $col) {
@@ -63,8 +65,8 @@ class PesertaExport implements FromCollection, WithHeadings, WithStyles
         }
         // Bold judul dan header
         $sheet->getStyle('A1:A3')->getFont()->setBold(true);
-        $sheet->getStyle('A4:' . $highestColumn . '4')->getFont()->setBold(true);
+        $sheet->getStyle('A4:'.$highestColumn.'4')->getFont()->setBold(true);
+
         return [];
     }
-    }
-
+}

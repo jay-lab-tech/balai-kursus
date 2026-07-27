@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                            <a href="{{ route('peserta.kursus.detail', $pendaftaran->kursus) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 font-semibold text-white hover:from-red-500 hover:to-red-600 transition">
+                            <a href="{{ route('peserta.kursus.detail', $pendaftaran->kursus) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 font-semibold text-white hover:from-sky-500 hover:to-sky-600 transition">
                                 <i class="bi bi-book mr-2"></i>Masuk Kelas
                             </a>
                             <a href="{{ route('peserta.kursus.risalah', $pendaftaran->kursus) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">

@@ -1,7 +1,7 @@
 <div class="space-y-8 max-w-6xl">
     <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
-        <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-            <i class="bi bi-easel2-fill text-red-400"></i>
+        <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+            <i class="bi bi-easel2-fill text-sky-400"></i>
             {{ $template ? 'Edit Template' : 'Template Baru' }}
         </div>
         <h1 class="mt-5 text-3xl font-bold text-white">{{ $template ? 'Perbarui template sertifikat resmi.' : 'Buat template sertifikat resmi.' }}</h1>
@@ -9,12 +9,12 @@
     </section>
 
     @if($errors->any())
-        <div class="rounded-[1.5rem] border border-red-500/20 bg-red-600/10 px-5 py-4 text-red-100 shadow-lg">
+        <div class="rounded-[1.5rem] border border-sky-500/20 bg-sky-600/10 px-5 py-4 text-sky-100 shadow-lg">
             <div class="flex items-start gap-3">
-                <i class="bi bi-exclamation-octagon-fill mt-0.5 text-lg text-red-300"></i>
+                <i class="bi bi-exclamation-octagon-fill mt-0.5 text-lg text-sky-300"></i>
                 <div>
                     <p class="font-semibold">Template belum bisa disimpan</p>
-                    <ul class="mt-2 space-y-1 text-sm text-red-100/90">
+                    <ul class="mt-2 space-y-1 text-sm text-sky-100/90">
                         @foreach($errors->all() as $message)
                             <li>{{ $message }}</li>
                         @endforeach
@@ -103,7 +103,7 @@
 
                 <div class="admin-panel rounded-[2rem] p-6 sm:p-8">
                     <label class="flex items-start gap-3">
-                        <input type="checkbox" name="is_active" value="1" class="mt-1 rounded border-white/10 bg-slate-950/70 text-red-600 focus:ring-red-500" {{ old('is_active', $template?->is_active ?? true) ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_active" value="1" class="mt-1 rounded border-white/10 bg-slate-950/70 text-sky-600 focus:ring-sky-500" {{ old('is_active', $template?->is_active ?? true) ? 'checked' : '' }}>
                         <span>
                             <span class="block text-sm font-semibold text-white">Jadikan template aktif</span>
                             <span class="mt-1 block text-sm text-slate-400">Template aktif akan langsung dipakai saat admin membuat draft sertifikat baru.</span>
@@ -114,7 +114,7 @@
         </section>
 
         <div class="flex flex-wrap gap-3">
-            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                 <i class="bi bi-check-circle-fill"></i>
                 {{ $submitLabel }}
             </button>

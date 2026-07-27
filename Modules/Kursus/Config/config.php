@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'name' => 'Kursus'
+    'name' => 'Kursus',
 ];

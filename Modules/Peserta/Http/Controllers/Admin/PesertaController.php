@@ -4,7 +4,6 @@ namespace Modules\Peserta\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Peserta;
-use App\Models\Pendaftaran;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,19 +17,21 @@ class PesertaController extends Controller
     {
         $date = date('Ymd_His');
         $filename = "balai_kursus_upi_peserta_{$date}.xlsx";
+
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PesertaExport, $filename);
     }
+
     public function index()
     {
         $query = Peserta::with('user');
         if ($search = request('search')) {
-            $query->whereHas('user', function($q) use ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%") ;
+                    ->orWhere('email', 'like', "%$search%");
             });
             $query->orWhere('nomor_peserta', 'like', "%$search%")
-                  ->orWhere('no_hp', 'like', "%$search%")
-                  ->orWhere('instansi', 'like', "%$search%");
+                ->orWhere('no_hp', 'like', "%$search%")
+                ->orWhere('instansi', 'like', "%$search%");
         }
         if ($filter = request('filter')) {
             if ($filter == 'aktif') {
@@ -40,6 +41,7 @@ class PesertaController extends Controller
             }
         }
         $pesertas = $query->get();
+
         return view('peserta::admin.peserta.index', compact('pesertas'));
     }
 
@@ -55,7 +57,7 @@ class PesertaController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'nomor_peserta' => 'required|unique:pesertas',
-            'no_hp' => 'required'
+            'no_hp' => 'required',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -64,14 +66,14 @@ class PesertaController extends Controller
                 'name' => $request->nama,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'role' => 'peserta'
+                'role' => 'peserta',
             ]);
 
             Peserta::create([
                 'user_id' => $user->id,
                 'nomor_peserta' => $request->nomor_peserta,
                 'no_hp' => $request->no_hp,
-                'instansi' => $request->instansi
+                'instansi' => $request->instansi,
             ]);
         });
 
@@ -81,6 +83,7 @@ class PesertaController extends Controller
     public function edit($id)
     {
         $peserta = Peserta::with('user')->findOrFail($id);
+
         return view('peserta::admin.peserta.edit', compact('peserta'));
     }
 

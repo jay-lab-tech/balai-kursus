@@ -11,12 +11,12 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-calendar-week-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-calendar-week-fill text-sky-400"></i>
                     Jadwal Per Kelas
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">{{ $kursus->nama }}</h1>
-                <p class="mt-3 text-base text-slate-300">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p>
+                <p class="mt-3 text-base text-slate-300">{{ $kursus->program->nama ?? '-' }} â€¢ {{ $kursus->level->nama ?? '-' }}</p>
                 <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Susun seluruh pertemuan untuk kelas ini, mulai dari tanggal, jam, lokasi, sampai ruang kelas yang dipakai.</p>
             </div>
 

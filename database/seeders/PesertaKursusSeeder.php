@@ -12,7 +12,7 @@ class PesertaKursusSeeder extends Seeder
     {
         $pairs = Pendaftaran::whereNotNull('kursus_id')
             ->get(['peserta_id', 'kursus_id'])
-            ->unique(fn ($item) => $item->peserta_id . '-' . $item->kursus_id);
+            ->unique(fn ($item) => $item->peserta_id.'-'.$item->kursus_id);
 
         foreach ($pairs as $pair) {
             $exists = DB::table('peserta_kursus')

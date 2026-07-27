@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;background:white} svg{font-family:Arial,sans-serif}
+  .box{fill:#f8fbff;stroke:#1f4e79;stroke-width:3;rx:10}
+  .head{fill:#1f4e79} .title{fill:white;font-weight:700;font-size:20px}
+  .field{fill:#17324d;font-size:15px} .rel{stroke:#5b6570;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+  .label{fill:#5b6570;font-size:13px;font-weight:700}
+</style>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+ <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 z" fill="#5b6570"/></marker></defs>
+ <text x="800" y="38" text-anchor="middle" fill="#17324d" font-size="27" font-weight="700">ERD Konseptual Aplikasi Balai Kursus</text>
+ <g transform="translate(40,90)">
+  <rect class="box" width="230" height="112"/><rect class="head" width="230" height="36"/><text class="title" x="115" y="25" text-anchor="middle">users</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">role</text><text class="field" x="16" y="104">email, password</text>
+ </g>
+ <g transform="translate(40,310)">
+  <rect class="box" width="230" height="122"/><rect class="head" width="230" height="36"/><text class="title" x="115" y="25" text-anchor="middle">pesertas</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK user_id</text><text class="field" x="16" y="106">nomor peserta, profil</text>
+ </g>
+ <g transform="translate(40,540)">
+  <rect class="box" width="230" height="122"/><rect class="head" width="230" height="36"/><text class="title" x="115" y="25" text-anchor="middle">instrukturs</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK user_id</text><text class="field" x="16" y="106">spesialisasi, profil</text>
+ </g>
+ <g transform="translate(400,100)">
+  <rect class="box" width="240" height="122"/><rect class="head" width="240" height="36"/><text class="title" x="120" y="25" text-anchor="middle">programs</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">nama program</text><text class="field" x="16" y="106">deskripsi, status</text>
+ </g>
+ <g transform="translate(400,330)">
+  <rect class="box" width="240" height="122"/><rect class="head" width="240" height="36"/><text class="title" x="120" y="25" text-anchor="middle">levels</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">nilai_min, nilai_max</text><text class="field" x="16" y="106">nama level</text>
+ </g>
+ <g transform="translate(400,560)">
+  <rect class="box" width="240" height="122"/><rect class="head" width="240" height="36"/><text class="title" x="120" y="25" text-anchor="middle">kursuses</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK program_id, level_id</text><text class="field" x="16" y="106">kuota, periode, harga</text>
+ </g>
+ <g transform="translate(760,100)">
+  <rect class="box" width="260" height="142"/><rect class="head" width="260" height="36"/><text class="title" x="130" y="25" text-anchor="middle">pendaftarans</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK peserta_id, program_id</text><text class="field" x="16" y="106">FK kursus_id</text><text class="field" x="16" y="128">status, tanggal</text>
+ </g>
+ <g transform="translate(760,360)">
+  <rect class="box" width="260" height="142"/><rect class="head" width="260" height="36"/><text class="title" x="130" y="25" text-anchor="middle">payments</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK pendaftaran_id</text><text class="field" x="16" y="106">order_id, gross_amount</text><text class="field" x="16" y="128">status transaksi</text>
+ </g>
+ <g transform="translate(760,620)">
+  <rect class="box" width="260" height="142"/><rect class="head" width="260" height="36"/><text class="title" x="130" y="25" text-anchor="middle">scores / absensis</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK pendaftaran_id</text><text class="field" x="16" y="106">FK kursus_id</text><text class="field" x="16" y="128">nilai, kehadiran</text>
+ </g>
+ <g transform="translate(1160,170)">
+  <rect class="box" width="260" height="142"/><rect class="head" width="260" height="36"/><text class="title" x="130" y="25" text-anchor="middle">jadwals / risalahs</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK kursus_id</text><text class="field" x="16" y="106">FK instruktur_id</text><text class="field" x="16" y="128">waktu, materi</text>
+ </g>
+ <g transform="translate(1160,500)">
+  <rect class="box" width="260" height="142"/><rect class="head" width="260" height="36"/><text class="title" x="130" y="25" text-anchor="middle">certificates</text><text class="field" x="16" y="62">PK id</text><text class="field" x="16" y="84">FK peserta_id, kursus_id</text><text class="field" x="16" y="106">FK template_id</text><text class="field" x="16" y="128">nomor, token verifikasi</text>
+ </g>
+ <path class="rel" d="M155,202 L155,310"/><text class="label" x="165" y="265">1 : 1</text>
+ <path class="rel" d="M270,370 L400,161"/><text class="label" x="315" y="260">1 : N</text>
+ <path class="rel" d="M640,161 L760,161"/><text class="label" x="690" y="150">1 : N</text>
+ <path class="rel" d="M520,452 L520,560"/><text class="label" x="535" y="515">1 : N</text>
+ <path class="rel" d="M640,621 L760,170"/><text class="label" x="682" y="405">1 : N</text>
+ <path class="rel" d="M640,621 L1160,240"/><text class="label" x="1000" y="390">1 : N</text>
+ <path class="rel" d="M890,242 L890,360"/><text class="label" x="905" y="310">1 : N</text>
+ <path class="rel" d="M890,502 L890,620"/><text class="label" x="905" y="570">1 : N</text>
+ <path class="rel" d="M640,621 L1160,570"/><text class="label" x="950" y="585">1 : N</text>
+ <path class="rel" d="M270,601 L400,621"/><text class="label" x="315" y="595">1 : N</text>
+ <path class="rel" d="M270,601 L1160,240"/><text class="label" x="700" y="430">1 : N</text>
+ <path class="rel" d="M1020,690 L1160,570"/><text class="label" x="1080" y="650">1 : N</text>
+ </g>
+</svg>

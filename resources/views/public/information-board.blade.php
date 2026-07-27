@@ -30,16 +30,16 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #1f2937;
+            background: #0b2035;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #dc2626;
+            background: #f59e0b;
             border-radius: 999px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #991b1b;
+            background: #d97706;
         }
 
         .glass-panel {
@@ -71,7 +71,7 @@
             overflow: hidden;
             border-radius: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(17, 24, 39, 0.45));
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(7, 29, 49, 0.56));
             box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
             opacity: 0;
             transform: translateY(18px);
@@ -83,12 +83,12 @@
             position: absolute;
             inset: auto 0 0 0;
             height: 4px;
-            background: linear-gradient(90deg, rgba(250, 204, 21, 0.95), rgba(220, 38, 38, 0.95));
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.95), rgba(14, 165, 233, 0.95));
         }
 
         .schedule-card.ongoing {
             border-color: rgba(250, 204, 21, 0.35);
-            box-shadow: 0 26px 56px rgba(220, 38, 38, 0.22);
+            box-shadow: 0 26px 56px rgba(14, 165, 233, 0.2);
         }
 
         .schedule-card.upcoming {
@@ -182,18 +182,36 @@
         }
     </style>
 </head>
-<body class="{{ $displayMode ? 'display-board' : '' }} overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+<body class="{{ $displayMode ? 'display-board' : '' }} overflow-x-hidden bg-gradient-to-br from-[#102a43] via-[#173f5f] to-[#061a2b] text-white">
     <div class="page-shell mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <header class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <a href="{{ url('/') }}" class="flex items-center gap-3">
+                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg shadow-black/10">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus" class="h-full w-full object-contain">
+                </span>
+                <span>
+                    <span class="block text-[10px] font-semibold uppercase tracking-[0.24em] text-amber-300">UPI · Balai Bahasa</span>
+                    <span class="mt-0.5 block text-base font-bold text-white">Balai Kursus</span>
+                </span>
+            </a>
+            <nav class="flex items-center gap-2" aria-label="Navigasi papan informasi">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Kembali ke Login</span>
+                </a>
+            </nav>
+        </header>
+
         <section class="glass-panel rounded-[2rem] p-6 sm:p-8">
             <div class="hero-grid items-stretch">
                 <div class="flex h-full flex-col justify-between gap-8">
                     <div class="flex items-start gap-4">
-                        <div class="brand-mark flex shrink-0 items-center justify-center rounded-3xl bg-white p-3 shadow-2xl shadow-red-950/40">
+                        <div class="brand-mark flex shrink-0 items-center justify-center rounded-3xl bg-white p-3 shadow-2xl shadow-black/30">
                             <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus">
                         </div>
                         <div class="min-w-0">
-                            <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-yellow-300">
-                                <i class="bi bi-broadcast-pin text-red-400"></i>
+                            <div class="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-amber-300">
+                                <i class="bi bi-broadcast-pin text-sky-300"></i>
                                 Informasi Publik
                             </div>
                             <h1 class="display-title mt-5 text-4xl font-bold leading-tight text-white">
@@ -211,10 +229,10 @@
                             <p class="mt-3 text-4xl font-bold">{{ $jadwals->count() }}</p>
                             <p class="mt-2 text-sm opacity-80">Total sesi yang terjadwal hari ini.</p>
                         </div>
-                        <div class="rounded-3xl bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-red-100">Sedang Berlangsung</p>
+                        <div class="rounded-3xl bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-100">Sedang Berlangsung</p>
                             <p class="mt-3 text-4xl font-bold">{{ $ongoingJadwals->count() }}</p>
-                            <p class="mt-2 text-sm text-red-100/90">Sesi aktif yang sedang berjalan sekarang.</p>
+                            <p class="mt-2 text-sm text-sky-100/90">Sesi aktif yang sedang berjalan sekarang.</p>
                         </div>
                         <div class="rounded-3xl border border-yellow-400/20 bg-gradient-to-br from-gray-900 to-black p-5 text-white shadow-xl">
                             <p class="text-xs font-semibold uppercase tracking-[0.22em] text-yellow-300">Mode Tampilan</p>
@@ -231,7 +249,7 @@
                         <div class="flex items-center justify-between gap-3">
                             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gray-400">Waktu Saat Ini</p>
                             @if ($displayMode)
-                                <span class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-3 py-1 text-xs font-semibold text-yellow-300">
+                                <span class="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-amber-300">
                                     <span class="h-2 w-2 rounded-full bg-yellow-400"></span>
                                     Auto refresh
                                 </span>
@@ -245,16 +263,16 @@
                     </div>
 
                     <div class="grid gap-3 {{ $displayMode ? '' : 'sm:grid-cols-2' }}">
-                        <a class="inline-flex items-center justify-center rounded-2xl border px-4 py-3 text-sm font-semibold transition duration-200 {{ $displayMode ? 'border-white/10 bg-white/5 text-gray-200 hover:bg-white/10' : 'border-red-500/30 bg-red-600/20 text-yellow-300' }}"
+                        <a class="inline-flex items-center justify-center rounded-2xl border px-4 py-3 text-sm font-semibold transition duration-200 {{ $displayMode ? 'border-white/10 bg-white/5 text-gray-200 hover:bg-white/10' : 'border-sky-400/30 bg-sky-500/20 text-amber-300' }}"
                            href="{{ url('/papan-informasi') }}">
                             <i class="bi bi-window mr-2"></i>Mode Normal
                         </a>
-                        <a class="inline-flex items-center justify-center rounded-2xl border px-4 py-3 text-sm font-semibold transition duration-200 {{ $displayMode ? 'border-red-500/30 bg-red-600 text-white hover:bg-red-700' : 'border-white/10 bg-white/5 text-gray-200 hover:bg-white/10' }}"
+                        <a class="inline-flex items-center justify-center rounded-2xl border px-4 py-3 text-sm font-semibold transition duration-200 {{ $displayMode ? 'border-sky-400/30 bg-sky-600 text-white hover:bg-sky-500' : 'border-white/10 bg-white/5 text-gray-200 hover:bg-white/10' }}"
                            href="{{ url('/papan-informasi?display=1') }}">
                             <i class="bi bi-tv mr-2"></i>Mode Display
                         </a>
                         @if ($displayMode)
-                            <button type="button" id="fullscreen-toggle" class="inline-flex items-center justify-center rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-semibold text-yellow-300 transition duration-200 hover:bg-yellow-400/20">
+                            <button type="button" id="fullscreen-toggle" class="inline-flex items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-300 transition duration-200 hover:bg-amber-400/20">
                                 <i class="bi bi-arrows-fullscreen mr-2"></i>Layar Penuh
                             </button>
                         @endif
@@ -290,7 +308,7 @@
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <h2 class="text-3xl font-bold text-white">
-                            <i class="bi bi-calendar3 mr-3 text-red-400"></i>Jadwal Hari Ini
+                            <i class="bi bi-calendar3 mr-3 text-sky-300"></i>Jadwal Hari Ini
                         </h2>
                         <p class="mt-2 text-gray-400">Semua sesi hari ini ditampilkan berurutan berdasarkan waktu mulai.</p>
                     </div>

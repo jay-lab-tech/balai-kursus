@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('absensi')->group(function() {
+Route::prefix('absensi')->group(function () {
     Route::get('/', 'AbsensiController@index');
 });

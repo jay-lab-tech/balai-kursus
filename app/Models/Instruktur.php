@@ -10,19 +10,22 @@ class Instruktur extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id','nama_instr','spesialisasi'
+        'user_id', 'nama_instr', 'spesialisasi',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function kursuses() {
+    public function kursuses()
+    {
         return $this->hasMany(Kursus::class);
     }
 
     // Relasi ke pivot instruktur_kursus_levels
-    public function kursusLevels() {
+    public function kursusLevels()
+    {
         return $this->hasMany(InstrukturKursusLevel::class);
     }
 }

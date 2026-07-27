@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Jadwal extends Model
@@ -11,7 +11,7 @@ class Jadwal extends Model
     use HasFactory;
 
     protected $fillable = [
-        'kursus_id', 'lokasi_id', 'kela_id', 'hari_id', 'pertemuan_ke', 'tgl_pertemuan', 'jam_mulai', 'jam_selesai', 'created_by'
+        'kursus_id', 'lokasi_id', 'kela_id', 'hari_id', 'pertemuan_ke', 'tgl_pertemuan', 'jam_mulai', 'jam_selesai', 'created_by',
     ];
 
     protected $casts = [

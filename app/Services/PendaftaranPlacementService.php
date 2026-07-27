@@ -16,7 +16,7 @@ class PendaftaranPlacementService
     {
         $pendaftaran = $score->pendaftaran()->with(['program', 'level', 'kursus'])->first();
 
-        if (!$pendaftaran || $score->jenis !== Score::TYPE_PLACEMENT || $score->final_score === null) {
+        if (! $pendaftaran || $score->jenis !== Score::TYPE_PLACEMENT || $score->final_score === null) {
             return [
                 'level' => null,
                 'kursus' => null,
@@ -41,7 +41,7 @@ class PendaftaranPlacementService
                 'level_id' => $level?->id,
                 'kursus_id' => $selectedKursus?->id,
                 'status_pendaftaran' => $selectedKursus ? Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN : Pendaftaran::STATUS_MENUNGGU_PENEMPATAN,
-                'status_pembayaran' => $selectedKursus ? Pendaftaran::PAYMENT_PENDING : Pendaftaran::PAYMENT_PENDING,
+                'status_pembayaran' => Pendaftaran::PAYMENT_PENDING,
                 'total_bayar' => $selectedKursus?->harga ?? 0,
                 'terbayar' => $selectedKursus ? min((int) $pendaftaran->terbayar, (int) ($selectedKursus->harga ?? 0)) : 0,
                 'diklasifikasikan_at' => now(),
@@ -65,9 +65,9 @@ class PendaftaranPlacementService
                 'level' => $level,
                 'kursus' => $selectedKursus,
                 'message' => $selectedKursus
-                    ? 'Peserta berhasil diklasifikasikan ke level ' . $level->nama . ' dan ditempatkan ke kelas ' . $selectedKursus->nama . '.'
+                    ? 'Peserta berhasil diklasifikasikan ke level '.$level->nama.' dan ditempatkan ke kelas '.$selectedKursus->nama.'.'
                     : ($level
-                        ? 'Peserta cocok ke level ' . $level->nama . ', tetapi semua kelas pada level tersebut sedang penuh.'
+                        ? 'Peserta cocok ke level '.$level->nama.', tetapi semua kelas pada level tersebut sedang penuh.'
                         : 'Sistem belum menemukan level yang cocok untuk program ini.'),
             ];
         });
@@ -96,7 +96,7 @@ class PendaftaranPlacementService
 
     private function availableLevelsForProgram(?int $programId): Collection
     {
-        if (!$programId) {
+        if (! $programId) {
             return collect();
         }
 
@@ -134,7 +134,7 @@ class PendaftaranPlacementService
 
     private function findAvailableClass(?int $programId, ?int $levelId): ?Kursus
     {
-        if (!$programId || !$levelId) {
+        if (! $programId || ! $levelId) {
             return null;
         }
 

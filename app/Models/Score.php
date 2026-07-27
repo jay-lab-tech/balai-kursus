@@ -10,6 +10,7 @@ class Score extends Model
     use HasFactory;
 
     public const TYPE_PLACEMENT = 'placement';
+
     public const TYPE_COURSE = 'course';
 
     protected $fillable = [
@@ -30,7 +31,7 @@ class Score extends Model
         'status',
         'evaluated_by',
         'evaluated_at',
-        'keterangan'
+        'keterangan',
     ];
 
     protected $casts = [
@@ -65,9 +66,9 @@ class Score extends Model
             $this->speaking,
             $this->reading,
             $this->writing,
-            $this->assignment
+            $this->assignment,
         ]);
-        
+
         return count($scores) > 0 ? round(array_sum($scores) / count($scores), 2) : null;
     }
 }

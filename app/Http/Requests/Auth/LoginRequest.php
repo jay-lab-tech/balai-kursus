@@ -60,7 +60,15 @@ class LoginRequest extends FormRequest
             return;
         }
 
-        if ($this->filled('password') && Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! $this->filled('password')) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'password' => 'Password wajib diisi untuk login di perangkat ini.',
+            ]);
+        }
+
+        if (Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::clear($this->throttleKey());
 
             return;
@@ -69,7 +77,7 @@ class LoginRequest extends FormRequest
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => 'Device ini belum dikenali. Masuk dengan Google atau gunakan password sekali untuk perangkat baru.',
+            'email' => 'Email atau password yang dimasukkan tidak sesuai.',
         ]);
     }
 

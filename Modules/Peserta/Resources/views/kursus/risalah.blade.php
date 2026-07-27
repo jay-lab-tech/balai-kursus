@@ -28,7 +28,7 @@
                     />
                     <i class="bi bi-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
-                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
+                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
                     <i class="bi bi-search mr-2"></i>Cari
                 </button>
             </form>
@@ -66,7 +66,7 @@
                                     <span class="line-clamp-1">{{ $r->materi ? Str::limit($r->materi, 50, '...') : 'Belum ada materi' }}</span>
                                 </div>
                                 <div class="flex items-center">
-                                    <i class="bi bi-people-fill text-red-400 mr-2 flex-shrink-0"></i>
+                                    <i class="bi bi-people-fill text-sky-400 mr-2 flex-shrink-0"></i>
                                     <span>{{ $r->absensis()->count() ?? 0 }} peserta hadir</span>
                                 </div>
                             </div>

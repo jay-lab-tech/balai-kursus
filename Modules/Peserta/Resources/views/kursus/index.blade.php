@@ -15,9 +15,9 @@
 
         <!-- Alerts -->
         @if($errors->any())
-        <div class="mb-6 bg-red-500/20 border-l-4 border-red-500 rounded-lg p-4 text-white">
+        <div class="mb-6 bg-sky-500/20 border-l-4 border-sky-500 rounded-lg p-4 text-white">
             <div class="flex items-start">
-                <i class="bi bi-exclamation-circle text-red-400 mr-3 mt-0.5"></i>
+                <i class="bi bi-exclamation-circle text-sky-400 mr-3 mt-0.5"></i>
                 <div>
                     <h3 class="font-bold mb-2">Ada Kesalahan</h3>
                     <ul class="space-y-1 text-sm">
@@ -82,24 +82,24 @@
                 <div class="peserta-kursus-item group">
                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
                         <!-- Card Header with Gradient -->
-                        <div class="h-32 bg-gradient-to-r from-red-600 to-red-700 relative overflow-hidden">
+                        <div class="h-32 bg-gradient-to-r from-sky-600 to-sky-700 relative overflow-hidden">
                             <div class="absolute inset-0 opacity-30">
                                 <i class="bi bi-book-fill text-white text-6xl absolute -right-4 -top-4"></i>
                             </div>
-                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 to-red-400"></div>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 to-sky-400"></div>
                         </div>
 
                         <!-- Card Body -->
                         <div class="p-6 flex-grow flex flex-col">
                             <!-- Title -->
-                            <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors line-clamp-2">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-sky-600 transition-colors line-clamp-2">
                                 {{ $k->nama }}
                             </h3>
 
                             <!-- Info Grid -->
                             <div class="space-y-3 mb-6 flex-grow">
                                 <div class="flex items-start">
-                                    <i class="bi bi-diagram-3 text-red-500 text-lg mr-3 mt-1 flex-shrink-0"></i>
+                                    <i class="bi bi-diagram-3 text-sky-500 text-lg mr-3 mt-1 flex-shrink-0"></i>
                                     <div>
                                         <p class="text-xs text-gray-600">Program</p>
                                         <p class="font-semibold text-gray-900">{{ $k->program->nama }}</p>
@@ -126,7 +126,7 @@
                             <!-- Price Box -->
                             <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-200 rounded-xl p-4 mb-6 text-center">
                                 <p class="text-xs text-gray-600 font-semibold uppercase">Harga Kursus</p>
-                                <p class="text-2xl font-bold text-red-600">Rp {{ number_format($k->harga, 0, ',', '.') }}</p>
+                                <p class="text-2xl font-bold text-sky-600">Rp {{ number_format($k->harga, 0, ',', '.') }}</p>
                                @if($k->harga_upi)
                                     <p class="text-xs text-gray-600 mt-1">UPI: Rp {{ number_format($k->harga_upi, 0, ',', '.') }}</p>
                                 @endif
@@ -140,7 +140,7 @@
                                 </a>
                                 <form action="{{ route('peserta.kursus.daftar', $k->id) }}" method="POST" class="w-full">
                                     @csrf
-                                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                         <i class="bi bi-check-circle mr-2"></i>
                                         <span>Daftar</span>
                                     </button>

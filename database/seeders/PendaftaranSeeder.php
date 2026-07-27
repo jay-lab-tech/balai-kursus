@@ -24,7 +24,7 @@ class PendaftaranSeeder extends Seeder
                 $sequence = ($index * 2) + $offset + 1;
 
                 Pendaftaran::updateOrCreate([
-                    'nomor' => 'REG-SEED-' . str_pad((string) $sequence, 4, '0', STR_PAD_LEFT),
+                    'nomor' => 'REG-SEED-'.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT),
                 ], [
                     'peserta_id' => $peserta->id,
                     'participant_email_snapshot' => $peserta->user->email ?? null,

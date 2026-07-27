@@ -11,9 +11,9 @@
 |
 */
 
-Route::prefix('pendaftaran')->group(function() {
+Route::prefix('pendaftaran')->group(function () {
     // redirect legacy module route to peserta module
-    Route::get('/', function() {
+    Route::get('/', function () {
         return redirect('/peserta/pendaftaran');
     });
 });

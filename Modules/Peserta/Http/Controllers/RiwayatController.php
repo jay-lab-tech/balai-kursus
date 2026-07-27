@@ -12,7 +12,7 @@ class RiwayatController extends Controller
     {
         $peserta = Auth::user()->peserta;
 
-        if (!$peserta) {
+        if (! $peserta) {
             $payments = collect();
 
             return view('peserta::riwayat.index', compact('payments'));

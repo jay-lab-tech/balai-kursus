@@ -10,19 +10,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('levels', function (Blueprint $table) {
-            if (!Schema::hasColumn('levels', 'urutan')) {
+            if (! Schema::hasColumn('levels', 'urutan')) {
                 $table->unsignedInteger('urutan')->default(1)->after('warna');
             }
 
-            if (!Schema::hasColumn('levels', 'nilai_min')) {
+            if (! Schema::hasColumn('levels', 'nilai_min')) {
                 $table->decimal('nilai_min', 5, 2)->nullable()->after('urutan');
             }
 
-            if (!Schema::hasColumn('levels', 'nilai_max')) {
+            if (! Schema::hasColumn('levels', 'nilai_max')) {
                 $table->decimal('nilai_max', 5, 2)->nullable()->after('nilai_min');
             }
 
-            if (!Schema::hasColumn('levels', 'deskripsi')) {
+            if (! Schema::hasColumn('levels', 'deskripsi')) {
                 $table->text('deskripsi')->nullable()->after('nilai_max');
             }
         });
@@ -49,30 +49,30 @@ return new class extends Migration
         }
 
         Schema::table('scores', function (Blueprint $table) {
-            if (!Schema::hasColumn('scores', 'jenis')) {
+            if (! Schema::hasColumn('scores', 'jenis')) {
                 $table->string('jenis', 24)->default('course')->after('pendaftaran_id');
                 $table->index('jenis');
             }
         });
 
         Schema::table('pendaftarans', function (Blueprint $table) {
-            if (!Schema::hasColumn('pendaftarans', 'program_id')) {
+            if (! Schema::hasColumn('pendaftarans', 'program_id')) {
                 $table->foreignId('program_id')->nullable()->after('peserta_id')->constrained('programs')->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('pendaftarans', 'level_id')) {
+            if (! Schema::hasColumn('pendaftarans', 'level_id')) {
                 $table->foreignId('level_id')->nullable()->after('program_id')->constrained('levels')->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('pendaftarans', 'status_pendaftaran')) {
+            if (! Schema::hasColumn('pendaftarans', 'status_pendaftaran')) {
                 $table->string('status_pendaftaran', 32)->default('menunggu_tes')->after('kursus_id');
             }
 
-            if (!Schema::hasColumn('pendaftarans', 'catatan_admin')) {
+            if (! Schema::hasColumn('pendaftarans', 'catatan_admin')) {
                 $table->text('catatan_admin')->nullable()->after('terbayar');
             }
 
-            if (!Schema::hasColumn('pendaftarans', 'diklasifikasikan_at')) {
+            if (! Schema::hasColumn('pendaftarans', 'diklasifikasikan_at')) {
                 $table->timestamp('diklasifikasikan_at')->nullable()->after('catatan_admin');
             }
         });

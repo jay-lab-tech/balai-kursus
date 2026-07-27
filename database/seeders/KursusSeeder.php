@@ -23,15 +23,17 @@ class KursusSeeder extends Seeder
 
         foreach ($programs as $programIndex => $program) {
             foreach ($levels as $levelIndex => $level) {
-                foreach (range(1, 2) as $classNumber) {
+                // Kursus dibuat lebih banyak agar halaman katalog dan demo admin
+                // memiliki cukup variasi tanpa menggandakan data pengguna.
+                foreach (range(1, 3) as $classNumber) {
                     $tanggalMulai = now()->startOfDay()->addDays(($programIndex * 5) + ($levelIndex * 7) + (($classNumber - 1) * 3));
 
                     $kursus = Kursus::updateOrCreate([
-                        'nama' => $program->nama . ' - ' . $level->nama . ' Kelas ' . $classNumber,
+                        'nama' => $program->nama.' - '.$level->nama.' Kelas '.$classNumber,
                     ], [
                         'program_id' => $program->id,
                         'level_id' => $level->id,
-                        'periode' => 'Gelombang ' . $classNumber . ' 2026',
+                        'periode' => 'Gelombang '.$classNumber.' 2026',
                         'tanggal_mulai' => $tanggalMulai,
                         'tanggal_selesai' => $tanggalMulai->copy()->addDays(56),
                         'harga' => 1250000 + (($level->urutan - 1) * 150000),

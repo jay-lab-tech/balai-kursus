@@ -10,16 +10,21 @@ class PesertaKursusLevel extends Model
     use HasFactory;
 
     protected $fillable = [
-        'peserta_id', 'kursus_id', 'level_id', 'assigned_at'
+        'peserta_id', 'kursus_id', 'level_id', 'assigned_at',
     ];
 
-    public function peserta() {
+    public function peserta()
+    {
         return $this->belongsTo(Peserta::class);
     }
-    public function kursus() {
+
+    public function kursus()
+    {
         return $this->belongsTo(Kursus::class);
     }
-    public function level() {
+
+    public function level()
+    {
         return $this->belongsTo(Level::class);
     }
 }

@@ -126,7 +126,7 @@
                                             <span>{{ $pendaftaran->progress() }}%</span>
                                         </div>
                                         <div class="h-3 overflow-hidden rounded-full bg-gray-700">
-                                            <div class="h-full bg-gradient-to-r from-yellow-400 to-red-500" style="width: {{ $pendaftaran->progress() }}%"></div>
+                                            <div class="h-full bg-gradient-to-r from-yellow-400 to-sky-500" style="width: {{ $pendaftaran->progress() }}%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +137,7 @@
                                             type="button"
                                             data-pendaftaran-id="{{ $pendaftaran->id }}"
                                             data-amount="{{ $pendaftaran->sisa() }}"
-                                            class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 font-semibold text-white hover:from-red-500 hover:to-red-600 transition"
+                                            class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 font-semibold text-white hover:from-sky-500 hover:to-sky-600 transition"
                                             onclick="startPayment(this)"
                                         >
                                             <i class="bi bi-credit-card mr-2"></i>Bayar Langsung via Midtrans

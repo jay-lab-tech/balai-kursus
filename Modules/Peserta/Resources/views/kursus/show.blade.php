@@ -17,7 +17,7 @@
             <div class="lg:col-span-2">
                 <!-- Hero Section -->
                 <div class="rounded-2xl overflow-hidden shadow-2xl mb-8">
-                    <div class="h-64 bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center">
+                    <div class="h-64 bg-gradient-to-r from-sky-600 to-sky-700 flex items-center justify-center">
                         <i class="bi bi-book text-white" style="font-size: 80px; opacity: 0.3;"></i>
                     </div>
                     <div class="bg-gradient-to-r from-gray-50 to-white p-8">
@@ -47,10 +47,10 @@
                     </div>
 
                     <!-- Instructor & Participants -->
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 hover:border-red-500/50 transition-colors duration-200">
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 hover:border-sky-500/50 transition-colors duration-200">
                         <div class="flex items-start justify-between mb-4">
                             <h3 class="text-lg font-semibold text-white">Detail Pelaksanaan</h3>
-                            <i class="bi bi-person-circle text-red-500 text-2xl"></i>
+                            <i class="bi bi-person-circle text-sky-500 text-2xl"></i>
                         </div>
                         <div class="space-y-4">
                             <div>
@@ -63,7 +63,7 @@
                                     <span class="text-white font-semibold">{{ $kursus->pendaftarans()->count() }}/{{ $kursus->kuota }} peserta</span>
                                 </div>
                                 <div class="w-full bg-gray-700 rounded-full h-2 mt-2 overflow-hidden">
-                                    <div class="bg-gradient-to-r from-red-500 to-yellow-400 h-full" style="width: {{ min(($kursus->pendaftarans()->count() / $kursus->kuota) * 100, 100) }}%"></div>
+                                    <div class="bg-gradient-to-r from-sky-500 to-yellow-400 h-full" style="width: {{ min(($kursus->pendaftarans()->count() / $kursus->kuota) * 100, 100) }}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -91,16 +91,16 @@
                 <!-- Schedule Section -->
                 <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-8 mb-8">
                     <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
-                        <i class="bi bi-calendar3 text-red-500 mr-3"></i>
+                        <i class="bi bi-calendar3 text-sky-500 mr-3"></i>
                         Jadwal Pertemuan
                     </h3>
 
                     @if($kursus->jadwals && count($kursus->jadwals) > 0)
                         <div class="space-y-4">
                             @foreach($kursus->jadwals as $jadwal)
-                            <div class="flex items-start p-4 bg-gradient-to-r from-gray-700/50 to-transparent rounded-lg border border-gray-700 hover:border-red-500/50 transition-colors duration-200 group">
+                            <div class="flex items-start p-4 bg-gradient-to-r from-gray-700/50 to-transparent rounded-lg border border-gray-700 hover:border-sky-500/50 transition-colors duration-200 group">
                                 <div class="flex-shrink-0 mr-4">
-                                    <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-red-600/20 text-red-400 group-hover:bg-red-600/30">
+                                    <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-sky-600/20 text-sky-400 group-hover:bg-sky-600/30">
                                         <i class="bi bi-calendar2-check"></i>
                                     </div>
                                 </div>
@@ -148,13 +148,13 @@
                         <!-- Not Yet Registered -->
                         <form action="{{ route('peserta.kursus.daftar', $kursus->id) }}" method="POST">
                             @csrf
-                            <div class="bg-gradient-to-br from-red-900/20 to-yellow-900/20 border border-red-500/50 rounded-xl p-6">
-                                <div class="flex items-center justify-center h-16 bg-red-600/20 rounded-lg mb-4">
-                                    <i class="bi bi-box-arrow-in-right text-red-400 text-4xl"></i>
+                            <div class="bg-gradient-to-br from-sky-900/20 to-yellow-900/20 border border-sky-500/50 rounded-xl p-6">
+                                <div class="flex items-center justify-center h-16 bg-sky-600/20 rounded-lg mb-4">
+                                    <i class="bi bi-box-arrow-in-right text-sky-400 text-4xl"></i>
                                 </div>
                                 <p class="text-center text-white font-semibold mb-2">Siap untuk Belajar?</p>
                                 <p class="text-sm text-gray-300 text-center mb-6">Daftarkan diri Anda sekarang dan mulai perjalanan pembelajaran Anda bersama instruktur terbaik kami.</p>
-                                <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-lg rounded-lg transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-red-500/50">
+                                <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-bold text-lg rounded-lg transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-sky-500/50">
                                     <i class="bi bi-check-circle mr-2"></i>Daftar Kursus Sekarang
                                 </button>
                             </div>

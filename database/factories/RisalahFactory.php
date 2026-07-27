@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Risalah;
-use App\Models\Kursus;
 use App\Models\Instruktur;
+use App\Models\Kursus;
+use App\Models\Risalah;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RisalahFactory extends Factory

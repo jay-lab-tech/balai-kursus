@@ -30,7 +30,7 @@ class TrustedDeviceManager
 
         Cookie::queue(Cookie::forever(
             self::COOKIE_NAME,
-            $user->id . '|' . $plainToken,
+            $user->id.'|'.$plainToken,
             null,
             null,
             $request->isSecure(),
@@ -44,7 +44,7 @@ class TrustedDeviceManager
     {
         $trustedDevice = $this->findTrustedDevice($user, $request);
 
-        if (!$trustedDevice) {
+        if (! $trustedDevice) {
             return false;
         }
 
@@ -61,7 +61,7 @@ class TrustedDeviceManager
     {
         [$cookieUserId, $plainToken] = $this->parseCookie((string) $request->cookie(self::COOKIE_NAME));
 
-        if (!$cookieUserId || !$plainToken || $cookieUserId !== $user->id) {
+        if (! $cookieUserId || ! $plainToken || $cookieUserId !== $user->id) {
             return null;
         }
 
@@ -76,13 +76,13 @@ class TrustedDeviceManager
      */
     protected function parseCookie(string $value): array
     {
-        if ($value === '' || !str_contains($value, '|')) {
+        if ($value === '' || ! str_contains($value, '|')) {
             return [null, null];
         }
 
         [$userId, $plainToken] = explode('|', $value, 2);
 
-        if (!ctype_digit($userId) || $plainToken === '') {
+        if (! ctype_digit($userId) || $plainToken === '') {
             return [null, null];
         }
 

@@ -13,7 +13,7 @@ class CertificateSeeder extends Seeder
     {
         $template = CertificateTemplate::active()->first();
 
-        if (!$template) {
+        if (! $template) {
             return;
         }
 
@@ -34,7 +34,7 @@ class CertificateSeeder extends Seeder
         }
 
         foreach ($pendaftarans as $index => $pendaftaran) {
-            if (!$pendaftaran->peserta || !$pendaftaran->peserta->user || !$pendaftaran->kursus) {
+            if (! $pendaftaran->peserta || ! $pendaftaran->peserta->user || ! $pendaftaran->kursus) {
                 continue;
             }
 
@@ -53,7 +53,7 @@ class CertificateSeeder extends Seeder
             ], [
                 'template_id' => $template->id,
                 'user_id' => $pendaftaran->peserta->user_id,
-                'certificate_name' => 'Sertifikat Kelulusan ' . ($pendaftaran->program->nama ?? 'Program'),
+                'certificate_name' => 'Sertifikat Kelulusan '.($pendaftaran->program->nama ?? 'Program'),
                 'certificate_number' => sprintf('%d/%s/%d', $index + 1, $template->certificate_prefix, now()->year),
                 'serial_number' => str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT),
                 'issued_date' => $issuedDate,

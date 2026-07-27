@@ -11,8 +11,8 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -72,6 +72,6 @@ class RegisteredUserController extends Controller
 
     protected function generateParticipantNumber(int $userId): string
     {
-        return 'PS-' . now()->format('Y') . '-' . str_pad((string) $userId, 5, '0', STR_PAD_LEFT);
+        return 'PS-'.now()->format('Y').'-'.str_pad((string) $userId, 5, '0', STR_PAD_LEFT);
     }
 }

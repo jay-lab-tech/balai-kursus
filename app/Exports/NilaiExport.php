@@ -23,7 +23,7 @@ class NilaiExport implements FromCollection, WithHeadings, WithStyles
 
         $data[] = ['BALAI KURSUS UPI', '', '', '', '', '', '', '', '', '', '', ''];
         $data[] = ['Data Hasil Tes Penempatan', '', '', '', '', '', '', '', '', '', '', ''];
-        $data[] = ['Tanggal Export: ' . $this->date, '', '', '', '', '', '', '', '', '', '', ''];
+        $data[] = ['Tanggal Export: '.$this->date, '', '', '', '', '', '', '', '', '', '', ''];
         $data[] = [
             'Nomor',
             'Peserta',
@@ -75,7 +75,7 @@ class NilaiExport implements FromCollection, WithHeadings, WithStyles
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
 
-        $sheet->getStyle('A4:' . $highestColumn . $highestRow)
+        $sheet->getStyle('A4:'.$highestColumn.$highestRow)
             ->getBorders()->getAllBorders()->setBorderStyle('thin');
 
         foreach (range('A', $highestColumn) as $column) {
@@ -83,7 +83,7 @@ class NilaiExport implements FromCollection, WithHeadings, WithStyles
         }
 
         $sheet->getStyle('A1:A3')->getFont()->setBold(true);
-        $sheet->getStyle('A4:' . $highestColumn . '4')->getFont()->setBold(true);
+        $sheet->getStyle('A4:'.$highestColumn.'4')->getFont()->setBold(true);
 
         return [];
     }

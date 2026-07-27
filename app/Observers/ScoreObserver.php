@@ -18,7 +18,7 @@ class ScoreObserver
 
     public function deleted(Score $score): void
     {
-        if ($score->jenis !== Score::TYPE_PLACEMENT || !$score->pendaftaran) {
+        if ($score->jenis !== Score::TYPE_PLACEMENT || ! $score->pendaftaran) {
             return;
         }
 

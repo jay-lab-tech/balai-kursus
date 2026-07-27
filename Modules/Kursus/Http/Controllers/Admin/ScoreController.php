@@ -23,7 +23,7 @@ class ScoreController extends Controller
         $date = date('Ymd_His');
         $filename = "balai_kursus_upi_hasil_tes_penempatan_{$date}.xlsx";
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\NilaiExport(), $filename);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\NilaiExport, $filename);
     }
 
     public function index(Request $request)

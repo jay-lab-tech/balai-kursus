@@ -63,7 +63,7 @@ class ProgramController extends Controller
     {
         $peserta = Auth::user()->peserta;
 
-        if (!$peserta) {
+        if (! $peserta) {
             abort(403, 'Akun ini belum memiliki profil peserta.');
         }
 

@@ -120,7 +120,7 @@
                                 @if(!$registration)
                                     <form action="{{ route('peserta.program.daftar', $program) }}" method="POST" class="flex-1">
                                         @csrf
-                                        <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 font-semibold text-white hover:from-red-500 hover:to-red-600 transition">
+                                        <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 font-semibold text-white hover:from-sky-500 hover:to-sky-600 transition">
                                             <i class="bi bi-check2-circle mr-2"></i>Daftar Program
                                         </button>
                                     </form>

@@ -72,6 +72,6 @@ class Level extends Model
         $min = $this->nilai_min !== null ? rtrim(rtrim(number_format((float) $this->nilai_min, 2, '.', ''), '0'), '.') : '0';
         $max = $this->nilai_max !== null ? rtrim(rtrim(number_format((float) $this->nilai_max, 2, '.', ''), '0'), '.') : '100';
 
-        return $min . ' - ' . $max;
+        return $min.' - '.$max;
     }
 }

@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Absensi;
-use App\Models\Risalah;
 use App\Models\Pendaftaran;
+use App\Models\Risalah;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AbsensiFactory extends Factory

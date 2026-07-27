@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Peserta;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -22,6 +22,7 @@ class ProfileController extends Controller
 
         if ($user->role === 'peserta') {
             $peserta = Peserta::where('user_id', $user->id)->first();
+
             return view('profile.edit', [
                 'user' => $user,
                 'peserta' => $peserta,

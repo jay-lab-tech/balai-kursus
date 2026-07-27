@@ -13,7 +13,7 @@ class PendaftaranController extends Controller
         try {
             $peserta = Auth::user()->peserta;
 
-            if (!$peserta) {
+            if (! $peserta) {
                 $pendaftarans = collect();
 
                 return view('peserta::pendaftaran.index', compact('pendaftarans'));
@@ -26,7 +26,7 @@ class PendaftaranController extends Controller
 
             return view('peserta::pendaftaran.index', compact('pendaftarans'));
         } catch (\Throwable $exception) {
-            \Log::error('PendaftaranController Error: ' . $exception->getMessage());
+            \Log::error('PendaftaranController Error: '.$exception->getMessage());
 
             return redirect('/peserta/dashboard')->with('error', 'Terjadi kesalahan, coba lagi nanti.');
         }

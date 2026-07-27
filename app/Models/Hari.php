@@ -13,7 +13,7 @@ class Hari extends Model
 
     protected $fillable = [
         'nama',
-        'urutan'
+        'urutan',
     ];
 
     public function jadwals()

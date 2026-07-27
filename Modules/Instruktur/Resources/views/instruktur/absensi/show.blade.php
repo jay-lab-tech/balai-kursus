@@ -12,12 +12,12 @@
 
         <!-- Header Kursus -->
         <div class="rounded-2xl overflow-hidden shadow-2xl mb-8">
-            <div class="h-64 bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-center">
+            <div class="h-64 bg-gradient-to-r from-sky-600 to-sky-700 flex items-center justify-center">
                 <i class="bi bi-book text-white" style="font-size: 80px; opacity: 0.3;"></i>
             </div>
             <div class="bg-gradient-to-r from-gray-50 to-white p-8">
                 <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $kursus->nama }}</h1>
-                <p class="text-gray-600">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p>
+                <p class="text-gray-600">{{ $kursus->program->nama ?? '-' }} â€¢ {{ $kursus->level->nama ?? '-' }}</p>
             </div>
         </div>
 
@@ -39,10 +39,10 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 hover:border-red-500/50 transition-colors duration-200">
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 hover:border-sky-500/50 transition-colors duration-200">
                 <div class="flex items-start justify-between mb-4">
                     <h3 class="text-lg font-semibold text-white">Detail Pelaksanaan</h3>
-                    <i class="bi bi-person-circle text-red-500 text-2xl"></i>
+                    <i class="bi bi-person-circle text-sky-500 text-2xl"></i>
                 </div>
                 <div class="space-y-4">
                     <div>
@@ -60,7 +60,7 @@
         <!-- Daftar Pertemuan & Absensi Full Width -->
         <div class="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-8 mb-8">
             <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
-                <i class="bi bi-calendar3 text-red-500 mr-3"></i>
+                <i class="bi bi-calendar3 text-sky-500 mr-3"></i>
                 Daftar Pertemuan & Absensi
             </h3>
             @forelse($risalah as $r)
@@ -104,7 +104,7 @@
                                             $status = strtoupper($a->status);
                                             $badgeClass = match($status) {
                                                 'HADIR' => 'bg-green-600 text-white',
-                                                'ABSEN' => 'bg-red-600 text-white',
+                                                'ABSEN' => 'bg-sky-600 text-white',
                                                 'IZIN' => 'bg-yellow-400 text-gray-900',
                                                 default => 'bg-gray-600 text-white'
                                             };

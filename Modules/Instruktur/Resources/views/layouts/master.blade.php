@@ -1,6 +1,5 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,142 +15,76 @@
     @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #dc2626;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #991b1b;
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
-        .animate-slide-in-right { animation: slideInRight 0.5s ease-out; }
         [x-cloak] { display: none !important; }
+        html { scroll-behavior: smooth; }
+        body { min-height: 100vh; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b2035; }
+        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 999px; }
+        .role-shell { background: #0b2035; }
+        .role-nav { background: rgba(16, 42, 67, .96); border-color: rgba(125, 211, 252, .16); backdrop-filter: blur(18px); }
+        .role-nav-link { color: #cbd5e1; transition: .2s ease; }
+        .role-nav-link:hover { color: #fff; background: rgba(14, 165, 233, .12); }
+        .role-nav-link.active { color: #082f49; background: #fbbf24; box-shadow: 0 8px 20px rgba(251, 191, 36, .14); }
+        .role-card { border: 1px solid rgba(148, 163, 184, .16); background: rgba(16, 42, 67, .72); box-shadow: 0 20px 50px rgba(2, 18, 34, .25); }
     </style>
 </head>
-<body class="overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-    <!-- Navigation -->
-    <nav x-data="{ mobileMenuOpen: false, syncDesktopMenu() { if (window.innerWidth >= 768) this.mobileMenuOpen = false } }"
-         x-init="syncDesktopMenu()"
-         @resize.window="syncDesktopMenu()"
-         class="sticky top-0 z-50 border-b border-red-600/30 bg-gradient-to-r from-black to-gray-900 shadow-2xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex min-h-20 items-center justify-between gap-4 py-4">
-                <div class="flex min-w-0 items-center">
-                    <a href="/instruktur/dashboard" class="whitespace-nowrap text-xl font-bold text-white transition-colors hover:text-yellow-400 sm:text-2xl">
-                        <i class="bi bi-mortarboard mr-2 text-yellow-400"></i>Balai Kursus
-                    </a>
+<body class="role-shell overflow-x-hidden text-white">
+    <nav x-data="{ mobileMenuOpen: false }" class="role-nav sticky top-0 z-50 border-b shadow-2xl">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex min-h-[4.75rem] items-center justify-between gap-4">
+                <a href="{{ route('instruktur.dashboard') }}" class="flex min-w-0 items-center gap-3">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus" class="h-full w-full object-contain">
+                    </span>
+                    <span class="min-w-0">
+                        <span class="block text-[10px] font-bold uppercase tracking-[0.22em] text-sky-300">Ruang Instruktur</span>
+                        <span class="block truncate text-base font-bold text-white">Balai Kursus</span>
+                    </span>
+                </a>
+
+                <div class="hidden items-center gap-1 md:flex">
+                    <a href="{{ route('instruktur.dashboard') }}" class="role-nav-link {{ request()->is('instruktur/dashboard*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-grid-1x2-fill mr-2"></i>Ringkasan</a>
+                    <a href="{{ url('/instruktur/kursus') }}" class="role-nav-link {{ request()->is('instruktur/kursus*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-journal-bookmark-fill mr-2"></i>Kursus</a>
+                    <a href="{{ url('/instruktur/jadwal') }}" class="role-nav-link {{ request()->is('instruktur/jadwal*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-calendar3 mr-2"></i>Jadwal</a>
                 </div>
 
-                <div class="hidden items-center space-x-1 md:flex">
-                    <a href="/instruktur/dashboard" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('instruktur/dashboard*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
-                        <i class="bi bi-speedometer2 mr-2"></i>Dashboard
-                    </a>
-                    <a href="/instruktur/kursus" class="px-4 py-2 rounded-lg hover:bg-red-600/20 hover:text-yellow-400 transition-all duration-200 {{ request()->is('instruktur/kursus*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300' }}">
-                        <i class="bi bi-book mr-2"></i>Kursus
-                    </a>
+                <div class="hidden items-center gap-2 md:flex">
+                    <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10"><i class="bi bi-person-circle text-sky-300"></i>{{ Auth::user()->name ?? 'Instruktur' }}</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST">@csrf</form>
+                    <button type="submit" form="logout-form" class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-sky-500"><i class="bi bi-box-arrow-right"></i>Keluar</button>
                 </div>
 
-                <div class="hidden items-center space-x-4 md:flex">
-                    <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 bg-red-600/20 rounded-lg border border-red-500/30 focus:outline-none">
-                        <i class="bi bi-person-circle text-yellow-400 mr-2"></i>
-                        <span class="text-sm font-semibold">{{ Auth::user()->name ?? 'Instruktur' }}</span>
-                    </a>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors duration-200 transform hover:scale-105">
-                        <i class="bi bi-box-arrow-right mr-2"></i>Keluar
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
-                </div>
-
-                <button type="button"
-                        class="ml-auto inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-red-500/30 bg-red-600/10 text-yellow-400 transition hover:bg-red-600/20 md:hidden"
-                        @click="mobileMenuOpen = !mobileMenuOpen"
-                        :aria-expanded="mobileMenuOpen.toString()"
-                        aria-label="Buka menu navigasi">
-                    <i class="bi text-2xl" :class="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-300/20 bg-sky-400/10 text-sky-200 md:hidden" @click="mobileMenuOpen = !mobileMenuOpen" :aria-expanded="mobileMenuOpen.toString()" aria-label="Buka menu navigasi">
+                    <i class="bi text-xl" :class="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
                 </button>
             </div>
 
-            <div x-cloak
-                 x-show="mobileMenuOpen"
-                 x-transition.opacity.duration.200ms
-                 class="border-t border-red-600/20 pb-4 pt-3 md:hidden">
-                <div class="space-y-2">
-                    <a href="/instruktur/dashboard" class="block rounded-xl px-4 py-3 text-base transition-all duration-200 {{ request()->is('instruktur/dashboard*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300 hover:bg-red-600/10 hover:text-yellow-400' }}">
-                        <i class="bi bi-speedometer2 mr-3"></i>Dashboard
-                    </a>
-                    <a href="/instruktur/kursus" class="block rounded-xl px-4 py-3 text-base transition-all duration-200 {{ request()->is('instruktur/kursus*') ? 'bg-red-600/30 text-yellow-400' : 'text-gray-300 hover:bg-red-600/10 hover:text-yellow-400' }}">
-                        <i class="bi bi-book mr-3"></i>Kursus
-                    </a>
+            <div x-cloak x-show="mobileMenuOpen" x-transition.opacity class="border-t border-white/10 py-4 md:hidden">
+                <div class="grid gap-2">
+                    <a href="{{ route('instruktur.dashboard') }}" class="role-nav-link {{ request()->is('instruktur/dashboard*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-grid-1x2-fill mr-3"></i>Ringkasan</a>
+                    <a href="{{ url('/instruktur/kursus') }}" class="role-nav-link {{ request()->is('instruktur/kursus*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-journal-bookmark-fill mr-3"></i>Kursus</a>
+                    <a href="{{ url('/instruktur/jadwal') }}" class="role-nav-link {{ request()->is('instruktur/jadwal*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-calendar3 mr-3"></i>Jadwal</a>
                 </div>
-
-                <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                    <a href="{{ route('profile.edit') }}" class="flex items-center justify-center rounded-xl border border-red-500/30 bg-red-600/20 px-4 py-3 text-sm font-semibold text-white">
-                        <i class="bi bi-person-circle mr-2 text-yellow-400"></i>{{ Auth::user()->name ?? 'Instruktur' }}
-                    </a>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center justify-center rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-700">
-                        <i class="bi bi-box-arrow-right mr-2"></i>Keluar
-                    </a>
+                <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                    <a href="{{ route('profile.edit') }}" class="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold"><i class="bi bi-person-circle mr-2 text-sky-300"></i>Profil Saya</a>
+                    <button type="submit" form="logout-form" class="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold"><i class="bi bi-box-arrow-right mr-2"></i>Keluar</button>
                 </div>
             </div>
         </div>
     </nav>
-    <!-- Main Content -->
-    <main class="overflow-x-hidden">
-        @yield('content')
-    </main>
-    <!-- Footer -->
-    <footer class="bg-gradient-to-r from-black to-gray-900 border-t border-red-600/30 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                <div>
-                    <h3 class="text-lg font-bold text-yellow-400 mb-4">Balai Kursus</h3>
-                    <p class="text-gray-400">Platform pembelajaran berkualitas tinggi untuk pengembangan skill Anda.</p>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Navigasi Cepat</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="/instruktur/dashboard" class="hover:text-yellow-400 transition-colors">Dashboard</a></li>
-                        <li><a href="/instruktur/kursus" class="hover:text-yellow-400 transition-colors">Kursus Saya</a></li>
-                        <li><a href="/instruktur/absensi" class="hover:text-yellow-400 transition-colors">Absensi</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-4">Hubungi Kami</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><i class="bi bi-telephone mr-2 text-red-500"></i>+62 123 456 789</li>
-                        <li><i class="bi bi-envelope mr-2 text-red-500"></i>info@balaikursus.com</li>
-                        <li><i class="bi bi-geo-alt mr-2 text-red-500"></i>Jakarta, Indonesia</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 Balai Kursus. Semua hak dilindungi.</p>
-            </div>
+
+    <main class="min-h-[calc(100vh-4.75rem)] overflow-x-hidden">@yield('content')</main>
+
+    <footer class="border-t border-sky-300/10 bg-[#061a2b]">
+        <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+            <span>Balai Kursus · Ruang Instruktur</span>
+            <a href="{{ url('/papan-informasi') }}" class="font-semibold text-sky-300 hover:text-amber-300">Papan Informasi Publik</a>
         </div>
     </footer>
+
     @if($jsFile)
         <script src="{{ asset('build/' . $jsFile) }}" type="module"></script>
     @endif
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js"></script>
 </body>
 </html>

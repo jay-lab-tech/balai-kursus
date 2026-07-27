@@ -10,16 +10,21 @@ class InstrukturKursusLevel extends Model
     use HasFactory;
 
     protected $fillable = [
-        'instruktur_id', 'kursus_id', 'level_id', 'assigned_at'
+        'instruktur_id', 'kursus_id', 'level_id', 'assigned_at',
     ];
 
-    public function instruktur() {
+    public function instruktur()
+    {
         return $this->belongsTo(Instruktur::class);
     }
-    public function kursus() {
+
+    public function kursus()
+    {
         return $this->belongsTo(Kursus::class);
     }
-    public function level() {
+
+    public function level()
+    {
         return $this->belongsTo(Level::class);
     }
 }

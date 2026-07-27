@@ -11,7 +11,7 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300"><i class="bi bi-journal-richtext text-red-400"></i>Risalah Per Kelas</div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300"><i class="bi bi-journal-richtext text-sky-400"></i>Risalah Per Kelas</div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">{{ $kursus->nama }}</h1>
                 <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Semua dokumentasi materi, tanggal pertemuan, dan instruktur untuk kelas ini terkumpul dalam satu tampilan.</p>
             </div>
@@ -20,7 +20,7 @@
 
         <div class="mt-6 grid gap-4 md:grid-cols-2">
             <article class="admin-stat-card"><span class="admin-stat-card__label">Total Risalah</span><div class="admin-stat-card__value">{{ $risalahs->count() }}</div><p class="admin-stat-card__hint">Jumlah risalah yang sudah terdokumentasi untuk kelas ini.</p></article>
-            <article class="admin-stat-card"><span class="admin-stat-card__label">Kelas Aktif</span><div class="text-base font-semibold leading-7 text-white">{{ $kursus->nama }}</div><p class="mt-3 text-sm text-slate-300">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p></article>
+            <article class="admin-stat-card"><span class="admin-stat-card__label">Kelas Aktif</span><div class="text-base font-semibold leading-7 text-white">{{ $kursus->nama }}</div><p class="mt-3 text-sm text-slate-300">{{ $kursus->program->nama ?? '-' }} â€¢ {{ $kursus->level->nama ?? '-' }}</p></article>
         </div>
     </section>
 

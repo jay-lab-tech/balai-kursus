@@ -9,8 +9,8 @@
 @section('content')
 <div class="space-y-8 max-w-5xl">
     <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
-        <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-            <i class="bi bi-pencil-square text-red-400"></i>
+        <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+            <i class="bi bi-pencil-square text-sky-400"></i>
             Update Kelas
         </div>
         <h1 class="mt-5 text-3xl font-bold text-white">Perbarui informasi kelas <span class="text-yellow-300">{{ $kursus->nama }}</span>.</h1>
@@ -18,12 +18,12 @@
     </section>
 
     @if($errors->any())
-        <div class="rounded-[1.5rem] border border-red-500/20 bg-red-600/10 px-5 py-4 text-red-100 shadow-lg">
+        <div class="rounded-[1.5rem] border border-sky-500/20 bg-sky-600/10 px-5 py-4 text-sky-100 shadow-lg">
             <div class="flex items-start gap-3">
-                <i class="bi bi-exclamation-octagon-fill mt-0.5 text-lg text-red-300"></i>
+                <i class="bi bi-exclamation-octagon-fill mt-0.5 text-lg text-sky-300"></i>
                 <div>
                     <p class="font-semibold">Perubahan belum bisa disimpan</p>
-                    <ul class="mt-2 space-y-1 text-sm text-red-100/90">
+                    <ul class="mt-2 space-y-1 text-sm text-sky-100/90">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -106,7 +106,7 @@
         </section>
 
         <div class="flex flex-wrap gap-3">
-            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                 <i class="bi bi-check-circle-fill"></i>
                 Update Kelas
             </button>

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Semua Risalah')
 
@@ -9,18 +9,18 @@
 @section('content')
 <div class="space-y-8">
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-            <i class="bi bi-journal-richtext text-red-400"></i>
+        <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+            <i class="bi bi-journal-richtext text-sky-400"></i>
             Dokumentasi Belajar
         </div>
         <h1 class="mt-5 text-3xl font-bold text-white">Semua risalah pertemuan dalam satu layar.</h1>
         <p class="mt-3 max-w-3xl text-base leading-7 text-slate-300">Gunakan halaman ini untuk meninjau materi yang diajarkan, pengajar yang bertugas, dan konsistensi dokumentasi setiap pertemuan kelas.</p>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Risalah</p>
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Risalah</p>
                 <p class="mt-3 text-4xl font-bold">{{ $risalahs->count() }}</p>
-                <p class="mt-2 text-sm text-red-100/90">Jumlah seluruh risalah yang sudah tercatat.</p>
+                <p class="mt-2 text-sm text-sky-100/90">Jumlah seluruh risalah yang sudah tercatat.</p>
             </div>
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 md:col-span-2">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Fokus Halaman</p>

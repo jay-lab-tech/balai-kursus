@@ -11,8 +11,8 @@
     <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
         <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-award-fill text-red-400"></i>
+                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
+                    <i class="bi bi-award-fill text-sky-400"></i>
                     Sertifikat Resmi
                 </div>
                 <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Kelola penerbitan sertifikat dengan template resmi.</h1>
@@ -28,7 +28,7 @@
                     <i class="bi bi-collection text-yellow-300"></i>
                     Generate Batch
                 </a>
-                <a href="{{ route('admin.certificates.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-red-500 hover:to-red-600">
+                <a href="{{ route('admin.certificates.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
                     <i class="bi bi-plus-circle"></i>
                     Buat Draft Sertifikat
                 </a>
@@ -36,10 +36,10 @@
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-4">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-red-600 to-red-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-red-100">Total Sertifikat</p>
+            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Sertifikat</p>
                 <p class="mt-3 text-4xl font-bold">{{ $certificates->count() }}</p>
-                <p class="mt-2 text-sm text-red-100/90">Seluruh entri sertifikat yang pernah dibuat admin.</p>
+                <p class="mt-2 text-sm text-sky-100/90">Seluruh entri sertifikat yang pernah dibuat admin.</p>
             </div>
             <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Draft</p>
@@ -145,7 +145,7 @@
                                             </form>
                                         </div>
                                     @elseif($certificate->status === \App\Models\Certificate::STATUS_REVOKED)
-                                        <span class="rounded-full border border-red-400/20 bg-red-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-red-300">Revoked</span>
+                                        <span class="rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">Revoked</span>
                                     @else
                                         <span class="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Published</span>
                                     @endif
@@ -163,7 +163,7 @@
                                         @if($certificate->status === \App\Models\Certificate::STATUS_PUBLISHED)
                                             <form action="{{ route('admin.certificates.revoke', $certificate->id) }}" method="POST" class="inline-flex">
                                                 @csrf
-                                                <button type="submit" class="admin-btn admin-btn-sm border border-red-500/20 bg-red-600/10 text-red-200 hover:bg-red-600/20">
+                                                <button type="submit" class="admin-btn admin-btn-sm border border-sky-500/20 bg-sky-600/10 text-sky-200 hover:bg-sky-600/20">
                                                     <i class="bi bi-x-octagon"></i>
                                                     Revoke
                                                 </button>

@@ -38,7 +38,7 @@ class AuthenticationTest extends TestCase
 
         $response = $this->withCookie(
             TrustedDeviceManager::COOKIE_NAME,
-            $user->id . '|' . $plainToken,
+            $user->id.'|'.$plainToken,
         )->post('/login', [
             'email' => $user->email,
         ]);
@@ -71,7 +71,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response->assertRedirect('/login');
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('password');
         $this->assertGuest();
     }
 

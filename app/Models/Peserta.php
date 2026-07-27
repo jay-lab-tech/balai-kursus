@@ -10,19 +10,22 @@ class Peserta extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id','nomor_peserta','no_hp','instansi'
+        'user_id', 'nomor_peserta', 'no_hp', 'instansi',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function pendaftarans() {
+    public function pendaftarans()
+    {
         return $this->hasMany(Pendaftaran::class);
     }
 
     // Relasi ke pivot peserta_kursus_levels
-    public function kursusLevels() {
+    public function kursusLevels()
+    {
         return $this->hasMany(PesertaKursusLevel::class);
     }
 }
