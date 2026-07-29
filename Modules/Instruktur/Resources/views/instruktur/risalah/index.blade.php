@@ -2,13 +2,17 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 gap-3 flex-wrap">
         <div>
             <h2 class="fw-bold text-dark mb-1">
                 <i class="bi bi-file-earmark me-2"></i>{{ $kursus->nama }}
             </h2>
             <small class="text-muted">Daftar Pertemuan & Risalah</small>
         </div>
+        <a href="{{ route('instruktur.kursus.show', $kursus) }}" class="inline-flex items-center gap-2 rounded-xl border border-[#c8d9d6] bg-white px-4 py-2 font-semibold text-[#40627d] shadow-sm transition hover:border-[#0d9488] hover:text-[#0f766e]">
+            <i class="bi bi-arrow-left"></i>
+            Ringkasan Kursus
+        </a>
         {{-- Admin membuat pertemuan; instruktur tidak dapat menambah pertemuan --}}
     </div>
 

@@ -7,41 +7,59 @@
 ---
 
 **Project:** Balai Kursus
-**Generated:** 2026-07-27 23:24:21
-**Category:** Educational App
-**Design Dials:** Variance 6/10 (Balanced / Modern) | Motion 4/10 (Standard) | Density 7/10 (Standard)
+**Updated:** 2026-07-29
+**Category:** Education Management / Academic Operations
+**Direction:** Institutional Editorial + Academic Workspace
+**Design Dials:** Variance 4/10 (Structured) | Motion 2/10 (Quiet) | Density 6/10 (Focused)
 
 ---
 
 ## Global Rules
 
+### Role Principles
+
+- **Admin:** dense but calm operational workspace; prioritize records, filters, and next actions.
+- **Instruktur:** course-centered workspace; every course page exposes local tabs for sessions, attendance, grades, and participants.
+- **Peserta:** progress-centered portal; show current class, next session, registration status, and learning records before catalog browsing.
+- **Public:** institutional information page; emphasize trust, schedule, announcements, and clear sign-in/register actions.
+
+### Layout Principles
+
+- Use one shared role shell per audience instead of styling legacy modules independently.
+- Use breadcrumb and local navigation on every page below the role dashboard.
+- Prefer editorial columns, ruled sections, and compact lists over decorative card grids.
+- Use a card only when it groups a meaningful object; do not wrap every statistic or button in a card.
+- Keep one primary action per page section and make destructive actions visually quiet until confirmation.
+
 ### Color Palette
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#0D9488` | `--color-primary` |
+| Primary | `#173F5F` | `--color-primary` |
 | On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#2DD4BF` | `--color-secondary` |
-| Accent/CTA | `#D97706` | `--color-accent` |
-| Background | `#F0FDFA` | `--color-background` |
-| Foreground | `#134E4A` | `--color-foreground` |
-| Muted | `#E8F1F4` | `--color-muted` |
-| Border | `#5EEAD4` | `--color-border` |
+| Secondary | `#0D9488` | `--color-secondary` |
+| Accent/CTA | `#A84A2A` | `--color-accent` |
+| Background | `#F5F2EA` | `--color-background` |
+| Surface | `#FFFEFA` | `--color-surface` |
+| Foreground | `#1E2D36` | `--color-foreground` |
+| Muted | `#E5E0D6` | `--color-muted` |
+| Border | `#CFC8BB` | `--color-border` |
 | Destructive | `#DC2626` | `--color-destructive` |
 | Ring | `#0D9488` | `--color-ring` |
 
-**Color Notes:** Education teal + course amber + grade green
+**Color Notes:** Ink blue for structure, restrained teal for active states, terracotta for actions and academic emphasis. Avoid neon, purple, and gradient backgrounds.
 
 ### Typography
 
-- **Heading Font:** Fira Code
-- **Body Font:** Fira Sans
-- **Mood:** dashboard, data, analytics, code, technical, precise
-- **Google Fonts:** [Fira Code + Fira Sans](https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap)
+- **Heading Font:** Source Serif 4
+- **Body Font:** IBM Plex Sans
+- **Utility Font:** IBM Plex Mono
+- **Mood:** institutional, editorial, calm, precise, academic
+- **Google Fonts:** [Source Serif 4 + IBM Plex Sans + IBM Plex Mono](https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@500;600;700&display=swap)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -161,21 +179,22 @@
 
 ## Style Guidelines
 
-**Style:** Sales Intelligence Dashboard
+**Style:** Institutional Editorial Workspace
 
-**Keywords:** Deal pipeline, sales metrics, territory performance, sales rep leaderboard, win-loss analysis, quota tracking, forecast accuracy
+**Keywords:** academic operations, course management, class sessions, attendance, assessment, participant progress, institutional records
 
-**Best For:** CRM dashboards, sales management, opportunity tracking, performance management, quota planning
+**Best For:** education management, training centers, course administration, instructor workspaces, participant portals
 
-**Key Effects:** Deal movement animations, metric updates, leaderboard ranking changes, gauge needle movements, status change highlights
+**Key Effects:** quiet hover states, clear active navigation, restrained status changes, no decorative motion on dense data
 
 ### Page Pattern
 
-**Pattern Name:** Newsletter / Content First
+**Pattern Name:** Contextual Workspace
 
-- **Conversion Strategy:** Single field form (Email only). Show 'Join X, 000 readers'. Read sample link.
-- **CTA Placement:** Hero inline form + Sticky header form
-- **Section Order:** 1. Hero (Value Prop + Form), 2. Recent Issues/Archives, 3. Social Proof (Subscriber count), 4. About Author
+- **Navigation:** role shell + contextual breadcrumb + local tabs for a course or record.
+- **Primary action:** one clear action near the page title; secondary actions remain quiet.
+- **Section order:** 1. page context, 2. operational summary, 3. primary records/list, 4. related actions.
+- **Data presentation:** use tables for administrative records, lists for activity, and cards only for meaningful grouped content.
 
 ---
 

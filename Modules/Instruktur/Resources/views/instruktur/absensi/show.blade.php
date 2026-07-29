@@ -5,10 +5,16 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
-        <a href="/instruktur/kursus" class="inline-flex items-center px-4 py-2 mb-8 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 group">
-            <i class="bi bi-arrow-left mr-2 transform group-hover:-translate-x-1 transition-transform"></i>
-            <span>Kembali ke Daftar Kursus</span>
-        </a>
+        <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
+            <a href="/instruktur/kursus" class="inline-flex items-center px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 group">
+                <i class="bi bi-arrow-left mr-2 transform group-hover:-translate-x-1 transition-transform"></i>
+                <span>Kembali ke Daftar Kursus</span>
+            </a>
+            <a href="{{ route('instruktur.risalah.index', $kursus) }}" class="inline-flex items-center gap-2 rounded-xl border border-sky-300 bg-white px-4 py-2 font-semibold text-sky-700 shadow-sm transition hover:border-sky-500 hover:text-sky-900">
+                <i class="bi bi-file-earmark-text"></i>
+                Kelola Risalah
+            </a>
+        </div>
 
         <!-- Header Kursus -->
         <div class="rounded-2xl overflow-hidden shadow-2xl mb-8">
