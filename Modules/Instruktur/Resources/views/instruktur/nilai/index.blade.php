@@ -5,17 +5,21 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl space-y-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#cfc8bb] pb-4">
+            <a href="{{ route('instruktur.kursus.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#526875] transition hover:text-[#0d9488]"><i class="bi bi-arrow-left"></i> Kembali ke kursus saya</a>
+            <span class="font-mono text-xs uppercase tracking-[.16em] text-[#6c7c82]">Kursus / {{ $kursus->id }} / Nilai</span>
+        </div>
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-xs uppercase tracking-[0.35em] text-gray-400">Instruktur Panel</p>
-                <h1 class="mt-2 text-4xl font-bold text-white">Nilai Akhir Kelas</h1>
+                <p class="font-mono text-xs uppercase tracking-[.18em] text-[#0d9488]">{{ $kursus->program->nama ?? 'Program' }} / {{ $kursus->level->nama ?? 'Level' }}</p>
+                <h1 class="mt-2 text-4xl tracking-tight text-[#173f5f]">Nilai Akhir Kelas</h1>
                 <p class="mt-3 max-w-3xl text-sm text-gray-400">
                     Halaman ini menyimpan <span class="font-semibold text-white">nilai akhir kursus per peserta</span>.
                     Jadi saat ini nilainya belum dibuat per pertemuan, melainkan rekap akhir setelah proses belajar di kelas berjalan atau selesai.
                 </p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('instruktur.kursus.show', $kursus) }}" class="inline-flex items-center rounded-xl bg-white/10 px-4 py-3 font-semibold text-white hover:bg-white/20 transition">
+                <a href="{{ route('instruktur.kursus.show', $kursus) }}" class="inline-flex items-center rounded-xl border border-[#cfc8bb] bg-[#fffefa] px-4 py-3 font-semibold text-[#173f5f] hover:border-[#0d9488] transition">
                     <i class="bi bi-arrow-left mr-2"></i>Kembali ke Detail Kelas
                 </a>
                 <a href="{{ route('instruktur.nilai.export', $kursus->id) }}" class="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white hover:bg-emerald-500 transition">
@@ -23,6 +27,12 @@
                 </a>
             </div>
         </div>
+
+        <nav class="flex flex-wrap gap-1 border-b border-[#cfc8bb]" aria-label="Navigasi kursus">
+            <a href="{{ route('instruktur.kursus.show', $kursus) }}" class="px-4 py-3 text-sm font-semibold text-[#6c7c82] transition hover:text-[#0d9488]">Ringkasan</a>
+            <a href="{{ route('instruktur.risalah.index', $kursus) }}" class="px-4 py-3 text-sm font-semibold text-[#6c7c82] transition hover:text-[#0d9488]">Pertemuan &amp; Risalah</a>
+            <a href="{{ route('instruktur.nilai.index', $kursus) }}" class="border-b-2 border-[#a84a2a] px-4 py-3 text-sm font-semibold text-[#173f5f]">Nilai Peserta</a>
+        </nav>
 
         @if(session('success'))
             <div class="rounded-2xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-green-100">
