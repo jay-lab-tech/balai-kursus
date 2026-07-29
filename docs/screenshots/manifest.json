@@ -3,6 +3,7 @@
   "Tampilan Halaman Login": "docs/screenshots/tampilan-halaman-login.png",
   "Tampilan Halaman Registrasi": "docs/screenshots/tampilan-halaman-registrasi.png",
   "Tampilan Halaman Lupa Kata Sandi": "docs/screenshots/tampilan-halaman-lupa-kata-sandi.png",
+  "Tampilan Verifikasi Sertifikat": "docs/screenshots/tampilan-verifikasi-sertifikat.png",
   "Tampilan Dashboard Admin": "docs/screenshots/tampilan-dashboard-admin.png",
   "Tampilan Manajemen Program": "docs/screenshots/tampilan-manajemen-program.png",
   "Tampilan Manajemen Level": "docs/screenshots/tampilan-manajemen-level.png",
@@ -23,18 +24,14 @@
   "Tampilan Pengelolaan Risalah": "docs/screenshots/tampilan-pengelolaan-risalah.png",
   "Tampilan Pencatatan Absensi": "docs/screenshots/tampilan-pencatatan-absensi.png",
   "Tampilan Penilaian Peserta": "docs/screenshots/tampilan-penilaian-peserta.png",
+  "Tampilan Jadwal Instruktur": "docs/screenshots/tampilan-jadwal-instruktur.png",
   "Tampilan Dashboard Peserta": "docs/screenshots/tampilan-dashboard-peserta.png",
   "Tampilan Daftar Program": "docs/screenshots/tampilan-daftar-program.png",
   "Tampilan Detail dan Pendaftaran Program": "docs/screenshots/tampilan-detail-dan-pendaftaran-program.png",
   "Tampilan Daftar Kursus": "docs/screenshots/tampilan-daftar-kursus.png",
   "Tampilan Kursus Saya": "docs/screenshots/tampilan-kursus-saya.png",
-  "Tampilan Detail Kursus dan Risalah": "docs/screenshots/tampilan-detail-kursus-dan-risalah.png",
   "Tampilan Daftar Pendaftaran Peserta": "docs/screenshots/tampilan-daftar-pendaftaran-peserta.png",
   "Tampilan Riwayat Pembayaran": "docs/screenshots/tampilan-riwayat-pembayaran.png",
   "Tampilan Profil Peserta": "docs/screenshots/tampilan-profil-peserta.png",
-  "Tampilan Daftar dan Unduh Sertifikat Peserta": "docs/screenshots/tampilan-daftar-dan-unduh-sertifikat-peserta.png",
-  "Tampilan Verifikasi Sertifikat": "docs/screenshots/tampilan-verifikasi-sertifikat.png",
-  "Tampilan Jadwal Instruktur": "docs/screenshots/tampilan-jadwal-instruktur.png",
-  "Tampilan Proses Pembayaran (Midtrans)": "docs/screenshots/tampilan-proses-pembayaran-midtrans.png",
-  "Tampilan Status Pembayaran Berhasil": "docs/screenshots/tampilan-status-pembayaran-berhasil.png"
+  "Tampilan Daftar dan Unduh Sertifikat Peserta": "docs/screenshots/tampilan-daftar-dan-unduh-sertifikat-peserta.png"
 }

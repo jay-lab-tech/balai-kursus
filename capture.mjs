@@ -43,7 +43,7 @@ const FIGS = [
   ['Tampilan Detail dan Pendaftaran Program', 'peserta', '/peserta/program/1'],
   ['Tampilan Daftar Kursus', 'peserta', '/peserta/kursus'],
   ['Tampilan Kursus Saya', 'peserta', '/peserta/kursus/saya'],
-  ['Tampilan Detail Kursus dan Risalah', 'peserta', '/peserta/kursus/1/detail'],
+  ['Tampilan Detail Kursus dan Risalah', 'peserta', '/peserta/kursus/2/detail'],
   ['Tampilan Daftar Pendaftaran Peserta', 'peserta', '/peserta/pendaftaran'],
   ['Tampilan Riwayat Pembayaran', 'peserta', '/peserta/riwayat-pembayaran'],
   ['Tampilan Profil Peserta', 'peserta', '/profile'],
@@ -58,11 +58,9 @@ const CRED = {
 
 async function login(page, email) {
   await page.goto(BASE + '/login', { waitUntil: 'domcontentloaded', timeout: 45000 });
-  // Buka panel "Pakai password untuk admin, instruktur, atau device baru"
-  await page.locator('summary').first().click();
-  await page.fill('#fallback_email', email);
+  await page.fill('#email', email);
   await page.fill('#password', 'password');
-  await page.press('#password', 'Enter');
+  await page.click('button[type="submit"]');
   try { await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 30000 }); }
   catch (e) { /* lanjut saja */ }
   await page.waitForTimeout(1000);

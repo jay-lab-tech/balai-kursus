@@ -3,65 +3,14 @@
 @section('title', 'Riwayat Pembayaran - Balai Kursus')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl space-y-8">
-        <div>
-            <h1 class="text-4xl font-bold text-white">
-                <i class="bi bi-receipt text-yellow-400 mr-3"></i>Riwayat Pembayaran
-            </h1>
-            <p class="mt-2 text-gray-400">Daftar seluruh transaksi pembayaran kelas/kursus yang sudah Anda dapatkan.</p>
-        </div>
-
+<div class="min-h-screen bg-[#f7f8f6] px-4 py-8 sm:px-6 lg:px-10">
+    <div class="mx-auto max-w-7xl">
+        <header class="mb-8 border-b border-[#dce7e5] pb-7"><p class="font-mono text-xs uppercase tracking-[0.22em] text-[#0d9488]">Ruang peserta / keuangan</p><h1 class="mt-2 text-4xl font-bold tracking-tight text-[#173f5f]">Riwayat pembayaran</h1><p class="mt-3 text-[#718596]">Semua transaksi pembayaran kelas yang tercatat di akun Anda.</p></header>
         @if($payments->isEmpty())
-            <div class="rounded-3xl border border-dashed border-white/10 px-8 py-16 text-center text-gray-400">
-                Belum ada transaksi pembayaran yang tercatat.
-            </div>
+            <div class="border border-dashed border-[#b8cbc8] bg-white px-6 py-16 text-center"><i class="bi bi-receipt text-4xl text-[#0d9488]"></i><h2 class="mt-4 text-2xl font-bold text-[#173f5f]">Belum ada transaksi</h2><p class="mt-2 text-[#718596]">Transaksi pembayaran akan muncul setelah Anda menyelesaikan pembayaran kelas.</p></div>
         @else
-            <div class="grid gap-5 md:grid-cols-3">
-                <div class="rounded-3xl bg-gradient-to-br from-blue-500 to-blue-700 p-6 text-white shadow-xl">
-                    <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Total Transaksi</p>
-                    <p class="mt-3 text-4xl font-bold">{{ $payments->count() }}</p>
-                </div>
-                <div class="rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 text-white shadow-xl">
-                    <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Pembayaran Berhasil</p>
-                    <p class="mt-3 text-4xl font-bold">{{ $payments->where('status', 'success')->count() }}</p>
-                </div>
-                <div class="rounded-3xl bg-gradient-to-br from-yellow-500 to-yellow-700 p-6 text-white shadow-xl">
-                    <p class="text-sm font-semibold uppercase tracking-wider opacity-80">Nominal Berhasil</p>
-                    <p class="mt-3 text-2xl font-bold">Rp {{ number_format($payments->where('status', 'success')->sum('amount'), 0, ',', '.') }}</p>
-                </div>
-            </div>
-
-            <div class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead class="bg-black/20 text-left text-xs uppercase tracking-[0.25em] text-gray-400">
-                            <tr>
-                                <th class="px-6 py-4">Tanggal</th>
-                                <th class="px-6 py-4">Program</th>
-                                <th class="px-6 py-4">Kelas</th>
-                                <th class="px-6 py-4">Nominal</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4">Order ID</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/10 text-sm text-gray-200">
-                            @foreach($payments as $payment)
-                                <tr class="hover:bg-white/5">
-                                    <td class="px-6 py-4">{{ $payment->created_at->format('d M Y H:i') }}</td>
-                                    <td class="px-6 py-4">{{ $payment->pendaftaran->program->nama ?? '-' }}</td>
-                                    <td class="px-6 py-4">{{ $payment->pendaftaran->kursus->nama ?? 'Belum ada kelas saat transaksi dibuat' }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs uppercase">{{ $payment->status }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-xs text-gray-400">{{ $payment->order_id }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <section class="mb-7 grid gap-4 md:grid-cols-3"><div class="border-l-4 border-[#0d9488] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]"><p class="font-mono text-xs uppercase tracking-[0.16em] text-[#718596]">Total transaksi</p><p class="mt-3 text-4xl font-bold text-[#173f5f]">{{ $payments->count() }}</p></div><div class="border-l-4 border-[#16a34a] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]"><p class="font-mono text-xs uppercase tracking-[0.16em] text-[#718596]">Berhasil</p><p class="mt-3 text-4xl font-bold text-[#173f5f]">{{ $payments->where('status','success')->count() }}</p></div><div class="border-l-4 border-[#d97706] bg-[#fffaf0] p-5"><p class="font-mono text-xs uppercase tracking-[0.16em] text-[#b45309]">Nominal berhasil</p><p class="mt-3 text-2xl font-bold text-[#173f5f]">Rp {{ number_format($payments->where('status','success')->sum('amount'),0,',','.') }}</p></div></section>
+            <section class="overflow-hidden border border-[#dce7e5] bg-white shadow-[0_14px_35px_rgba(23,63,95,.06)]"><div class="border-b border-[#e8efed] px-5 py-5 sm:px-6"><p class="font-mono text-xs uppercase tracking-[0.18em] text-[#0d9488]">Ledger transaksi</p><h2 class="mt-1 text-xl font-bold text-[#173f5f]">Pembayaran terbaru</h2></div><div class="overflow-x-auto"><table class="min-w-full divide-y divide-[#e8efed]"><thead class="bg-[#f3f7f6] text-left font-mono text-[11px] uppercase tracking-[0.16em] text-[#718596]"><tr><th class="px-5 py-4">Tanggal</th><th class="px-5 py-4">Program / kelas</th><th class="px-5 py-4">Nominal</th><th class="px-5 py-4">Status</th><th class="px-5 py-4">Order ID</th></tr></thead><tbody class="divide-y divide-[#e8efed] text-sm text-[#40627d]">@foreach($payments as $payment)<tr class="transition hover:bg-[#f3f7f6]"><td class="whitespace-nowrap px-5 py-5">{{ $payment->created_at->format('d M Y H:i') }}</td><td class="min-w-[250px] px-5 py-5"><p class="font-semibold text-[#173f5f]">{{ $payment->pendaftaran->program->nama ?? '-' }}</p><p class="mt-1 text-xs text-[#718596]">{{ $payment->pendaftaran->kursus->nama ?? 'Belum ada kelas saat transaksi dibuat' }}</p></td><td class="whitespace-nowrap px-5 py-5 font-semibold text-[#173f5f]">Rp {{ number_format($payment->amount,0,',','.') }}</td><td class="px-5 py-5"><span class="rounded-full bg-[#e8f7f4] px-3 py-1 font-mono text-[11px] font-semibold uppercase text-[#0f766e]">{{ $payment->status }}</span></td><td class="whitespace-nowrap px-5 py-5 font-mono text-xs text-[#718596]">{{ $payment->order_id }}</td></tr>@endforeach</tbody></table></div></section>
         @endif
     </div>
 </div>
