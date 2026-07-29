@@ -71,9 +71,65 @@
         .role-shell main [class*="bg-gradient"][style*="width"] { background: #0d9488 !important; }
         .role-shell main [style*="linear-gradient"] { background: #173f5f !important; }
         footer { background: #173f5f !important; border-color: #285574 !important; }
+
+        .workspace-body { background: #f5f2ea; color: #1e2d36; }
+        .workspace-app { min-height: 100vh; display: grid; grid-template-columns: 15.5rem minmax(0, 1fr); }
+        .workspace-sidebar { background: #173f5f; color: #fff; padding: 1.5rem 1rem; display: flex; flex-direction: column; }
+        .workspace-sidebar-fixed { position: fixed; inset: 0 auto 0 0; z-index: 40; width: 15.5rem; }
+        .workspace-brand { display: flex; align-items: center; gap: .75rem; padding: .2rem .65rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,.16); }
+        .workspace-brand img { width: 2.35rem; height: 2.35rem; object-fit: contain; background: #fff; padding: .3rem; border-radius: .4rem; }
+        .workspace-brand small { display: block; color: #9ddbd4; font: 600 .62rem/1.2 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+        .workspace-brand strong { display: block; margin-top: .2rem; font: 700 1rem/1.2 'Source Serif 4', serif; }
+        .workspace-nav-label { margin: 1.75rem .7rem .55rem; color: #b8cedb; font: 600 .65rem/1.2 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; }
+        .workspace-link { display: flex; align-items: center; gap: .7rem; padding: .75rem .7rem; color: #d9e6ec; border-left: 3px solid transparent; font-size: .88rem; font-weight: 600; text-decoration: none; transition: color .18s ease, background .18s ease, border-color .18s ease; }
+        .workspace-link:hover { color: #fff; background: rgba(255,255,255,.09); }
+        .workspace-link.active { color: #fff; background: rgba(13,148,136,.32); border-left-color: #f0a36c; }
+        .workspace-link i { width: 1.1rem; text-align: center; color: #9ddbd4; }
+        .workspace-account { margin-top: auto; padding: 1rem .7rem 0; border-top: 1px solid rgba(255,255,255,.16); color: #d9e6ec; font-size: .78rem; }
+        .workspace-account span { display: block; color: #9ddbd4; font: .7rem 'IBM Plex Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .workspace-column { min-width: 0; background: #f5f2ea; }
+        .workspace-topbar { min-height: 4.4rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem clamp(1rem, 3vw, 2.5rem); background: #fffefa; border-bottom: 1px solid #cfc8bb; }
+        .workspace-topbar-fixed { position: fixed; inset: 0 0 auto 15.5rem; z-index: 30; }
+        .workspace-topbar small { color: #6c7c82; font: 600 .68rem 'IBM Plex Mono', monospace; letter-spacing: .13em; text-transform: uppercase; }
+        .workspace-topbar h1 { margin: .2rem 0 0; color: #173f5f; font: 600 1.4rem/1.2 'Source Serif 4', serif; }
+        .workspace-topbar-actions { display: flex; align-items: center; gap: .65rem; }
+        .workspace-profile { color: #40627d; font-size: .82rem; font-weight: 600; text-decoration: none; }
+        .workspace-logout { border: 1px solid #cfc8bb; background: transparent; color: #a84a2a; padding: .55rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer; }
+        .workspace-mobile-toggle { display: none; border: 1px solid #cfc8bb; background: #fffefa; color: #173f5f; padding: .5rem .7rem; cursor: pointer; }
+        .workspace-content { min-width: 0; }
+        .workspace-footer { padding: 1.2rem clamp(1rem, 3vw, 2.5rem); border-top: 1px solid #cfc8bb; background: #fffefa; color: #6c7c82; font-size: .72rem; }
+        .workspace-footer a { color: #0d9488; font-weight: 700; }
+        .workspace-body > nav { display: none !important; }
+        .workspace-body > main, .workspace-body > footer { margin-left: 15.5rem; }
+        .workspace-body > main { padding-top: 4.4rem; }
+        @media (max-width: 800px) {
+            .workspace-sidebar-fixed { display: none; }
+            .workspace-topbar-fixed { inset: 0; }
+            .workspace-body > main, .workspace-body > footer { margin-left: 0; }
+            .workspace-mobile-toggle { display: inline-flex; }
+            .workspace-mobile-menu { position: absolute; inset: 4.4rem 0 auto 0; z-index: 30; padding: .75rem 1rem 1rem; background: #173f5f; box-shadow: 0 12px 24px rgba(23,63,95,.2); }
+            .workspace-mobile-menu .workspace-link { color: #d9e6ec; }
+        }
     </style>
 </head>
-<body class="role-shell overflow-x-hidden text-white">
+<body class="workspace-body role-shell overflow-x-hidden text-white">
+    <aside class="workspace-sidebar workspace-sidebar-fixed">
+        <a href="{{ route('instruktur.dashboard') }}" class="workspace-brand">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus">
+            <span><small>Ruang Instruktur</small><strong>Balai Kursus</strong></span>
+        </a>
+        <div class="workspace-nav-label">Workspace</div>
+        <nav aria-label="Navigasi instruktur">
+            <a href="{{ route('instruktur.dashboard') }}" class="workspace-link {{ request()->is('instruktur/dashboard*') ? 'active' : '' }}"><i class="bi bi-grid-1x2"></i>Ringkasan</a>
+            <a href="{{ route('instruktur.kursus.index') }}" class="workspace-link {{ request()->is('instruktur/kursus*') ? 'active' : '' }}"><i class="bi bi-journal-bookmark"></i>Kursus Saya</a>
+            <a href="{{ route('instruktur.jadwal.index') }}" class="workspace-link {{ request()->is('instruktur/jadwal*') ? 'active' : '' }}"><i class="bi bi-calendar3"></i>Jadwal</a>
+        </nav>
+        <div class="workspace-account"><span>{{ Auth::user()->email ?? '' }}</span>{{ Auth::user()->name ?? 'Instruktur' }}</div>
+    </aside>
+    <header class="workspace-topbar workspace-topbar-fixed">
+        <div><small>Balai Kursus / Instruktur</small><h1>@yield('title', 'Ruang kerja instruktur')</h1></div>
+        <div class="workspace-topbar-actions"><a href="{{ route('profile.edit') }}" class="workspace-profile"><i class="bi bi-person-circle"></i> {{ Auth::user()->name ?? 'Profil' }}</a><form id="logout-form" action="{{ route('logout') }}" method="POST">@csrf</form><button type="submit" form="logout-form" class="workspace-logout">Keluar</button></div>
+    </header>
     <nav x-data="{ mobileMenuOpen: false }" class="role-nav sticky top-0 z-50 border-b shadow-2xl">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex min-h-[4.75rem] items-center justify-between gap-4">
