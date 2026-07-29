@@ -1,164 +1,29 @@
 @extends('layouts.admin')
 
 @section('title', 'Manajemen Kelas')
-
 @section('page-title', 'Manajemen Kelas')
-
-@section('page-description', 'Kelola kelas program, pantau kuota, dan akses peserta per kelas dari satu tampilan operasional.')
+@section('page-description', 'Kelola kelas program, kuota, jadwal, dan peserta dalam satu daftar operasional.')
 
 @section('content')
-<div class="space-y-8">
-    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-book-half text-sky-400"></i>
-                    Kelas Program
-                </div>
-                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Daftar kelas yang menjadi tempat penempatan peserta aktif.</h1>
-                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">
-                    Setiap kelas terhubung ke program dan level tertentu. Halaman ini membantu admin memantau kuota, harga, serta akses cepat ke daftar peserta dalam tiap kelas.
-                </p>
-            </div>
+<div class="space-y-7">
+    <header class="flex flex-col gap-5 border-b border-[#cfc8bb] pb-6 lg:flex-row lg:items-end lg:justify-between">
+        <div><p class="font-mono text-xs uppercase tracking-[.18em] text-[#0d9488]">Akademik / Kelas program</p><h1 class="mt-2 text-4xl tracking-tight text-[#173f5f]">Kelas yang sedang dikelola</h1><p class="mt-3 max-w-2xl text-sm leading-6 text-[#6c7c82]">Pantau penempatan peserta, kapasitas, periode, dan instruktur dari satu halaman kerja.</p></div>
+        <div class="flex flex-wrap gap-2"><a href="{{ route('admin.jadwal.all') }}" class="admin-btn admin-btn-secondary"><i class="bi bi-calendar3"></i>Jadwal</a><a href="{{ route('admin.kursus.create') }}" class="admin-btn admin-btn-primary"><i class="bi bi-plus-lg"></i>Tambah kelas</a></div>
+    </header>
 
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.kursus.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
-                    <i class="bi bi-plus-circle"></i>
-                    Tambah Kelas
-                </a>
-                <a href="{{ route('admin.jadwal.all') }}" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10">
-                    <i class="bi bi-calendar-week"></i>
-                    Lihat Semua Jadwal
-                </a>
-            </div>
-        </div>
+    @if(session('success'))<div class="admin-alert border-l-4 border-[#0d9488] bg-[#dff2ef] text-[#0f766e]"><i class="bi bi-check-circle"></i><div><p class="font-semibold">Perubahan berhasil disimpan</p><p class="mt-1 text-sm">{{ session('success') }}</p></div></div>@endif
 
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Kelas</p>
-                <p class="mt-3 text-4xl font-bold">{{ $kursus->total() }}</p>
-                <p class="mt-2 text-sm text-sky-100/90">Jumlah seluruh kelas program yang terdaftar.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Halaman Saat Ini</p>
-                <p class="mt-3 text-3xl font-bold text-white">{{ $kursus->currentPage() }}</p>
-                <p class="mt-2 text-sm text-slate-300">Navigasi paginasi mengikuti daftar kelas terbaru.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Per Halaman</p>
-                <p class="mt-3 text-3xl font-bold text-white">{{ $kursus->perPage() }}</p>
-                <p class="mt-2 text-sm text-slate-300">Jumlah baris data yang ditampilkan per halaman.</p>
-            </div>
-        </div>
-    </section>
+    <section class="grid gap-4 sm:grid-cols-3" aria-label="Ringkasan kelas"><div class="border border-[#cfc8bb] bg-[#fffefa] p-5"><p class="font-mono text-xs uppercase tracking-[.15em] text-[#6c7c82]">Total kelas</p><p class="mt-2 text-3xl font-semibold text-[#173f5f]">{{ $kursus->total() }}</p><p class="mt-1 text-sm text-[#6c7c82]">Seluruh kelas program</p></div><div class="border border-[#cfc8bb] bg-[#fffefa] p-5"><p class="font-mono text-xs uppercase tracking-[.15em] text-[#6c7c82]">Halaman</p><p class="mt-2 text-3xl font-semibold text-[#173f5f]">{{ $kursus->currentPage() }}</p><p class="mt-1 text-sm text-[#6c7c82]">Dari daftar berhalaman</p></div><div class="border border-[#cfc8bb] bg-[#fffefa] p-5"><p class="font-mono text-xs uppercase tracking-[.15em] text-[#6c7c82]">Per halaman</p><p class="mt-2 text-3xl font-semibold text-[#173f5f]">{{ $kursus->perPage() }}</p><p class="mt-1 text-sm text-[#6c7c82]">Baris data ditampilkan</p></div></section>
 
-    @if(session('success'))
-        <div class="rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 px-5 py-4 text-emerald-200 shadow-lg">
-            <div class="flex items-start gap-3">
-                <i class="bi bi-check-circle-fill mt-0.5 text-lg text-emerald-300"></i>
-                <div>
-                    <p class="font-semibold">Perubahan berhasil disimpan</p>
-                    <p class="mt-1 text-sm text-emerald-100/90">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    <section class="admin-panel overflow-hidden rounded-[2rem]">
-        <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-white">
-                    <i class="bi bi-collection-play-fill mr-3 text-yellow-300"></i>Daftar Kelas
-                </h2>
-                <p class="mt-2 text-slate-400">Pantau program, level, periode, kuota terisi, dan akses tindakan penting untuk setiap kelas.</p>
-            </div>
-            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
-                {{ $kursus->total() }} kelas ditemukan
-            </span>
-        </div>
-
-        @if($kursus->isEmpty())
-            <div class="px-6 py-16 text-center">
-                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-4xl text-yellow-300">
-                    <i class="bi bi-book"></i>
-                </div>
-                <h3 class="mt-6 text-2xl font-bold text-white">Belum ada kelas program</h3>
-                <p class="mt-3 text-slate-400">Tambahkan kelas baru untuk mulai menempatkan peserta ke program yang sesuai.</p>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Kelas</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Program</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Level</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Periode</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Kuota</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Status</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($kursus as $kelas)
-                            <tr class="transition hover:bg-white/[0.03]">
-                                <td class="px-6 py-5">
-                                    <p class="font-semibold text-white">{{ $kelas->nama }}</p>
-                                    <p class="mt-1 text-sm text-slate-400">Rp {{ number_format($kelas->harga, 0, ',', '.') }}</p>
-                                </td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $kelas->program->nama ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $kelas->level->nama ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $kelas->periode ?? '-' }}</td>
-                                <td class="px-6 py-5">
-                                    <div class="space-y-1 text-sm text-slate-300">
-                                        <p><span class="font-semibold text-white">{{ $kelas->pendaftarans_count }}</span> / {{ $kelas->kuota }}</p>
-                                        <p class="text-xs text-slate-500">peserta terisi</p>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-5">
-                                    @php
-                                        $statusClass = match($kelas->status) {
-                                            'buka' => 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300',
-                                            'berjalan' => 'border-yellow-400/20 bg-yellow-400/10 text-yellow-300',
-                                            'tutup' => 'border-sky-500/20 bg-sky-600/10 text-sky-200',
-                                            default => 'border-white/10 bg-white/5 text-slate-300',
-                                        };
-                                    @endphp
-                                    <span class="inline-flex items-center rounded-full border px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] {{ $statusClass }}">
-                                        {{ ucfirst($kelas->status) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-5">
-                                    <div class="flex flex-wrap gap-2">
-                                        <a href="{{ route('admin.kursus.edit', $kelas) }}" class="admin-btn admin-btn-ghost admin-btn-sm">
-                                            <i class="bi bi-pencil-square text-yellow-300"></i>
-                                            Edit
-                                        </a>
-                                        <a href="{{ route('admin.kursus.peserta', $kelas) }}" class="admin-btn admin-btn-sm" style="border:1px solid rgba(250,204,21,0.2);background:rgba(250,204,21,0.1);color:rgb(253 224 71);">
-                                            <i class="bi bi-people"></i>
-                                            Peserta
-                                        </a>
-                                        <form action="{{ route('admin.kursus.destroy', $kelas) }}" method="POST" onsubmit="return confirm('Hapus kelas ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">
-                                                <i class="bi bi-trash"></i>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="border-t border-white/10 px-6 py-4">
-                {{ $kursus->links() }}
-            </div>
+    <section class="admin-panel overflow-hidden">
+        <div class="flex flex-col gap-2 border-b border-[#cfc8bb] px-5 py-4 sm:flex-row sm:items-end sm:justify-between"><div><p class="font-mono text-xs uppercase tracking-[.15em] text-[#0d9488]">Daftar kerja</p><h2 class="mt-1 text-2xl text-[#173f5f]">Semua kelas</h2></div><span class="text-sm text-[#6c7c82]">{{ $kursus->total() }} kelas ditemukan</span></div>
+        @if($kursus->isEmpty())<div class="px-6 py-16 text-center"><i class="bi bi-book text-3xl text-[#0d9488]"></i><h3 class="mt-3 text-xl text-[#173f5f]">Belum ada kelas program</h3><p class="mt-2 text-sm text-[#6c7c82]">Tambahkan kelas untuk mulai menempatkan peserta.</p></div>@else
+            <div class="overflow-x-auto"><table class="admin-table"><thead><tr><th>Kelas</th><th>Program / Level</th><th>Periode</th><th>Peserta</th><th>Status</th><th>Aksi</th></tr></thead><tbody>
+                @foreach($kursus as $kelas)
+                    <tr><td><p class="font-semibold text-[#173f5f]">{{ $kelas->nama }}</p><p class="mt-1 text-sm text-[#6c7c82]">Rp {{ number_format($kelas->harga, 0, ',', '.') }}</p></td><td><p class="text-sm text-[#1e2d36]">{{ $kelas->program->nama ?? '-' }}</p><p class="mt-1 text-xs text-[#6c7c82]">{{ $kelas->level->nama ?? '-' }}</p></td><td class="text-sm text-[#526875]">{{ $kelas->periode ?? '-' }}</td><td><span class="font-semibold text-[#173f5f]">{{ $kelas->pendaftarans_count }}</span><span class="text-[#6c7c82]"> / {{ $kelas->kuota }}</span></td><td><span class="admin-badge {{ $kelas->status === 'buka' ? 'admin-badge-info' : ($kelas->status === 'berjalan' ? 'admin-badge-warning' : 'admin-badge-muted') }}">{{ ucfirst($kelas->status) }}</span></td><td><div class="flex flex-wrap gap-2"><a href="{{ route('admin.kursus.edit', $kelas) }}" class="admin-btn admin-btn-secondary admin-btn-sm"><i class="bi bi-pencil"></i>Edit</a><a href="{{ route('admin.kursus.peserta', $kelas) }}" class="admin-btn admin-btn-secondary admin-btn-sm"><i class="bi bi-people"></i>Peserta</a><form action="{{ route('admin.kursus.destroy', $kelas) }}" method="POST" onsubmit="return confirm('Hapus kelas ini?')">@csrf @method('DELETE')<button type="submit" class="admin-btn admin-btn-danger admin-btn-sm"><i class="bi bi-trash"></i>Hapus</button></form></div></td></tr>
+                @endforeach
+            </tbody></table></div><div class="border-t border-[#cfc8bb] px-5 py-4">{{ $kursus->links() }}</div>
         @endif
     </section>
 </div>
 @endsection
-
-
