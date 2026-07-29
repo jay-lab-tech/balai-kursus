@@ -43,7 +43,9 @@ class AbsensiController extends Controller
     public function absensi(Risalah $risalah)
     {
         $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || $risalah->instruktur_id !== $instruktur->id) {
+        if (! $instruktur || ! InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
+            ->where('kursus_id', $risalah->kursus_id)
+            ->exists()) {
             abort(403);
         }
 
@@ -74,7 +76,9 @@ class AbsensiController extends Controller
     public function store(Request $request, Risalah $risalah)
     {
         $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || $risalah->instruktur_id !== $instruktur->id) {
+        if (! $instruktur || ! InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
+            ->where('kursus_id', $risalah->kursus_id)
+            ->exists()) {
             abort(403);
         }
 

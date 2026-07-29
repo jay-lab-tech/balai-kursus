@@ -4,6 +4,7 @@ namespace Modules\Instruktur\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kursus;
+use App\Models\InstrukturKursusLevel;
 use App\Models\Risalah;
 use Illuminate\Http\Request;
 
@@ -18,9 +19,7 @@ class RisalahController extends Controller
 
     public function edit(Risalah $risalah)
     {
-        // ensure the logged instruktur owns the kursus
-        $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || $instruktur->id !== $risalah->instruktur_id) {
+        if (! $this->canManage($risalah)) {
             abort(403);
         }
 
@@ -29,8 +28,7 @@ class RisalahController extends Controller
 
     public function update(Request $request, Risalah $risalah)
     {
-        $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || $instruktur->id !== $risalah->instruktur_id) {
+        if (! $this->canManage($risalah)) {
             abort(403);
         }
 
@@ -49,6 +47,16 @@ class RisalahController extends Controller
         $risalah->update($data);
 
         return redirect("/instruktur/kursus/{$risalah->kursus_id}/risalah")->with('success', 'Risalah diperbarui');
+    }
+
+    private function canManage(Risalah $risalah): bool
+    {
+        $instruktur = auth()->user()->instruktur;
+
+        return $instruktur
+            && InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
+                ->where('kursus_id', $risalah->kursus_id)
+                ->exists();
     }
 
     public function download(Risalah $risalah)
