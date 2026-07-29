@@ -27,6 +27,50 @@
         .role-nav-link:hover { color: #fff; background: rgba(14, 165, 233, .12); }
         .role-nav-link.active { color: #082f49; background: #fbbf24; box-shadow: 0 8px 20px rgba(251, 191, 36, .14); }
         .role-card { border: 1px solid rgba(148, 163, 184, .16); background: rgba(16, 42, 67, .72); box-shadow: 0 20px 50px rgba(2, 18, 34, .25); }
+
+        .role-shell { background: #f7f8f6; color: #173f5f; }
+        .role-nav { background: rgba(255, 255, 255, .96); border-color: #dce7e5; box-shadow: 0 8px 24px rgba(23, 63, 95, .06); }
+        .role-nav-link { color: #40627d; }
+        .role-nav-link:hover { color: #0f766e; background: #e8f7f4; }
+        .role-nav-link.active { color: #0f766e; background: #e8f7f4; box-shadow: none; }
+        .role-shell main { color: #173f5f; }
+        .role-shell main [class~="text-white"] { color: #173f5f !important; }
+        .role-shell main [class~="text-gray-300"],
+        .role-shell main [class~="text-slate-300"] { color: #40627d !important; }
+        .role-shell main [class~="text-gray-400"],
+        .role-shell main [class~="text-gray-500"],
+        .role-shell main [class~="text-slate-400"] { color: #718596 !important; }
+        .role-shell main [class~="bg-white/5"],
+        .role-shell main [class~="bg-black/20"],
+        .role-shell main [class~="bg-gray-900/60"],
+        .role-shell main [class~="bg-gray-900/70"] { background: #ffffff !important; }
+        .role-shell main [class~="border-white/10"],
+        .role-shell main [class~="border-gray-700"] { border-color: #dce7e5 !important; }
+        .role-shell main [class*="bg-gradient"] { background-image: none !important; background-color: #ffffff !important; border: 1px solid #dce7e5; box-shadow: 0 14px 35px rgba(23, 63, 95, .08); }
+        .role-shell main [class~="bg-[#0b2035]"],
+        .role-shell main [class~="bg-[#102a43]"] { background: #f7f8f6 !important; }
+        .role-shell main [class~="text-yellow-300"],
+        .role-shell main [class~="text-yellow-400"] { color: #b45309 !important; }
+        .role-shell main [class~="text-sky-300"],
+        .role-shell main [class~="text-sky-400"] { color: #0f766e !important; }
+        .role-shell main [class~="bg-sky-600"],
+        .role-shell main [class~="bg-sky-700"] { background: #0d9488 !important; }
+        .role-shell main > [class*="bg-gradient"] { background: #f7f8f6 !important; border: 0; box-shadow: none; }
+        .role-shell main [class~="bg-gray-800"],
+        .role-shell main [class~="bg-gray-900"],
+        .role-shell main [class~="bg-slate-800"],
+        .role-shell main [class~="bg-slate-900"] { background: #ffffff !important; }
+        .role-shell main [class~="bg-gray-700"],
+        .role-shell main [class~="bg-slate-950"] { background: #f3f7f6 !important; }
+        .role-shell main [class~="text-gray-900"],
+        .role-shell main [class~="text-slate-950"] { color: #173f5f !important; }
+        .role-shell main [class*="border-gray-"],
+        .role-shell main [class*="border-slate-"] { border-color: #dce7e5 !important; }
+        .role-shell main a[class*="bg-gradient"],
+        .role-shell main button[class*="bg-gradient"] { background-image: none !important; background: #0d9488 !important; border: 0; color: #ffffff !important; }
+        .role-shell main [class*="bg-gradient"][style*="width"] { background: #0d9488 !important; }
+        .role-shell main [style*="linear-gradient"] { background: #173f5f !important; }
+        footer { background: #173f5f !important; border-color: #285574 !important; }
     </style>
 </head>
 <body class="role-shell overflow-x-hidden text-white">

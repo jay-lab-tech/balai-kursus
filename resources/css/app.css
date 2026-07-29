@@ -1,3 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --bk-ink: #173f5f;
+    --bk-ink-soft: #40627d;
+    --bk-teal: #0d9488;
+    --bk-teal-dark: #0f766e;
+    --bk-teal-pale: #e8f7f4;
+    --bk-amber: #d97706;
+    --bk-paper: #f7f8f6;
+    --bk-card: #ffffff;
+    --bk-line: #dce7e5;
+    --bk-muted: #718596;
+    --bk-danger: #dc2626;
+    --bk-radius: 18px;
+    --bk-shadow: 0 14px 35px rgba(23, 63, 95, 0.08);
+}
+
+html {
+    font-family: 'Fira Sans', sans-serif;
+    background: var(--bk-paper);
+}
+
+body {
+    color: var(--bk-ink);
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+    cursor: pointer;
+}
+
+*:focus-visible {
+    outline: 3px solid rgba(13, 148, 136, 0.35);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

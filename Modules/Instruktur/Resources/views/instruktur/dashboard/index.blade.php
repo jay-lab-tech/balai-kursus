@@ -1,6 +1,6 @@
 @extends('instruktur::layouts.master')
 
-@section('title', 'Dashboard Instruktur')
+@section('title', 'Ringkasan Mengajar')
 
 @section('content')
 @php
@@ -14,126 +14,86 @@
     $totalRisalah = $kursus->sum(fn ($item) => $item->risalahs()->count());
 @endphp
 
-<div class="min-h-screen overflow-x-hidden bg-[#0b2035] px-4 py-10 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-[#f7f8f6] px-4 py-8 sm:px-6 lg:px-10">
     <div class="mx-auto max-w-7xl">
-        <div class="mb-8 flex items-center gap-4">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/15 text-amber-300">
-                <i class="bi bi-speedometer2 text-3xl"></i>
-            </div>
+        <header class="mb-10 flex flex-col gap-6 border-b border-[#dce7e5] pb-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-xs font-bold uppercase tracking-[0.2em] text-sky-300">Ruang Instruktur</p>
-                <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-white">Ringkasan mengajar</h1>
-                <p class="mt-1 text-sm text-slate-400">Pantau kursus, peserta, dan materi yang sedang Anda kelola.</p>
+                <p class="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-[#0d9488]">Ruang kerja instruktur / {{ now()->translatedFormat('j F Y') }}</p>
+                <h1 class="mt-3 max-w-2xl text-4xl font-bold tracking-[-0.04em] text-[#173f5f] sm:text-5xl">Siap mengajar,<br><span class="text-[#0d9488]">{{ Str::before(auth()->user()->name, ' ') }}.</span></h1>
+                <p class="mt-4 max-w-xl text-base leading-7 text-[#718596]">Satu tempat untuk melihat kelas yang ditugaskan, peserta, dan catatan pertemuan yang perlu ditindaklanjuti.</p>
             </div>
-        </div>
+            <a href="{{ url('/instruktur/jadwal') }}" class="inline-flex min-h-11 items-center justify-center gap-3 rounded-xl bg-[#173f5f] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#173f5f]/10 transition hover:bg-[#0f766e]">
+                <i class="bi bi-calendar3"></i>
+                Buka jadwal mengajar
+            </a>
+        </header>
 
-        <div class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            <div class="rounded-2xl border border-white/10 bg-[#102a43] p-6 shadow-xl shadow-black/10">
-                <div class="flex items-center gap-4">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300">
-                        <i class="bi bi-book text-3xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">Total Kursus</p>
-                        <p class="mt-2 text-3xl font-bold text-white">{{ $kursus->count() }}</p>
-                    </div>
-                </div>
+        <section class="mb-10 grid gap-4 sm:grid-cols-3" aria-label="Ringkasan aktivitas mengajar">
+            <div class="border-l-4 border-[#0d9488] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]">
+                <p class="font-mono text-xs uppercase tracking-[0.18em] text-[#718596]">Kelas aktif</p>
+                <p class="mt-3 text-4xl font-bold tracking-tight text-[#173f5f]">{{ $kursus->count() }}</p>
+                <p class="mt-2 text-sm text-[#718596]">kelas yang sedang Anda kelola</p>
             </div>
-
-            <div class="rounded-2xl border border-white/10 bg-[#102a43] p-6 shadow-xl shadow-black/10">
-                <div class="flex items-center gap-4">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-300">
-                        <i class="bi bi-people text-3xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">Total Peserta</p>
-                        <p class="mt-2 text-3xl font-bold text-white">{{ $totalPeserta }}</p>
-                    </div>
-                </div>
+            <div class="border-l-4 border-[#d97706] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]">
+                <p class="font-mono text-xs uppercase tracking-[0.18em] text-[#718596]">Peserta</p>
+                <p class="mt-3 text-4xl font-bold tracking-tight text-[#173f5f]">{{ $totalPeserta }}</p>
+                <p class="mt-2 text-sm text-[#718596]">terdaftar di kelas Anda</p>
             </div>
-
-            <div class="rounded-2xl border border-white/10 bg-[#102a43] p-6 shadow-xl shadow-black/10">
-                <div class="flex items-center gap-4">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-300">
-                        <i class="bi bi-calendar-event text-3xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gray-400">Total Pertemuan</p>
-                        <p class="mt-2 text-3xl font-bold text-white">{{ $totalRisalah }}</p>
-                    </div>
-                </div>
+            <div class="border-l-4 border-[#40627d] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]">
+                <p class="font-mono text-xs uppercase tracking-[0.18em] text-[#718596]">Pertemuan</p>
+                <p class="mt-3 text-4xl font-bold tracking-tight text-[#173f5f]">{{ $totalRisalah }}</p>
+                <p class="mt-2 text-sm text-[#718596]">catatan pertemuan tersedia</p>
             </div>
-        </div>
+        </section>
 
-        <section class="space-y-6">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <section>
+            <div class="mb-5 flex items-end justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Kursus yang Anda Ajarkan</h2>
-                    <p class="text-sm text-gray-400">Setiap kartu akan otomatis turun ke bawah saat ruang layar tidak cukup.</p>
+                    <p class="font-mono text-xs uppercase tracking-[0.18em] text-[#0d9488]">Daftar penugasan</p>
+                    <h2 class="mt-2 text-2xl font-bold tracking-tight text-[#173f5f]">Kelas yang Anda ajarkan</h2>
                 </div>
-                <div class="rounded-full border border-gray-700 bg-gray-900/70 px-4 py-2 text-sm text-gray-300">
-                    {{ $pivotData->count() }} penugasan aktif
-                </div>
+                <span class="hidden font-mono text-xs text-[#718596] sm:block">{{ $pivotData->count() }} penugasan aktif</span>
             </div>
 
             @if($pivotData->count() > 0)
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    @foreach($pivotData as $pivot)
+                <div class="grid gap-5 lg:grid-cols-2">
+                    @foreach($pivotData as $index => $pivot)
                         @php $k = $pivot->kursus; @endphp
-                        <article class="min-w-0 overflow-hidden rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg transition-colors duration-200 hover:border-yellow-500/50">
-                            <div class="flex h-full flex-col">
-                                <div class="min-w-0 flex-1">
-                                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-400">
-                                        <i class="bi bi-bookmark text-2xl"></i>
-                                    </div>
-
-                            <h3 class="mb-4 break-words text-xl font-bold leading-tight text-white">
-                                        {{ $k->nama }}
-                                    </h3>
-
-                                    <div class="space-y-3 text-base text-gray-300">
-                                        <div class="flex items-start gap-3">
-                                            <i class="bi bi-folder mt-1 text-gray-500"></i>
-                                            <div class="min-w-0">
-                                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Program</p>
-                                                <p class="break-words">{{ $k->program->nama ?? '-' }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start gap-3">
-                                            <i class="bi bi-bookmark mt-1 text-gray-500"></i>
-                                            <div class="min-w-0">
-                                                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">Level</p>
-                                                <p class="break-words">{{ $pivot->level->nama ?? '-' }}</p>
-                                            </div>
-                                        </div>
+                        <article class="group flex min-w-0 flex-col border border-[#dce7e5] bg-white p-6 shadow-[0_14px_35px_rgba(23,63,95,.06)] transition duration-200 hover:-translate-y-0.5 hover:border-[#0d9488] hover:shadow-[0_18px_42px_rgba(23,63,95,.12)]">
+                            <div class="flex items-start justify-between gap-5">
+                                <div class="flex min-w-0 gap-4">
+                                    <span class="font-mono text-sm text-[#d97706]">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <div class="min-w-0">
+                                        <h3 class="break-words text-xl font-bold leading-tight text-[#173f5f]">{{ $k->nama }}</h3>
+                                        <p class="mt-2 text-sm text-[#718596]">{{ $k->program->nama ?? 'Program' }} · {{ $pivot->level->nama ?? 'Level belum ditentukan' }}</p>
                                     </div>
                                 </div>
-
-                                <div class="my-6 grid grid-cols-2 gap-4 rounded-2xl border border-gray-700/80 bg-black/20 p-4">
-                                    <div class="text-center">
-                                        <p class="text-sm font-semibold text-gray-400">Peserta</p>
-                                        <p class="mt-2 text-3xl font-bold text-yellow-400">{{ $k->pendaftarans()->count() }}</p>
-                                    </div>
-                                    <div class="text-center">
-                                        <p class="text-sm font-semibold text-gray-400">Pertemuan</p>
-                                        <p class="mt-2 text-3xl font-bold text-yellow-400">{{ $k->risalahs()->count() }}</p>
-                                    </div>
-                                </div>
-
-                                <a href="{{ url('/instruktur/kursus/' . $k->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-700 px-5 py-3 text-base font-semibold text-white transition-all duration-200 hover:from-yellow-700 hover:to-yellow-800">
-                                    <i class="bi bi-arrow-right mr-2"></i>Lihat Detail
-                                </a>
+                                <span class="shrink-0 rounded-full bg-[#e8f7f4] px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-[#0f766e]">Aktif</span>
                             </div>
+
+                            <div class="mt-7 grid grid-cols-2 border-y border-[#e8efed] py-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.16em] text-[#718596]">Peserta</p>
+                                    <p class="mt-1 text-2xl font-bold text-[#173f5f]">{{ $k->pendaftarans()->count() }}</p>
+                                </div>
+                                <div class="border-l border-[#e8efed] pl-5">
+                                    <p class="text-xs uppercase tracking-[0.16em] text-[#718596]">Pertemuan</p>
+                                    <p class="mt-1 text-2xl font-bold text-[#173f5f]">{{ $k->risalahs()->count() }}</p>
+                                </div>
+                            </div>
+
+                            <a href="{{ url('/instruktur/kursus/' . $k->id) }}" class="mt-5 inline-flex min-h-11 items-center justify-between rounded-xl border border-[#dce7e5] px-4 py-3 text-sm font-semibold text-[#173f5f] transition hover:border-[#0d9488] hover:bg-[#e8f7f4] hover:text-[#0f766e]">
+                                Kelola kelas
+                                <i class="bi bi-arrow-up-right text-base"></i>
+                            </a>
                         </article>
                     @endforeach
                 </div>
             @else
-                <div class="rounded-3xl border border-dashed border-gray-700 bg-gray-900/60 px-6 py-16 text-center">
-                    <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gray-800 text-gray-400">
-                        <i class="bi bi-book text-5xl"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-white">Belum Ada Kursus</h2>
-                    <p class="mt-2 text-gray-400">Hubungi admin untuk mendapatkan penugasan mengajar.</p>
+                <div class="border border-dashed border-[#b8cbc8] bg-white px-6 py-16 text-center">
+                    <i class="bi bi-journal-x text-4xl text-[#0d9488]"></i>
+                    <h2 class="mt-4 text-2xl font-bold text-[#173f5f]">Belum ada penugasan</h2>
+                    <p class="mx-auto mt-2 max-w-md text-[#718596]">Hubungi admin untuk mendapatkan kelas yang perlu Anda kelola.</p>
                 </div>
             @endif
         </section>

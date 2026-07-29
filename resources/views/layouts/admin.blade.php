@@ -658,6 +658,169 @@
         .admin-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(2, 132, 199, 0.95);
         }
+
+        /* Admin visual system: a light operations console, not a generic dark dashboard. */
+        .admin-shell {
+            background: #f7f8f6;
+            color: #173f5f;
+        }
+
+        .admin-sidebar {
+            background: #ffffff;
+            border-color: #dce7e5 !important;
+            box-shadow: 12px 0 32px rgba(23, 63, 95, 0.06);
+        }
+
+        .admin-main,
+        .admin-content {
+            background: #f7f8f6;
+        }
+
+        .admin-panel,
+        .admin-panel-soft,
+        .admin-stat-card {
+            background: #ffffff;
+            border-color: #dce7e5;
+            box-shadow: 0 14px 35px rgba(23, 63, 95, 0.08);
+            backdrop-filter: none;
+        }
+
+        .admin-panel__title,
+        .admin-empty-state h3,
+        .admin-stat-card__value {
+            color: #173f5f;
+        }
+
+        .admin-panel__subtitle,
+        .admin-stat-card__hint,
+        .admin-empty-state p,
+        .admin-nav-group-title {
+            color: #718596;
+        }
+
+        .admin-nav-link {
+            color: #40627d;
+        }
+
+        .admin-nav-link:hover {
+            color: #0f766e;
+            background: #e8f7f4;
+            transform: none;
+        }
+
+        .admin-nav-link.active {
+            color: #0f766e;
+            background: #e8f7f4;
+            border-color: #b8e5df;
+            box-shadow: none;
+        }
+
+        .admin-nav-link.active::before {
+            background: #d97706;
+        }
+
+        .admin-sidebar [class~="text-white"],
+        .admin-sidebar [class~="text-slate-200"] {
+            color: #173f5f !important;
+        }
+
+        .admin-sidebar [class~="text-slate-300"],
+        .admin-sidebar [class~="text-slate-400"] {
+            color: #718596 !important;
+        }
+
+        .admin-sidebar [class~="bg-white"],
+        .admin-sidebar [class~="bg-white/5"] {
+            background: #ffffff !important;
+        }
+
+        .admin-sidebar [class~="border-white/10"] {
+            border-color: #dce7e5 !important;
+        }
+
+        .admin-content [class~="text-white"] {
+            color: #173f5f !important;
+        }
+
+        .admin-content [class~="text-slate-200"],
+        .admin-content [class~="text-slate-300"] {
+            color: #40627d !important;
+        }
+
+        .admin-content [class~="text-slate-400"],
+        .admin-content [class~="text-gray-400"] {
+            color: #718596 !important;
+        }
+
+        .admin-content [class~="bg-white/5"],
+        .admin-content [class~="bg-black/20"],
+        .admin-content [class~="bg-slate-950/45"] {
+            background: #f3f7f6 !important;
+        }
+
+        .admin-content [class~="border-white/10"],
+        .admin-content [class~="border-gray-700"] {
+            border-color: #dce7e5 !important;
+        }
+
+        .admin-content [class*="bg-gradient"] {
+            background-image: none !important;
+            background-color: #ffffff !important;
+            color: #173f5f !important;
+            border: 1px solid #dce7e5;
+            box-shadow: 0 14px 35px rgba(23, 63, 95, 0.08);
+        }
+
+        .admin-content [class~="text-yellow-300"],
+        .admin-content [class~="text-yellow-400"] {
+            color: #b45309 !important;
+        }
+
+        .admin-content [class~="bg-yellow-400"],
+        .admin-content [class~="bg-yellow-500"] {
+            background: #fef3c7 !important;
+        }
+
+        .admin-content [class~="text-sky-300"],
+        .admin-content [class~="text-sky-400"] {
+            color: #0f766e !important;
+        }
+
+        .admin-content [class~="bg-sky-600"],
+        .admin-content [class~="bg-sky-700"] {
+            background: #0d9488 !important;
+        }
+
+        .admin-content [class~="bg-[#173f5f]"],
+        .admin-content a[class*="bg-gradient"],
+        .admin-content button[class*="bg-gradient"] {
+            background-image: none !important;
+            background: #0d9488 !important;
+            color: #ffffff !important;
+            border-color: #0d9488 !important;
+        }
+
+        .admin-table thead th {
+            color: #718596;
+            background: #f3f7f6;
+            border-color: #dce7e5;
+        }
+
+        .admin-table tbody td {
+            color: #40627d;
+            border-color: #e8efed;
+        }
+
+        .admin-table tbody tr:hover td {
+            background: #f3f7f6;
+        }
+
+        .admin-content h1,
+        .admin-content h2,
+        .admin-content h3,
+        .admin-content h4 {
+            letter-spacing: -0.025em;
+        }
     </style>
 
     @yield('styles')
