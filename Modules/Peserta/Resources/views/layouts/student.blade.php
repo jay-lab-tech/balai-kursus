@@ -72,7 +72,27 @@
         footer { background: #173f5f !important; border-color: #285574 !important; }
     </style>
 </head>
-<body class="role-shell overflow-x-hidden text-white">
+<body class="workspace-body role-shell overflow-x-hidden text-white">
+    <aside class="workspace-sidebar-fixed">
+        <a href="{{ route('peserta.dashboard') }}" class="workspace-brand">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus">
+            <span><small>Ruang Peserta</small><strong>Balai Kursus</strong></span>
+        </a>
+        <div class="workspace-nav-label">Ruang belajar</div>
+        <nav aria-label="Navigasi peserta">
+            <a href="{{ route('peserta.dashboard') }}" class="workspace-link {{ request()->is('peserta/dashboard*') ? 'active' : '' }}"><i class="bi bi-grid-1x2"></i>Beranda</a>
+            <a href="{{ url('/peserta/program') }}" class="workspace-link {{ request()->is('peserta/program*') ? 'active' : '' }}"><i class="bi bi-compass"></i>Program</a>
+            <a href="{{ url('/peserta/kursus/saya') }}" class="workspace-link {{ request()->is('peserta/kursus*') ? 'active' : '' }}"><i class="bi bi-journal-bookmark"></i>Kelas Saya</a>
+            <a href="{{ url('/peserta/pendaftaran') }}" class="workspace-link {{ request()->is('peserta/pendaftaran*') ? 'active' : '' }}"><i class="bi bi-clipboard-check"></i>Pendaftaran</a>
+            <a href="{{ url('/peserta/riwayat-pembayaran') }}" class="workspace-link {{ request()->is('peserta/riwayat-pembayaran*') ? 'active' : '' }}"><i class="bi bi-receipt"></i>Pembayaran</a>
+            <a href="{{ route('profile.certificates') }}" class="workspace-link {{ request()->is('profile/certificates*') ? 'active' : '' }}"><i class="bi bi-award"></i>Sertifikat</a>
+        </nav>
+        <div class="workspace-account"><span>{{ Auth::user()->email ?? '' }}</span>{{ Auth::user()->name ?? 'Peserta' }}</div>
+    </aside>
+    <header class="workspace-topbar-fixed workspace-topbar">
+        <div><small>Balai Kursus / Peserta</small><h1>@yield('title', 'Ruang belajar peserta')</h1></div>
+        <div class="workspace-topbar-actions"><a href="{{ route('profile.edit') }}" class="workspace-profile"><i class="bi bi-person-circle"></i> {{ Auth::user()->name ?? 'Profil' }}</a><form id="logout-form" action="{{ route('logout') }}" method="POST">@csrf</form><button type="submit" form="logout-form" class="workspace-logout">Keluar</button></div>
+    </header>
     <nav x-data="{ mobileMenuOpen: false }" class="role-nav sticky top-0 z-50 border-b shadow-2xl">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex min-h-[4.75rem] items-center justify-between gap-4">

@@ -48,6 +48,37 @@ pre,
     font-family: 'IBM Plex Mono', monospace;
 }
 
+/* Shared institutional workspace shell */
+.workspace-body { background: #f5f2ea; color: #1e2d36; }
+.workspace-sidebar-fixed { position: fixed; inset: 0 auto 0 0; z-index: 40; width: 15.5rem; background: #173f5f; color: #fff; padding: 1.5rem 1rem; display: flex; flex-direction: column; }
+.workspace-brand { display: flex; align-items: center; gap: .75rem; padding: .2rem .65rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,.16); text-decoration: none; color: #fff; }
+.workspace-brand img { width: 2.35rem; height: 2.35rem; object-fit: contain; background: #fff; padding: .3rem; border-radius: .4rem; }
+.workspace-brand small { display: block; color: #9ddbd4; font: 600 .62rem/1.2 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+.workspace-brand strong { display: block; margin-top: .2rem; font: 700 1rem/1.2 'Source Serif 4', serif; }
+.workspace-nav-label { margin: 1.75rem .7rem .55rem; color: #b8cedb; font: 600 .65rem/1.2 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; }
+.workspace-link { display: flex; align-items: center; gap: .7rem; padding: .75rem .7rem; color: #d9e6ec; border-left: 3px solid transparent; font-size: .88rem; font-weight: 600; text-decoration: none; transition: color .18s ease, background .18s ease, border-color .18s ease; }
+.workspace-link:hover { color: #fff; background: rgba(255,255,255,.09); }
+.workspace-link.active { color: #fff; background: rgba(13,148,136,.32); border-left-color: #f0a36c; }
+.workspace-link i { width: 1.1rem; text-align: center; color: #9ddbd4; }
+.workspace-account { margin-top: auto; padding: 1rem .7rem 0; border-top: 1px solid rgba(255,255,255,.16); color: #d9e6ec; font-size: .78rem; }
+.workspace-account span { display: block; color: #9ddbd4; font: .7rem 'IBM Plex Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-topbar-fixed { position: fixed; inset: 0 0 auto 15.5rem; z-index: 30; min-height: 4.4rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem clamp(1rem, 3vw, 2.5rem); background: #fffefa; border-bottom: 1px solid #cfc8bb; }
+.workspace-topbar small { color: #6c7c82; font: 600 .68rem 'IBM Plex Mono', monospace; letter-spacing: .13em; text-transform: uppercase; }
+.workspace-topbar h1 { margin: .2rem 0 0; color: #173f5f; font: 600 1.4rem/1.2 'Source Serif 4', serif; }
+.workspace-topbar-actions { display: flex; align-items: center; gap: .65rem; }
+.workspace-profile { color: #40627d; font-size: .82rem; font-weight: 600; text-decoration: none; }
+.workspace-logout { border: 1px solid #cfc8bb; background: transparent; color: #a84a2a; padding: .55rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer; }
+.workspace-body > nav { display: none !important; }
+.workspace-body > main, .workspace-body > footer { margin-left: 15.5rem; }
+.workspace-body > main { padding-top: 4.4rem; }
+.workspace-footer { padding: 1.2rem clamp(1rem, 3vw, 2.5rem); border-top: 1px solid #cfc8bb; background: #fffefa; color: #6c7c82; font-size: .72rem; }
+.workspace-footer a { color: #0d9488; font-weight: 700; }
+@media (max-width: 800px) {
+    .workspace-sidebar-fixed { display: none; }
+    .workspace-topbar-fixed { inset: 0; }
+    .workspace-body > main, .workspace-body > footer { margin-left: 0; }
+}
+
 button,
 a,
 input,
