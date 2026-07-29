@@ -821,6 +821,37 @@
         .admin-content h4 {
             letter-spacing: -0.025em;
         }
+
+        /* Institutional operations workspace */
+        body.admin-shell { background: #f5f2ea; color: #1e2d36; }
+        .admin-layout { background: #f5f2ea; }
+        .admin-sidebar { background: #173f5f; border-color: rgba(255,255,255,.15); box-shadow: 12px 0 30px rgba(23,63,95,.12); }
+        .admin-sidebar .admin-panel { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); box-shadow: none; }
+        .admin-sidebar .admin-panel-soft { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+        .admin-sidebar .admin-nav-group-title { color: #9ddbd4; letter-spacing: .16em; }
+        .admin-sidebar .admin-nav-link { color: #d9e6ec; border-left: 3px solid transparent; border-radius: 0; }
+        .admin-sidebar .admin-nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .admin-sidebar .admin-nav-link.active { color: #fff; background: rgba(13,148,136,.32); border-left-color: #f0a36c; box-shadow: none; }
+        .admin-sidebar .admin-nav-link i { color: #9ddbd4; }
+        .admin-main { background: #f5f2ea; }
+        .admin-main > header { background: #fffefa; border-color: #cfc8bb; box-shadow: 0 3px 12px rgba(30,45,54,.04); }
+        .admin-main > header p.text-white { color: #173f5f !important; font-family: 'Source Serif 4', Georgia, serif; }
+        .admin-main > header p.text-slate-400 { color: #6c7c82 !important; }
+        .admin-topbar-date { background: #f5f2ea !important; border-color: #cfc8bb !important; color: #526875 !important; }
+        .admin-topbar-actions form button { background: #a84a2a !important; border-radius: 0 !important; }
+        .admin-content { color: #1e2d36; }
+        .admin-content .admin-panel, .admin-content .admin-stat-card { background: #fffefa; border: 1px solid #cfc8bb; box-shadow: 0 8px 22px rgba(30,45,54,.07); border-radius: 8px; }
+        .admin-content .admin-panel__title, .admin-content .admin-stat-card__value, .admin-content h1, .admin-content h2, .admin-content h3, .admin-content h4 { color: #173f5f; }
+        .admin-content .admin-panel__subtitle, .admin-content .admin-stat-card__hint { color: #6c7c82; }
+        .admin-content .admin-stat-card__label, .admin-content .admin-label { color: #526875; }
+        .admin-content .admin-table thead th { color: #526875; background: #f5f2ea; border-color: #cfc8bb; }
+        .admin-content .admin-table tbody td { color: #1e2d36; border-color: #e5e0d6; }
+        .admin-content .admin-table tbody tr:hover td { background: #f5f2ea; }
+        .admin-content .admin-btn-primary { background: #0d9488; border-radius: 0; box-shadow: none; }
+        .admin-content .admin-btn-secondary, .admin-content .admin-btn-ghost { color: #173f5f; background: transparent; border-color: #cfc8bb; border-radius: 0; }
+        .admin-content .admin-badge-warning { background: #f8e5d8; color: #8a3b22; }
+        .admin-content .admin-badge-info { background: #dff2ef; color: #0f766e; }
+        .admin-content .admin-badge-muted { background: #e5e0d6; color: #526875; }
     </style>
 
     @yield('styles')
