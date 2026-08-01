@@ -43,7 +43,9 @@ const FIGS = [
   ['Tampilan Detail dan Pendaftaran Program', 'peserta', '/peserta/program/1'],
   ['Tampilan Daftar Kursus', 'peserta', '/peserta/kursus'],
   ['Tampilan Kursus Saya', 'peserta', '/peserta/kursus/saya'],
-  ['Tampilan Detail Kursus dan Risalah', 'peserta', '/peserta/kursus/2/detail'],
+  // Id kelas ikut berubah setiap kali data di-seed ulang, jadi alamatnya
+  // diambil dari halaman "Kursus Saya" saat capture berjalan.
+  ['Tampilan Detail Kursus dan Risalah', 'peserta', { resolveFrom: '/peserta/kursus/saya', linkPattern: '/detail' }],
   ['Tampilan Daftar Pendaftaran Peserta', 'peserta', '/peserta/pendaftaran'],
   ['Tampilan Riwayat Pembayaran', 'peserta', '/peserta/riwayat-pembayaran'],
   ['Tampilan Profil Peserta', 'peserta', '/profile'],
@@ -66,6 +68,26 @@ async function login(page, email) {
   await page.waitForTimeout(1000);
 }
 
+// Cari alamat tujuan dari sebuah halaman daftar, supaya id yang berubah-ubah
+// setiap kali data di-seed ulang tidak perlu ditulis manual.
+async function resolvePath(page, { resolveFrom, linkPattern }) {
+  try {
+    await page.goto(BASE + resolveFrom, { waitUntil: 'load', timeout: 45000 });
+    await page.waitForTimeout(800);
+    const href = await page.evaluate(
+      pattern => {
+        const a = [...document.querySelectorAll('a[href]')].find(x => x.getAttribute('href').includes(pattern));
+        return a ? a.getAttribute('href') : null;
+      },
+      linkPattern
+    );
+    if (!href) return null;
+    return href.startsWith('http') ? href.replace(BASE, '') : href;
+  } catch (e) {
+    return null;
+  }
+}
+
 const manifest = {};
 const report = [];
 
@@ -82,8 +104,15 @@ async function captureRole(role, figs) {
     catch (e) { report.push(`[LOGIN FAIL ${role}] ${e.message.split('\n')[0]}`); }
   }
 
-  for (const [caption, , path] of figs) {
+  for (const [caption, , target] of figs) {
     const file = `${OUT}/${slug(caption)}.png`;
+
+    let path = target;
+    if (typeof target === 'object') {
+      path = await resolvePath(page, target);
+      if (!path) { report.push(`[FAIL] ${caption}  <- tautan ${target.linkPattern} tidak ditemukan di ${target.resolveFrom}`); continue; }
+    }
+
     let status = 0, ok = false, err = '';
     for (let attempt = 1; attempt <= 3 && !ok; attempt++) {
       try {

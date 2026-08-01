@@ -17,3 +17,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Tangkapan layar kerja: hasil verifikasi per fase dan arsip sebelum redesain.
+# Berguna saat mengerjakan, tapi puluhan MB dan bukan bagian dari laporan.
+/docs/fase3
+/docs/fase4
+/docs/screenshots-before
+/docs/screenshots-capture-archive
+/docs/screenshots-old-archive
