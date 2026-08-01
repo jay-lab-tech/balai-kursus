@@ -1,35 +1,95 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@500;600;700&display=swap');
+/* ==========================================================================
+   BALAI KURSUS — SISTEM RUPA "BALAI HANGAT"
+   --------------------------------------------------------------------------
+   Bahasa rupa: ruang belajar, bukan kantor. Hijau hutan, terakota, pasir.
+   Sudut membulat, struktur dari bidang dan garis rambut, bayangan hampir nol.
+   Huruf display Fraunces untuk judul dan angka, Karla untuk kerja sehari-hari,
+   IBM Plex Mono hanya untuk kode dan pengenal.
+
+   Kepadatan dibagi dua tingkat, bukan dua sistem:
+     · lega  (bawaan)     — sisi peserta, instruktur, halaman publik
+     · padat (.is-padat)  — tabel data admin, tempat banyak baris harus
+                            terlihat sekaligus
+
+   Nama kanonis komponen berawalan .bk-*. Nama lama .admin-* masih ikut di
+   selektor yang sama sebagai jembatan; dicabut per kelompok view saat Fase 4
+   berjalan.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* --------------------------------------------------------------------------
+   1 · TOKEN
+   Cerminan tailwind.config.js. Ubah di kedua tempat kalau menggeser palet.
+   -------------------------------------------------------------------------- */
+
 :root {
-    --bk-ink: #173f5f;
-    --bk-ink-soft: #526875;
-    --bk-teal: #0d9488;
-    --bk-teal-dark: #0f766e;
-    --bk-teal-pale: #e8f7f4;
-    --bk-amber: #a84a2a;
-    --bk-paper: #f5f2ea;
-    --bk-card: #fffefa;
-    --bk-line: #cfc8bb;
-    --bk-muted: #6c7c82;
-    --bk-danger: #dc2626;
-    --bk-radius: 8px;
-    --bk-shadow: 0 8px 22px rgba(30, 45, 54, 0.07);
+    --bk-canvas: #fbf8f4;
+    --bk-surface: #ffffff;
+
+    --bk-forest: #1f3a34;
+    --bk-forest-600: #2e5249;
+    --bk-forest-400: #5a7d72;
+
+    --bk-terra: #c05f3c;
+    --bk-terra-700: #a94f2f;
+    --bk-terra-900: #9d452a;
+    --bk-terra-soft: #fbeee8;
+
+    --bk-sage: #7a9082;
+    --bk-sage-700: #3b5c4f;
+    --bk-sage-soft: #eaf1ec;
+
+    --bk-sand: #e9e0d3;
+    --bk-sand-100: #f3ece2;
+
+    --bk-ink: #22312e;
+    --bk-ink-2: #6b7a75;
+    --bk-ink-3: #9aa5a0;
+
+    --bk-amber: #b07d21;
+    --bk-amber-700: #8a6113;
+    --bk-amber-soft: #fbf2df;
+
+    --bk-danger: #b3402c;
+    --bk-danger-700: #8f3020;
+    --bk-danger-soft: #fbeae7;
+
+    --bk-display: 'Fraunces', Georgia, serif;
+    --bk-sans: 'Karla', system-ui, sans-serif;
+    --bk-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    --bk-r: 14px;
+    --bk-r-sm: 9px;
+    --bk-shadow: 0 1px 2px rgba(34, 49, 46, 0.04);
+    --bk-lift: 0 6px 18px rgba(34, 49, 46, 0.08);
+
+    /* Jarak dalam panel — dikecilkan oleh .is-padat */
+    --bk-pad-x: 1.35rem;
+    --bk-pad-y: 1.15rem;
+    --bk-cell-y: 0.85rem;
 }
 
+/* --------------------------------------------------------------------------
+   2 · DASAR
+   -------------------------------------------------------------------------- */
+
 html {
-    font-family: 'IBM Plex Sans', sans-serif;
-    background: var(--bk-paper);
+    background: var(--bk-canvas);
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
+    margin: 0;
+    background: var(--bk-canvas);
     color: var(--bk-ink);
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
+    font: 400 0.9375rem/1.6 var(--bk-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -38,45 +98,26 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: var(--bk-display);
     font-weight: 600;
+    letter-spacing: -0.012em;
 }
 
 code,
-pre,
-.font-mono {
-    font-family: 'IBM Plex Mono', monospace;
+kbd,
+samp,
+pre {
+    font-family: var(--bk-mono);
 }
 
-/* Shared institutional workspace shell */
-.workspace-body { background: #f5f2ea; color: #1e2d36; }
-.workspace-sidebar-fixed { position: fixed; inset: 0 auto 0 0; z-index: 40; width: 15.5rem; background: #173f5f; color: #fff; padding: 1.5rem 1rem; display: flex; flex-direction: column; }
-.workspace-brand { display: flex; align-items: center; gap: .75rem; padding: .2rem .65rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,.16); text-decoration: none; color: #fff; }
-.workspace-brand img { width: 2.35rem; height: 2.35rem; object-fit: contain; background: #fff; padding: .3rem; border-radius: .4rem; }
-.workspace-brand small { display: block; color: #9ddbd4; font: 600 .62rem/1.2 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
-.workspace-brand strong { display: block; margin-top: .2rem; font: 700 1rem/1.2 'Source Serif 4', serif; }
-.workspace-nav-label { margin: 1.75rem .7rem .55rem; color: #b8cedb; font: 600 .65rem/1.2 'IBM Plex Mono', monospace; letter-spacing: .16em; text-transform: uppercase; }
-.workspace-link { display: flex; align-items: center; gap: .7rem; padding: .75rem .7rem; color: #d9e6ec; border-left: 3px solid transparent; font-size: .88rem; font-weight: 600; text-decoration: none; transition: color .18s ease, background .18s ease, border-color .18s ease; }
-.workspace-link:hover { color: #fff; background: rgba(255,255,255,.09); }
-.workspace-link.active { color: #fff; background: rgba(13,148,136,.32); border-left-color: #f0a36c; }
-.workspace-link i { width: 1.1rem; text-align: center; color: #9ddbd4; }
-.workspace-account { margin-top: auto; padding: 1rem .7rem 0; border-top: 1px solid rgba(255,255,255,.16); color: #d9e6ec; font-size: .78rem; }
-.workspace-account span { display: block; color: #9ddbd4; font: .7rem 'IBM Plex Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.workspace-topbar-fixed { position: fixed; inset: 0 0 auto 15.5rem; z-index: 30; min-height: 4.4rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem clamp(1rem, 3vw, 2.5rem); background: #fffefa; border-bottom: 1px solid #cfc8bb; }
-.workspace-topbar small { color: #6c7c82; font: 600 .68rem 'IBM Plex Mono', monospace; letter-spacing: .13em; text-transform: uppercase; }
-.workspace-topbar h1 { margin: .2rem 0 0; color: #173f5f; font: 600 1.4rem/1.2 'Source Serif 4', serif; }
-.workspace-topbar-actions { display: flex; align-items: center; gap: .65rem; }
-.workspace-profile { color: #40627d; font-size: .82rem; font-weight: 600; text-decoration: none; }
-.workspace-logout { border: 1px solid #cfc8bb; background: transparent; color: #a84a2a; padding: .55rem .75rem; font-size: .78rem; font-weight: 700; cursor: pointer; }
-.workspace-body > nav { display: none !important; }
-.workspace-body > main, .workspace-body > footer { margin-left: 15.5rem; }
-.workspace-body > main { padding-top: 4.4rem; }
-.workspace-footer { padding: 1.2rem clamp(1rem, 3vw, 2.5rem); border-top: 1px solid #cfc8bb; background: #fffefa; color: #6c7c82; font-size: .72rem; }
-.workspace-footer a { color: #0d9488; font-weight: 700; }
-@media (max-width: 800px) {
-    .workspace-sidebar-fixed { display: none; }
-    .workspace-topbar-fixed { inset: 0; }
-    .workspace-body > main, .workspace-body > footer { margin-left: 0; }
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+a {
+    cursor: pointer;
 }
 
 button,
@@ -87,14 +128,13 @@ textarea {
     -webkit-tap-highlight-color: transparent;
 }
 
-button,
-a {
-    cursor: pointer;
+*:focus-visible {
+    outline: 2px solid var(--bk-terra);
+    outline-offset: 2px;
 }
 
-*:focus-visible {
-    outline: 3px solid rgba(13, 148, 136, 0.35);
-    outline-offset: 2px;
+[x-cloak] {
+    display: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -105,5 +145,2234 @@ a {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3 · PEMBANTU TIPOGRAFI
+   -------------------------------------------------------------------------- */
+
+/* Angka rata kanan dengan lebar digit seragam — dipakai di kolom nominal,
+   nilai, dan kuota supaya kolom tidak bergoyang antar baris. */
+.bk-num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* Kode dan pengenal: K-0241, REG-20260731-A41C, KELAS-184-7712. */
+.bk-code {
+    font-family: var(--bk-mono);
+    font-size: 0.8em;
+    letter-spacing: -0.01em;
+    color: var(--bk-ink-2);
+}
+
+/* Label kecil di atas judul bagian. */
+.bk-eyebrow,
+.admin-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--bk-ink-2);
+    font-family: var(--bk-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.bk-muted {
+    color: var(--bk-ink-2);
+}
+
+.bk-nowrap {
+    white-space: nowrap;
+}
+
+/* Teks yang disembunyikan di layar sempit, menyisakan ikonnya saja. */
+@media (max-width: 620px) {
+    .bk-only-lebar {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   4 · SAPAAN / KEPALA HALAMAN
+   Bidang hijau dengan tekstur diagonal. Satu per halaman, paling atas.
+   -------------------------------------------------------------------------- */
+
+.bk-hello {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    padding: 1.75rem 2rem;
+    border-radius: var(--bk-r);
+    background: var(--bk-forest);
+    color: #eaf3ee;
+}
+
+.bk-hello::after {
+    content: '';
+    position: absolute;
+    inset: 0 -6rem 0 auto;
+    width: 22rem;
+    opacity: 0.14;
+    background: repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 14px);
+    pointer-events: none;
+}
+
+.bk-hello > * {
+    position: relative;
+}
+
+.bk-hello__kicker {
+    color: #9dbdae;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.bk-hello__title {
+    margin: 0.35rem 0;
+    color: #fff;
+    font: 600 2.05rem/1.12 var(--bk-display);
+    letter-spacing: -0.015em;
+}
+
+.bk-hello__lede {
+    margin: 0;
+    max-width: 48ch;
+    color: #c3d6cc;
+    font-size: 0.92rem;
+}
+
+.bk-hello__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.15rem;
+}
+
+@media (max-width: 620px) {
+    .bk-hello {
+        padding: 1.35rem 1.25rem;
+    }
+
+    .bk-hello__title {
+        font-size: 1.6rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   5 · TOMBOL
+   -------------------------------------------------------------------------- */
+
+.bk-btn,
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.05rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: 99px;
+    background: var(--bk-surface);
+    color: var(--bk-ink);
+    font: 600 0.84rem/1.2 var(--bk-sans);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.bk-btn:hover,
+.admin-btn:hover {
+    border-color: var(--bk-sage);
+    background: var(--bk-sage-soft);
+    color: var(--bk-forest);
+}
+
+.bk-btn:disabled,
+.bk-btn[aria-disabled='true'],
+.admin-btn:disabled,
+.admin-btn[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bk-btn--pri,
+.admin-btn-primary {
+    border-color: var(--bk-terra);
+    background: var(--bk-terra);
+    color: #fff;
+}
+
+.bk-btn--pri:hover,
+.admin-btn-primary:hover {
+    border-color: var(--bk-terra-700);
+    background: var(--bk-terra-700);
+    color: #fff;
+}
+
+.bk-btn--dark,
+.admin-btn-secondary {
+    border-color: var(--bk-forest);
+    background: var(--bk-forest);
+    color: #fff;
+}
+
+.bk-btn--dark:hover,
+.admin-btn-secondary:hover {
+    border-color: var(--bk-forest-600);
+    background: var(--bk-forest-600);
+    color: #fff;
+}
+
+.bk-btn--quiet,
+.admin-btn-ghost {
+    border-color: transparent;
+    background: transparent;
+    color: var(--bk-ink-2);
+}
+
+.bk-btn--quiet:hover,
+.admin-btn-ghost:hover {
+    border-color: var(--bk-sand);
+    background: var(--bk-sand-100);
+    color: var(--bk-ink);
+}
+
+/* Di atas bidang hijau (.bk-hello) tombol sekunder harus terang. */
+.bk-btn--onDark {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: transparent;
+    color: #fff;
+}
+
+.bk-btn--onDark:hover {
+    border-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.bk-btn--danger,
+.admin-btn-danger {
+    border-color: var(--bk-danger);
+    background: transparent;
+    color: var(--bk-danger-700);
+}
+
+.bk-btn--danger:hover,
+.admin-btn-danger:hover {
+    border-color: var(--bk-danger-700);
+    background: var(--bk-danger-700);
+    color: #fff;
+}
+
+.bk-btn--sm,
+.admin-btn-sm {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
+}
+
+/* Tombol selebar induknya — dipakai di formulir masuk/daftar. */
+.bk-btn--blok {
+    display: flex;
+    width: 100%;
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+
+/* Tombol ikon bulat untuk kolom aksi tabel. */
+.bk-iconbtn {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--bk-ink-2);
+    cursor: pointer;
+    transition: background 0.16s ease, color 0.16s ease;
+}
+
+.bk-iconbtn:hover {
+    background: var(--bk-sage-soft);
+    color: var(--bk-forest);
+}
+
+.bk-iconbtn--danger:hover {
+    background: var(--bk-danger-soft);
+    color: var(--bk-danger-700);
+}
+
+/* --------------------------------------------------------------------------
+   6 · PANEL
+   Wadah utama seluruh isi. Kepala, badan, kaki.
+   -------------------------------------------------------------------------- */
+
+.bk-panel,
+.admin-panel {
+    overflow: hidden;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r);
+    background: var(--bk-surface);
+    box-shadow: var(--bk-shadow);
+}
+
+.bk-panel + .bk-panel,
+.bk-panel + .bk-note,
+.bk-note + .bk-panel,
+.admin-panel + .admin-panel,
+.admin-panel + .admin-alert,
+.admin-alert + .admin-panel {
+    margin-top: 1.5rem;
+}
+
+.bk-panel__head,
+.admin-panel__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: var(--bk-pad-y) var(--bk-pad-x);
+    border-bottom: 1px solid var(--bk-sand-100);
+}
+
+.bk-panel__title,
+.admin-panel__title {
+    margin: 0;
+    color: var(--bk-ink);
+    font: 600 1.18rem/1.25 var(--bk-display);
+    letter-spacing: -0.01em;
+}
+
+.bk-panel__subtitle,
+.admin-panel__subtitle {
+    margin: 0.1rem 0 0;
+    max-width: 52rem;
+    color: var(--bk-ink-2);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.bk-panel__body {
+    padding: var(--bk-pad-y) var(--bk-pad-x);
+}
+
+.bk-panel__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem var(--bk-pad-x);
+    border-top: 1px solid var(--bk-sand-100);
+    color: var(--bk-ink-2);
+    font-size: 0.82rem;
+}
+
+/* Jembatan untuk view lama yang menaruh isi langsung di .admin-panel tanpa
+   pembungkus .bk-panel__body. Dicabut bersama kelas .admin-* di Fase 4. */
+.admin-panel > :not(.admin-panel__header):not(.admin-table):not(table) {
+    padding-left: var(--bk-pad-x);
+    padding-right: var(--bk-pad-x);
+}
+
+.admin-panel--hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.6rem var(--bk-pad-x);
+}
+
+.admin-panel--hero .admin-panel__header {
+    padding: 0;
+    border-bottom: 0;
+}
+
+.admin-panel--hero > :not(.admin-panel__header) {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Perkakas di kepala panel: pencarian, saringan, tombol. */
+.bk-tools,
+.bk-panel__head .bk-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   7 · KARTU ANGKA
+   -------------------------------------------------------------------------- */
+
+.bk-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+}
+
+.bk-stats--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bk-stats--5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.bk-stat,
+.admin-stat-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r);
+    background: var(--bk-surface);
+    box-shadow: var(--bk-shadow);
+}
+
+.bk-stat__icon {
+    display: grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    margin-bottom: 0.75rem;
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-sage-soft);
+    color: var(--bk-forest-600);
+    font-size: 1.05rem;
+}
+
+.bk-stat--terra .bk-stat__icon {
+    background: var(--bk-terra-soft);
+    color: var(--bk-terra);
+}
+
+.bk-stat--amber .bk-stat__icon {
+    background: var(--bk-amber-soft);
+    color: var(--bk-amber);
+}
+
+.bk-stat__label,
+.admin-stat-card__label {
+    color: var(--bk-ink-2);
+    font-family: var(--bk-sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.bk-stat__value,
+.admin-stat-card__value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0.15rem 0 0;
+    color: var(--bk-ink);
+    font: 600 1.95rem/1 var(--bk-display);
+    letter-spacing: -0.02em;
+}
+
+.bk-stat__delta {
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-style: normal;
+    color: var(--bk-sage-700);
+}
+
+.bk-stat__delta--down {
+    color: var(--bk-terra);
+}
+
+.bk-stat__hint,
+.admin-stat-card__hint {
+    margin: 0.3rem 0 0;
+    color: var(--bk-ink-2);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 1160px) {
+    .bk-stats,
+    .bk-stats--3,
+    .bk-stats--5 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .bk-stats,
+    .bk-stats--3,
+    .bk-stats--5 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   8 · TABEL
+   Bawaan lega. Tambahkan .is-padat pada tabel admin yang banyak barisnya.
+   -------------------------------------------------------------------------- */
+
+.bk-table,
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+.bk-table th,
+.admin-table thead th {
+    padding: 0.75rem 1rem;
+    background: var(--bk-sand-100);
+    color: var(--bk-ink-2);
+    font: 700 0.72rem var(--bk-sans);
+    letter-spacing: 0.07em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.bk-table td,
+.admin-table tbody td {
+    padding: var(--bk-cell-y) 1rem;
+    border-bottom: 1px solid var(--bk-sand-100);
+    color: var(--bk-ink);
+    vertical-align: middle;
+}
+
+.bk-table th:first-child,
+.bk-table td:first-child,
+.admin-table thead th:first-child,
+.admin-table tbody td:first-child {
+    padding-left: var(--bk-pad-x);
+}
+
+.bk-table th:last-child,
+.bk-table td:last-child,
+.admin-table thead th:last-child,
+.admin-table tbody td:last-child {
+    padding-right: var(--bk-pad-x);
+}
+
+.bk-table tbody tr:last-child td,
+.admin-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.bk-table tbody tr:hover,
+.admin-table tbody tr:hover {
+    background: #fdfaf6;
+}
+
+/* Kolom kanan: nominal, nilai, kuota. */
+.bk-table .r,
+.admin-table .r {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.bk-table th.r,
+.admin-table th.r {
+    text-align: right;
+}
+
+.bk-table .nw,
+.admin-table .nw {
+    white-space: nowrap;
+}
+
+/* Kepala tabel menempel saat menggulir daftar panjang — sumbangan dari
+   arah "Konsol Operasi", tempat banyak baris harus terpantau sekaligus. */
+.bk-table--sticky thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: inset 0 -1px 0 var(--bk-sand);
+}
+
+/* Tingkat padat: baris lebih rapat, huruf sedikit lebih kecil. */
+.bk-table.is-padat,
+.admin-table.is-padat {
+    font-size: 0.83rem;
+}
+
+.bk-table.is-padat td,
+.admin-table.is-padat tbody td {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.bk-table.is-padat th,
+.admin-table.is-padat thead th {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+}
+
+/* Identitas dalam sel: inisial + nama + keterangan. */
+.bk-who {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.bk-who__ini {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-sage-soft);
+    color: var(--bk-forest-600);
+    font: 600 0.8rem var(--bk-display);
+}
+
+.bk-who__ini--terra {
+    background: var(--bk-terra-soft);
+    color: var(--bk-terra);
+}
+
+.bk-who__ini--sand {
+    background: var(--bk-sand-100);
+    color: var(--bk-ink-2);
+}
+
+.bk-who b {
+    display: block;
+    font-weight: 600;
+}
+
+.bk-who small {
+    color: var(--bk-ink-2);
+    font-size: 0.775rem;
+}
+
+/* Tabel jadi daftar bertumpuk di layar kecil. Label kolom diisi oleh skrip
+   di layout lewat atribut data-label. */
+@media (max-width: 760px) {
+    .bk-table thead,
+    .admin-table thead {
+        display: none;
+    }
+
+    .bk-table tbody tr,
+    .admin-table tbody tr {
+        display: block;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--bk-sand);
+    }
+
+    .bk-table tbody td,
+    .admin-table tbody td {
+        display: flex;
+        gap: 1rem;
+        align-items: baseline;
+        justify-content: space-between;
+        padding: 0.3rem var(--bk-pad-x);
+        border: 0;
+    }
+
+    .bk-table tbody td::before,
+    .admin-table tbody td::before {
+        content: attr(data-label);
+        flex: none;
+        color: var(--bk-ink-2);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    .bk-table .r,
+    .admin-table .r {
+        text-align: right;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   9 · LABEL KEADAAN
+   Pil warna. Satu keadaan, satu warna, konsisten di seluruh aplikasi.
+   -------------------------------------------------------------------------- */
+
+.bk-tag,
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.24rem 0.7rem;
+    border: 0;
+    border-radius: 99px;
+    background: var(--bk-sage-soft);
+    color: var(--bk-sage-700);
+    font-family: var(--bk-sans);
+    font-size: 0.775rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+/* Berjalan / menunggu / dalam proses */
+.bk-tag--jalan,
+.admin-badge-warning {
+    background: var(--bk-amber-soft);
+    color: var(--bk-amber-700);
+}
+
+/* Perlu perhatian / tertunggak / gagal */
+.bk-tag--perlu,
+.bk-tag--gagal {
+    background: var(--bk-terra-soft);
+    color: var(--bk-terra-900);
+}
+
+/* Netral / tutup / selesai tanpa tindakan */
+.bk-tag--diam,
+.admin-badge-muted {
+    background: #efeee9;
+    color: #767065;
+}
+
+.bk-tag--info,
+.admin-badge-info {
+    background: #e8f0f2;
+    color: #2b5560;
+}
+
+/* Titik keadaan untuk tabel padat — lebih hemat ruang daripada pil. */
+.bk-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+}
+
+.bk-dot::before {
+    content: '';
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--bk-sage);
+}
+
+.bk-dot--jalan::before {
+    background: var(--bk-amber);
+}
+
+.bk-dot--perlu::before {
+    background: var(--bk-terra);
+}
+
+.bk-dot--diam::before {
+    background: var(--bk-ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   10 · METER
+   Kuota kelas, kemajuan materi, porsi tagihan terbayar.
+   -------------------------------------------------------------------------- */
+
+.bk-meter {
+    display: block;
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: var(--bk-sand-100);
+}
+
+.bk-meter > i {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: var(--bk-sage);
+}
+
+.bk-meter > i.is-penuh {
+    background: var(--bk-terra);
+}
+
+/* Varian sempit rata kanan untuk kolom kuota. */
+.bk-meter--cell {
+    width: 5.5rem;
+    margin: 0.35rem 0 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   11 · TAHAPAN
+   Runtut vertikal. Kolom ikon dan kolom teks dipatok eksplisit supaya
+   keterangan tidak jatuh ke kolom ikon yang sempit.
+   -------------------------------------------------------------------------- */
+
+.bk-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bk-steps li {
+    display: grid;
+    grid-template-columns: 1.9rem minmax(0, 1fr);
+    align-items: start;
+    padding: 0.45rem 0;
+}
+
+.bk-steps li::before {
+    content: '\F26E';
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    display: grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--bk-sand-100);
+    color: var(--bk-ink-3);
+    font-family: 'bootstrap-icons';
+    font-size: 0.7rem;
+}
+
+.bk-steps li.is-selesai::before {
+    background: var(--bk-sage);
+    color: #fff;
+}
+
+.bk-steps li.is-kini::before {
+    content: '\F4F7';
+    background: var(--bk-terra);
+    color: #fff;
+}
+
+.bk-steps b {
+    grid-column: 2;
+    font-size: 0.89rem;
+    font-weight: 600;
+}
+
+.bk-steps small {
+    grid-column: 2;
+    color: var(--bk-ink-2);
+    font-size: 0.79rem;
+}
+
+/* --------------------------------------------------------------------------
+   12 · CATATAN & PERINGATAN
+   -------------------------------------------------------------------------- */
+
+.bk-note,
+.admin-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.95rem 1.15rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-surface);
+    color: var(--bk-ink);
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
+.bk-note__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--bk-sage-soft);
+    color: var(--bk-sage-700);
+    font-size: 0.8rem;
+}
+
+.bk-note--baik,
+.admin-alert-success {
+    border-color: #cfe0d5;
+    background: var(--bk-sage-soft);
+    color: var(--bk-sage-700);
+}
+
+.bk-note--baik .bk-note__icon {
+    background: var(--bk-sage);
+    color: #fff;
+}
+
+.bk-note--perlu {
+    border-color: #efd3c8;
+    background: var(--bk-terra-soft);
+    color: var(--bk-terra-900);
+}
+
+.bk-note--perlu .bk-note__icon {
+    background: var(--bk-terra);
+    color: #fff;
+}
+
+.bk-note--buruk,
+.admin-alert-danger {
+    border-color: #eec8c1;
+    background: var(--bk-danger-soft);
+    color: var(--bk-danger-700);
+}
+
+.bk-note--buruk .bk-note__icon {
+    background: var(--bk-danger);
+    color: #fff;
+}
+
+/* Kartu saran di kolom samping. */
+.bk-tip {
+    padding: var(--bk-pad-x);
+}
+
+.bk-tip__icon {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin-bottom: 0.85rem;
+    border-radius: 50%;
+    background: var(--bk-terra-soft);
+    color: var(--bk-terra);
+    font-size: 1.15rem;
+}
+
+.bk-tip h3 {
+    margin: 0 0 0.35rem;
+    font: 600 1.08rem var(--bk-display);
+}
+
+.bk-tip p {
+    margin: 0 0 1rem;
+    color: var(--bk-ink-2);
+    font-size: 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   13 · FORM
+   -------------------------------------------------------------------------- */
+
+.bk-label,
+.admin-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--bk-ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.bk-input,
+.bk-select,
+.bk-textarea,
+.admin-input,
+.admin-native-select {
+    display: block;
+    width: 100%;
+    min-height: 2.6rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-surface);
+    color: var(--bk-ink);
+    font: 400 0.875rem/1.45 var(--bk-sans);
+    box-shadow: none;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.bk-input::placeholder,
+.bk-textarea::placeholder,
+.admin-input::placeholder {
+    color: var(--bk-ink-3);
+}
+
+.bk-input:focus,
+.bk-select:focus,
+.bk-textarea:focus,
+.admin-input:focus,
+.admin-native-select:focus {
+    border-color: var(--bk-sage);
+    outline: 0;
+    box-shadow: 0 0 0 3px var(--bk-sage-soft);
+}
+
+.bk-textarea,
+textarea.bk-input,
+textarea.admin-input {
+    min-height: 6.5rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.bk-input[aria-invalid='true'],
+.bk-input.is-invalid,
+.admin-input[aria-invalid='true'],
+.admin-input.is-invalid {
+    border-color: var(--bk-danger);
+}
+
+.bk-input[aria-invalid='true']:focus,
+.bk-input.is-invalid:focus,
+.admin-input.is-invalid:focus {
+    box-shadow: 0 0 0 3px var(--bk-danger-soft);
+}
+
+.bk-error,
+.admin-field-error {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--bk-danger-700);
+    font-size: 0.775rem;
+    font-weight: 600;
+}
+
+.bk-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--bk-ink-2);
+    font-size: 0.775rem;
+}
+
+/* Kolom form: dua lajur di layar lebar, satu di layar sempit. */
+.bk-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.25rem;
+}
+
+.bk-fields > .bk-field--wide {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 720px) {
+    .bk-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Kontrol pil di kepala panel: pencarian dan saringan. */
+.bk-pillfield {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.85rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: 99px;
+    background: var(--bk-canvas);
+    color: var(--bk-ink-2);
+    font-size: 0.82rem;
+}
+
+.bk-pillfield input {
+    width: 9.5rem;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--bk-ink);
+    font: 400 0.84rem var(--bk-sans);
+    outline: 0;
+    box-shadow: none;
+}
+
+.bk-pillselect {
+    min-height: 0;
+    padding: 0.42rem 2rem 0.42rem 0.85rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: 99px;
+    background-color: var(--bk-canvas);
+    color: var(--bk-ink);
+    font: 500 0.82rem var(--bk-sans);
+    width: auto;
+}
+
+/* Chip saringan aktif yang bisa dibuang — sumbangan dari arah
+   "Konsol Operasi": saringan yang sedang berlaku harus terbaca, bukan
+   tersembunyi di dalam dropdown. */
+.bk-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem 0.3rem 0.7rem;
+    border-radius: 99px;
+    background: var(--bk-sage-soft);
+    color: var(--bk-sage-700);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.bk-chip a,
+.bk-chip button {
+    display: grid;
+    place-items: center;
+    width: 1.05rem;
+    height: 1.05rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(59, 92, 79, 0.14);
+    color: inherit;
+    font-size: 0.6rem;
+    cursor: pointer;
+}
+
+.bk-chip a:hover,
+.bk-chip button:hover {
+    background: var(--bk-sage);
+    color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   14 · KEADAAN KOSONG
+   -------------------------------------------------------------------------- */
+
+.bk-empty,
+.admin-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--bk-sand);
+    border-radius: var(--bk-r);
+    background: var(--bk-canvas);
+    text-align: center;
+}
+
+.bk-empty__icon,
+.admin-empty-state__icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--bk-sand-100);
+    color: var(--bk-forest-400);
+    font-size: 1.3rem;
+}
+
+.bk-empty h3,
+.admin-empty-state h3 {
+    margin: 0.6rem 0 0;
+    color: var(--bk-ink);
+    font: 600 1.08rem var(--bk-display);
+}
+
+.bk-empty p,
+.admin-empty-state p {
+    margin: 0;
+    max-width: 40ch;
+    color: var(--bk-ink-2);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.bk-empty .bk-btn,
+.bk-empty .admin-btn,
+.admin-empty-state .admin-btn {
+    margin-top: 0.9rem;
+}
+
+/* Tabel kosong: baris tunggal yang membentang. */
+.bk-table .bk-empty,
+.admin-table .admin-empty-state {
+    border: 0;
+    background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   15 · PENOMORAN HALAMAN
+   -------------------------------------------------------------------------- */
+
+.bk-pager {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.bk-pager a,
+.bk-pager span {
+    display: grid;
+    place-items: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.4rem;
+    border-radius: 50%;
+    color: var(--bk-ink-2);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.bk-pager a:hover {
+    background: var(--bk-sand-100);
+    color: var(--bk-ink);
+}
+
+.bk-pager .is-kini {
+    background: var(--bk-forest);
+    color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   16 · SUSUNAN
+   -------------------------------------------------------------------------- */
+
+/* Dua kolom tak sama: daftar utama + kolom samping. */
+.bk-duo {
+    display: grid;
+    grid-template-columns: 1.3fr minmax(0, 1fr);
+    gap: 1.25rem;
+    margin-top: 1.6rem;
+    align-items: start;
+}
+
+.bk-duo--even {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 1160px) {
+    .bk-duo,
+    .bk-duo--even {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Baris daftar sederhana di dalam panel (antrean, riwayat singkat). */
+.bk-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem var(--bk-pad-x);
+    border-bottom: 1px solid var(--bk-sand-100);
+}
+
+.bk-row:last-child {
+    border-bottom: 0;
+}
+
+.bk-row__sp {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Pasangan label-nilai tiga lajur di dalam kartu. */
+.bk-kv {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.bk-kv > div {
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-canvas);
+}
+
+.bk-kv dt {
+    color: var(--bk-ink-2);
+    font-size: 0.78rem;
+}
+
+.bk-kv dd {
+    margin: 0.15rem 0 0;
+    font: 600 1.05rem var(--bk-display);
+}
+
+/* --------------------------------------------------------------------------
+   17 · RANGKA RUANG KERJA
+   Sisi kiri hijau + kepala menempel. Satu rangka dipakai bertiga: layout
+   admin, instruktur, dan peserta.
+   -------------------------------------------------------------------------- */
+
+.bk-shell {
+    display: grid;
+    grid-template-columns: 16.5rem minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+/* Merek di atas, akun di bawah, hanya daftar navigasi yang menggulir —
+   supaya blok akun tetap terlihat pada layar pendek. */
+.bk-side {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    display: flex;
+    width: 16.5rem;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1.5rem 1rem;
+    background: var(--bk-forest);
+    color: #d3e0da;
+}
+
+.bk-side__scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.bk-side__scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.bk-side__scroll::-webkit-scrollbar-thumb {
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.bk-side__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0 0.6rem 1.4rem;
+    color: #fff;
+}
+
+.bk-side__glyph {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+    padding: 0.28rem;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--bk-terra);
+    font: 700 0.9rem var(--bk-display);
+}
+
+.bk-side__glyph img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.bk-side__brand b {
+    display: block;
+    color: #fff;
+    font: 600 1.05rem/1.15 var(--bk-display);
+}
+
+.bk-side__brand small {
+    display: block;
+    color: #94ab9f;
+    font-size: 0.7rem;
+}
+
+.bk-side__sec {
+    padding: 1rem 0.8rem 0.4rem;
+    color: #8ba498;
+    font: 700 0.68rem var(--bk-sans);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.bk-side__sec:first-child {
+    padding-top: 0.25rem;
+}
+
+.bk-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.1rem;
+    padding: 0.52rem 0.8rem;
+    border-radius: 99px;
+    color: #cfded7;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.16s ease, color 0.16s ease;
+}
+
+.bk-nav i {
+    flex: none;
+    width: 1.1rem;
+    color: #8ba498;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.bk-nav:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+}
+
+.bk-nav.is-aktif {
+    background: var(--bk-terra);
+    color: #fff;
+    font-weight: 600;
+}
+
+.bk-nav.is-aktif i {
+    color: #fff;
+}
+
+.bk-nav__cnt {
+    margin-left: auto;
+    padding: 0.05rem 0.45rem;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.16);
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.bk-nav.is-aktif .bk-nav__cnt {
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.bk-side__foot {
+    flex: none;
+    padding-top: 0.5rem;
+}
+
+.bk-side__me {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 0.9rem;
+    padding: 0.85rem;
+    border-radius: var(--bk-r-sm);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.bk-side__av {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: var(--bk-sage);
+    color: #12241f;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.bk-side__me b {
+    display: block;
+    overflow: hidden;
+    color: #fff;
+    font-size: 0.83rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bk-side__me span {
+    display: block;
+    overflow: hidden;
+    color: #8ba498;
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bk-side__out {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.8rem;
+    color: #a9c0b5;
+    font-size: 0.8rem;
+}
+
+.bk-side__out:hover {
+    color: #fff;
+}
+
+.bk-main {
+    grid-column: 2;
+    min-height: 100vh;
+}
+
+.bk-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.4rem;
+    padding: 0.8rem clamp(1.25rem, 3vw, 2.75rem);
+    border-bottom: 1px solid var(--bk-sand);
+    background: rgba(251, 248, 244, 0.9);
+    backdrop-filter: blur(14px);
+}
+
+.bk-topbar__crumb {
+    color: var(--bk-ink-2);
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.bk-topbar__title {
+    margin: 0.1rem 0 0;
+    color: var(--bk-ink);
+    font: 600 1.28rem/1.2 var(--bk-display);
+}
+
+.bk-topbar__note {
+    margin: 0.15rem 0 0;
+    overflow: hidden;
+    color: var(--bk-ink-2);
+    font-size: 0.78rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bk-content {
+    padding: 1.75rem clamp(1.25rem, 3vw, 2.75rem) 3rem;
+}
+
+.bk-menubtn {
+    display: none;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-surface);
+    color: var(--bk-ink);
+}
+
+.bk-overlay {
+    display: none;
+}
+
+@media (max-width: 960px) {
+    .bk-shell {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .bk-side {
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+    }
+
+    .bk-side.is-buka {
+        transform: translateX(0);
+    }
+
+    .bk-main {
+        grid-column: 1;
+    }
+
+    .bk-menubtn {
+        display: inline-flex;
+    }
+
+    .bk-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 35;
+        display: block;
+        background: rgba(31, 58, 52, 0.45);
+    }
+}
+
+@media (max-width: 620px) {
+    .bk-content {
+        padding: 1.1rem 1rem 2.5rem;
+    }
+
+    .bk-topbar__note {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   18 · GERBANG
+   Halaman yang dilihat sebelum masuk: login, daftar, pulih kata sandi,
+   verifikasi sertifikat, papan informasi. Bukan ruang kerja, jadi tidak
+   memakai .bk-shell — tapi palet, huruf, dan komponennya sama persis.
+   -------------------------------------------------------------------------- */
+
+.bk-gate {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    min-height: 100vh;
+}
+
+/* Sisi kiri: bidang hijau yang menerangkan tempat ini apa. */
+.bk-gate__aside {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    padding: 2.5rem clamp(2rem, 4vw, 4rem);
+    background: var(--bk-forest);
+    color: #d3e0da;
+}
+
+.bk-gate__aside::after {
+    content: '';
+    position: absolute;
+    inset: auto -8rem -8rem auto;
+    width: 26rem;
+    height: 26rem;
+    opacity: 0.13;
+    border-radius: 50%;
+    background: repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 15px);
+    pointer-events: none;
+}
+
+.bk-gate__aside > * {
+    position: relative;
+}
+
+.bk-gate__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: #fff;
+}
+
+.bk-gate__brand b {
+    display: block;
+    font: 600 1.1rem/1.15 var(--bk-display);
+}
+
+.bk-gate__brand small {
+    display: block;
+    color: #94ab9f;
+    font-size: 0.72rem;
+}
+
+.bk-gate__pitch {
+    margin: auto 0;
+    padding: 3rem 0;
+    max-width: 30rem;
+}
+
+.bk-gate__pitch h2 {
+    margin: 0.6rem 0 0;
+    color: #fff;
+    font: 600 clamp(1.9rem, 3vw, 2.6rem)/1.12 var(--bk-display);
+    letter-spacing: -0.018em;
+}
+
+.bk-gate__pitch p {
+    margin: 1rem 0 0;
+    color: #b9cec4;
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+.bk-gate__steps {
+    display: grid;
+    gap: 0.85rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.bk-gate__steps li {
+    display: grid;
+    grid-template-columns: 1.6rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.7rem;
+    color: #c3d6cc;
+    font-size: 0.88rem;
+}
+
+.bk-gate__steps b {
+    color: var(--bk-sand);
+    font: 500 0.78rem var(--bk-mono);
+}
+
+.bk-gate__foot {
+    color: #8ba498;
+    font-size: 0.74rem;
+}
+
+/* Sisi kanan: formulirnya sendiri. */
+.bk-gate__main {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem clamp(1.25rem, 3vw, 3.5rem) 2.5rem;
+    background: var(--bk-canvas);
+}
+
+.bk-gate__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.bk-gate__logo {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--bk-ink);
+    font: 600 0.95rem var(--bk-display);
+}
+
+.bk-gate__logo img,
+.bk-gate__brand img {
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    padding: 0.3rem;
+    border-radius: 50%;
+    background: #fff;
+    object-fit: contain;
+}
+
+.bk-gate__logo img {
+    width: 2.1rem;
+    height: 2.1rem;
+    box-shadow: var(--bk-shadow);
+}
+
+/* Sakelar Masuk / Daftar. */
+.bk-gate__swap {
+    display: inline-flex;
+    gap: 0.2rem;
+    padding: 0.25rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: 99px;
+    background: var(--bk-surface);
+}
+
+.bk-gate__swap a {
+    padding: 0.42rem 1rem;
+    border-radius: 99px;
+    color: var(--bk-ink-2);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: background 0.16s ease, color 0.16s ease;
+}
+
+.bk-gate__swap a:hover {
+    color: var(--bk-ink);
+}
+
+.bk-gate__swap a.is-aktif {
+    background: var(--bk-forest);
+    color: #fff;
+}
+
+.bk-gate__box {
+    width: 100%;
+    max-width: 27rem;
+    margin: auto;
+    padding: 2.25rem 0;
+}
+
+.bk-gate__kicker {
+    color: var(--bk-terra-900);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.bk-gate__box h1 {
+    margin: 0.5rem 0 0;
+    color: var(--bk-ink);
+    font: 600 2rem/1.15 var(--bk-display);
+    letter-spacing: -0.015em;
+}
+
+.bk-gate__box > p {
+    margin: 0.7rem 0 0;
+    color: var(--bk-ink-2);
+    font-size: 0.9rem;
+}
+
+.bk-gate__card {
+    margin-top: 1.75rem;
+    padding: 1.75rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r);
+    background: var(--bk-surface);
+    box-shadow: var(--bk-lift);
+    transition: opacity 0.15s ease;
+}
+
+.bk-gate__card.is-muat {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+/* Catatan sesi / galat yang muncul di atas formulir. */
+.bk-gate__card > .bk-note {
+    margin-bottom: 1.35rem;
+}
+
+/* Isi kartu: deret ruas yang berjarak sama. */
+.bk-gate__form {
+    display: grid;
+    gap: 1.15rem;
+}
+
+/* Baris label yang berbagi tempat dengan tautan "Lupa kata sandi?". */
+.bk-gate__lbl {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+.bk-gate__lbl .bk-label {
+    margin-bottom: 0;
+}
+
+.bk-gate__lbl a {
+    color: var(--bk-terra-900);
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.bk-gate__lbl a:hover {
+    text-decoration: underline;
+}
+
+.bk-gate__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--bk-ink-2);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.bk-gate__check input {
+    width: 0.95rem;
+    height: 0.95rem;
+    accent-color: var(--bk-forest);
+    cursor: pointer;
+}
+
+/* Pemisah "atau lanjutkan dengan". */
+.bk-gate__or {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    color: var(--bk-ink-3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.bk-gate__or::before,
+.bk-gate__or::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--bk-sand);
+}
+
+.bk-gate__alt {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.bk-gate__ask {
+    margin: 1.75rem 0 0;
+    color: var(--bk-ink-2);
+    font-size: 0.86rem;
+    text-align: center;
+}
+
+.bk-gate__ask a {
+    color: var(--bk-terra-900);
+    font-weight: 700;
+}
+
+.bk-gate__ask a:hover {
+    text-decoration: underline;
+}
+
+.bk-gate__fine {
+    margin: 1.5rem 0 0;
+    color: var(--bk-ink-3);
+    font-size: 0.74rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .bk-gate {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .bk-gate__aside {
+        display: none;
+    }
+
+    .bk-gate__logo {
+        display: inline-flex;
+    }
+}
+
+/* --- Halaman publik berdiri sendiri (papan informasi, verifikasi) --------- */
+
+.bk-page {
+    min-height: 100vh;
+    background: var(--bk-canvas);
+}
+
+.bk-page__bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem clamp(1rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--bk-sand);
+    background: rgba(251, 248, 244, 0.92);
+    backdrop-filter: blur(14px);
+}
+
+.bk-page__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--bk-ink);
+}
+
+.bk-page__brand img {
+    width: 2.3rem;
+    height: 2.3rem;
+    flex: none;
+    padding: 0.26rem;
+    border-radius: 50%;
+    background: #fff;
+    object-fit: contain;
+    box-shadow: var(--bk-shadow);
+}
+
+.bk-page__brand b {
+    display: block;
+    font: 600 1rem/1.15 var(--bk-display);
+}
+
+.bk-page__brand small {
+    display: block;
+    color: var(--bk-ink-2);
+    font-size: 0.72rem;
+}
+
+.bk-page__body {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 2rem clamp(1rem, 3vw, 2.5rem) 3.5rem;
+}
+
+.bk-page__body--sempit {
+    max-width: 44rem;
+}
+
+/* Putusan verifikasi: pita berwarna di kepala panel. */
+.bk-verdict {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.35rem var(--bk-pad-x);
+    border-bottom: 1px solid var(--bk-sand-100);
+}
+
+.bk-verdict__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-size: 1.35rem;
+}
+
+.bk-verdict h1 {
+    margin: 0;
+    font: 600 1.3rem/1.2 var(--bk-display);
+}
+
+.bk-verdict p {
+    margin: 0.2rem 0 0;
+    color: var(--bk-ink-2);
+    font-size: 0.85rem;
+}
+
+.bk-verdict--sah {
+    background: var(--bk-sage-soft);
+}
+
+.bk-verdict--sah .bk-verdict__icon {
+    background: var(--bk-sage);
+    color: #fff;
+}
+
+.bk-verdict--sah h1 {
+    color: var(--bk-sage-700);
+}
+
+.bk-verdict--tarik {
+    background: var(--bk-amber-soft);
+}
+
+.bk-verdict--tarik .bk-verdict__icon {
+    background: var(--bk-amber);
+    color: #fff;
+}
+
+.bk-verdict--tarik h1 {
+    color: var(--bk-amber-700);
+}
+
+.bk-verdict--nihil {
+    background: var(--bk-danger-soft);
+}
+
+.bk-verdict--nihil .bk-verdict__icon {
+    background: var(--bk-danger);
+    color: #fff;
+}
+
+.bk-verdict--nihil h1 {
+    color: var(--bk-danger-700);
+}
+
+/* Daftar keterangan: label kiri, isi kanan, garis rambut antar baris. */
+.bk-facts {
+    margin: 0;
+}
+
+.bk-facts > div {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: 0.35rem 1.25rem;
+    padding: 0.8rem var(--bk-pad-x);
+    border-bottom: 1px solid var(--bk-sand-100);
+}
+
+.bk-facts > div:last-child {
+    border-bottom: 0;
+}
+
+.bk-facts dt {
+    color: var(--bk-ink-2);
+    font-size: 0.82rem;
+}
+
+.bk-facts dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+@media (max-width: 560px) {
+    .bk-facts > div {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* --- Papan informasi ------------------------------------------------------
+   Dibaca dari jauh di layar lobi, jadi jam dan judul sesi dibesarkan.
+   .is-tv menaikkan seluruh skala tanpa mengganti tata letaknya. */
+
+.bk-board__top {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1.85rem 2rem;
+    border-radius: var(--bk-r);
+    background: var(--bk-forest);
+    color: #c3d6cc;
+}
+
+.bk-board__top::after {
+    content: '';
+    position: absolute;
+    inset: 0 -6rem 0 auto;
+    width: 22rem;
+    opacity: 0.14;
+    background: repeating-linear-gradient(135deg, #fff 0 2px, transparent 2px 14px);
+    pointer-events: none;
+}
+
+.bk-board__top > * {
+    position: relative;
+}
+
+.bk-board__top h1 {
+    margin: 0.35rem 0 0;
+    color: #fff;
+    font: 600 clamp(1.9rem, 3.2vw, 2.6rem)/1.1 var(--bk-display);
+    letter-spacing: -0.018em;
+}
+
+.bk-board__top p {
+    margin: 0.5rem 0 0;
+    font-size: 0.95rem;
+}
+
+.bk-board__clock {
+    text-align: right;
+}
+
+.bk-board__clock time {
+    display: block;
+    color: #fff;
+    font: 600 clamp(2.6rem, 5vw, 3.6rem)/1 var(--bk-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+}
+
+.bk-board__clock span {
+    display: block;
+    margin-top: 0.4rem;
+    color: #9dbdae;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.bk-board__sec {
+    margin-top: 2rem;
+}
+
+.bk-board__sec h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0 0 0.3rem;
+    font: 600 1.35rem var(--bk-display);
+}
+
+.bk-board__sec > p {
+    margin: 0 0 1.1rem;
+    color: var(--bk-ink-2);
+    font-size: 0.86rem;
+}
+
+.bk-board__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: 1rem;
+}
+
+/* Satu sesi kursus. */
+.bk-sesi {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.25rem 1.35rem;
+    border: 1px solid var(--bk-sand);
+    border-left: 4px solid var(--bk-sand);
+    border-radius: var(--bk-r);
+    background: var(--bk-surface);
+    box-shadow: var(--bk-shadow);
+}
+
+.bk-sesi--ongoing {
+    border-left-color: var(--bk-terra);
+}
+
+.bk-sesi--upcoming {
+    border-left-color: var(--bk-amber);
+}
+
+.bk-sesi--finished,
+.bk-sesi--unscheduled {
+    border-left-color: var(--bk-sand);
+    background: var(--bk-canvas);
+}
+
+.bk-sesi__jam {
+    display: block;
+    margin-top: 0.75rem;
+    color: var(--bk-ink);
+    font: 600 1.6rem/1 var(--bk-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+.bk-sesi__nama {
+    margin: 0.4rem 0 0;
+    font: 600 1.12rem/1.25 var(--bk-display);
+}
+
+.bk-sesi__list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--bk-sand-100);
+}
+
+.bk-sesi__list > div {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.6rem;
+    color: var(--bk-ink-2);
+    font-size: 0.84rem;
+}
+
+.bk-sesi__list i {
+    color: var(--bk-sage);
+    font-size: 0.85rem;
+}
+
+.bk-sesi__list b {
+    color: var(--bk-ink);
+    font-weight: 600;
+}
+
+/* Mode layar lobi. */
+.is-tv .bk-page__body {
+    max-width: 100rem;
+}
+
+.is-tv .bk-board__grid {
+    grid-template-columns: repeat(auto-fill, minmax(23rem, 1fr));
+}
+
+.is-tv .bk-sesi__jam {
+    font-size: 2.1rem;
+}
+
+.is-tv .bk-sesi__nama {
+    font-size: 1.35rem;
+}
+
+.is-tv .bk-sesi__list > div {
+    font-size: 0.95rem;
+}
+
+.is-tv .bk-board__sec h2 {
+    font-size: 1.7rem;
+}
+
+@media (max-width: 780px) {
+    .bk-board__top {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.25rem;
+    }
+
+    .bk-board__clock {
+        text-align: left;
     }
 }

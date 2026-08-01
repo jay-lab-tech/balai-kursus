@@ -4,153 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Balai Kursus') - Peserta</title>
-    @php
-        $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
-        $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
-        $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
-    @endphp
-    @if($cssFile)
-        <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}">
-    @endif
+    <title>@yield('title', 'Ruang belajar') · Balai Kursus</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        [x-cloak] { display: none !important; }
-        html { scroll-behavior: smooth; }
-        body { min-height: 100vh; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0b2035; }
-        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 999px; }
-        .role-shell { background: #0b2035; }
-        .role-nav { background: rgba(16, 42, 67, .96); border-color: rgba(125, 211, 252, .16); backdrop-filter: blur(18px); }
-        .role-nav-link { color: #cbd5e1; transition: .2s ease; }
-        .role-nav-link:hover { color: #fff; background: rgba(14, 165, 233, .12); }
-        .role-nav-link.active { color: #082f49; background: #fbbf24; box-shadow: 0 8px 20px rgba(251, 191, 36, .14); }
-
-        .role-shell { background: #f7f8f6; color: #173f5f; }
-        .role-nav { background: rgba(255, 255, 255, .96); border-color: #dce7e5; box-shadow: 0 8px 24px rgba(23, 63, 95, .06); }
-        .role-nav-link { color: #40627d; }
-        .role-nav-link:hover { color: #0f766e; background: #e8f7f4; }
-        .role-nav-link.active { color: #0f766e; background: #e8f7f4; box-shadow: none; }
-        .role-shell main { color: #173f5f; }
-        .role-shell main [class~="text-white"] { color: #173f5f !important; }
-        .role-shell main [class~="text-gray-300"],
-        .role-shell main [class~="text-slate-300"] { color: #40627d !important; }
-        .role-shell main [class~="text-gray-400"],
-        .role-shell main [class~="text-gray-500"],
-        .role-shell main [class~="text-slate-400"] { color: #718596 !important; }
-        .role-shell main [class~="bg-white/5"],
-        .role-shell main [class~="bg-black/20"],
-        .role-shell main [class~="bg-gray-900/60"],
-        .role-shell main [class~="bg-gray-900/70"] { background: #ffffff !important; }
-        .role-shell main [class~="border-white/10"],
-        .role-shell main [class~="border-gray-700"] { border-color: #dce7e5 !important; }
-        .role-shell main [class*="bg-gradient"] { background-image: none !important; background-color: #ffffff !important; border: 1px solid #dce7e5; box-shadow: 0 14px 35px rgba(23, 63, 95, .08); }
-        .role-shell main [class~="bg-[#0b2035]"],
-        .role-shell main [class~="bg-[#102a43]"] { background: #f7f8f6 !important; }
-        .role-shell main [class~="text-yellow-300"],
-        .role-shell main [class~="text-yellow-400"] { color: #b45309 !important; }
-        .role-shell main [class~="text-sky-300"],
-        .role-shell main [class~="text-sky-400"] { color: #0f766e !important; }
-        .role-shell main [class~="bg-sky-600"],
-        .role-shell main [class~="bg-sky-700"] { background: #0d9488 !important; }
-        .role-shell main > [class*="bg-gradient"] { background: #f7f8f6 !important; border: 0; box-shadow: none; }
-        .role-shell main [class~="bg-gray-800"],
-        .role-shell main [class~="bg-gray-900"],
-        .role-shell main [class~="bg-slate-800"],
-        .role-shell main [class~="bg-slate-900"] { background: #ffffff !important; }
-        .role-shell main [class~="bg-gray-700"],
-        .role-shell main [class~="bg-slate-950"] { background: #f3f7f6 !important; }
-        .role-shell main [class~="text-gray-900"],
-        .role-shell main [class~="text-slate-950"] { color: #173f5f !important; }
-        .role-shell main [class*="border-gray-"],
-        .role-shell main [class*="border-slate-"] { border-color: #dce7e5 !important; }
-        .role-shell main a[class*="bg-gradient"],
-        .role-shell main button[class*="bg-gradient"] { background-image: none !important; background: #0d9488 !important; border: 0; color: #ffffff !important; }
-        .role-shell main [class*="bg-gradient"][style*="width"] { background: #0d9488 !important; }
-        .role-shell main [style*="linear-gradient"] { background: #173f5f !important; }
-        footer { background: #173f5f !important; border-color: #285574 !important; }
+        /* SEMENTARA — dihapus di akhir rollout view peserta (Fase 4).
+           Sebagian view peserta masih memakai utilitas tema gelap lama.
+           Blok ini menyelaraskannya dengan palet Balai Hangat sampai tiap
+           view ditulis ulang. Cari "SEMENTARA" untuk menemukannya kembali. */
+        .bk-content .text-white,
+        .bk-content .text-slate-100, .bk-content .text-slate-200,
+        .bk-content .text-sky-100 { color: var(--bk-ink); }
+        .bk-content .text-slate-300, .bk-content .text-slate-400,
+        .bk-content .text-gray-300, .bk-content .text-gray-400 { color: var(--bk-ink-2); }
+        .bk-content .text-sky-300, .bk-content .text-sky-400,
+        .bk-content .text-yellow-300, .bk-content .text-yellow-400,
+        .bk-content .text-emerald-300 { color: var(--bk-sage-700); }
+        .bk-content .bg-white\/5, .bk-content .bg-white\/10,
+        .bk-content .bg-black\/20, .bk-content .bg-slate-900,
+        .bk-content .bg-slate-800 { background-color: var(--bk-sand-100); }
+        .bk-content [class*="bg-gradient"] { background-image: none; }
+        .bk-content .border-white\/10, .bk-content .border-white\/5 { border-color: var(--bk-sand); }
+        .bk-content .rounded-3xl, .bk-content .rounded-2xl { border-radius: var(--bk-r); }
     </style>
+    @yield('styles')
 </head>
-<body class="workspace-body role-shell overflow-x-hidden text-white">
-    <aside class="workspace-sidebar-fixed">
-        <a href="{{ route('peserta.dashboard') }}" class="workspace-brand">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus">
-            <span><small>Ruang Peserta</small><strong>Balai Kursus</strong></span>
+<body>
+@php
+    $navItems = [
+        ['label' => 'Beranda', 'url' => route('peserta.dashboard'), 'active' => request()->is('peserta/dashboard*'), 'icon' => 'bi-house-door'],
+        ['label' => 'Program', 'url' => url('/peserta/program'), 'active' => request()->is('peserta/program*'), 'icon' => 'bi-compass'],
+        ['label' => 'Kelas Saya', 'url' => url('/peserta/kursus/saya'), 'active' => request()->is('peserta/kursus*'), 'icon' => 'bi-journal-bookmark'],
+        ['label' => 'Pendaftaran', 'url' => url('/peserta/pendaftaran'), 'active' => request()->is('peserta/pendaftaran*'), 'icon' => 'bi-clipboard-check'],
+        ['label' => 'Pembayaran', 'url' => url('/peserta/riwayat-pembayaran'), 'active' => request()->is('peserta/riwayat-pembayaran*'), 'icon' => 'bi-receipt'],
+        ['label' => 'Sertifikat', 'url' => route('profile.certificates'), 'active' => request()->is('profile/certificates*'), 'icon' => 'bi-patch-check'],
+    ];
+
+    $me = Auth::user();
+    $inisial = $me ? collect(explode(' ', trim($me->name)))->take(2)->map(fn ($p) => mb_substr($p, 0, 1))->implode('') : 'P';
+@endphp
+<div x-data="{ open: false }" class="bk-shell">
+
+    <aside class="bk-side" :class="open && 'is-buka'">
+        <a href="{{ route('peserta.dashboard') }}" class="bk-side__brand">
+            <span class="bk-side__glyph"><img src="{{ asset('images/logo.png') }}" alt=""></span>
+            <span>
+                <b>Balai Kursus</b>
+                <small>Ruang peserta</small>
+            </span>
         </a>
-        <div class="workspace-nav-label">Ruang belajar</div>
-        <nav aria-label="Navigasi peserta">
-            <a href="{{ route('peserta.dashboard') }}" class="workspace-link {{ request()->is('peserta/dashboard*') ? 'active' : '' }}"><i class="bi bi-grid-1x2"></i>Beranda</a>
-            <a href="{{ url('/peserta/program') }}" class="workspace-link {{ request()->is('peserta/program*') ? 'active' : '' }}"><i class="bi bi-compass"></i>Program</a>
-            <a href="{{ url('/peserta/kursus/saya') }}" class="workspace-link {{ request()->is('peserta/kursus*') ? 'active' : '' }}"><i class="bi bi-journal-bookmark"></i>Kelas Saya</a>
-            <a href="{{ url('/peserta/pendaftaran') }}" class="workspace-link {{ request()->is('peserta/pendaftaran*') ? 'active' : '' }}"><i class="bi bi-clipboard-check"></i>Pendaftaran</a>
-            <a href="{{ url('/peserta/riwayat-pembayaran') }}" class="workspace-link {{ request()->is('peserta/riwayat-pembayaran*') ? 'active' : '' }}"><i class="bi bi-receipt"></i>Pembayaran</a>
-            <a href="{{ route('profile.certificates') }}" class="workspace-link {{ request()->is('profile/certificates*') ? 'active' : '' }}"><i class="bi bi-award"></i>Sertifikat</a>
-        </nav>
-        <div class="workspace-account"><span>{{ Auth::user()->email ?? '' }}</span>{{ Auth::user()->name ?? 'Peserta' }}</div>
-    </aside>
-    <header class="workspace-topbar-fixed workspace-topbar">
-        <div><small>Balai Kursus / Peserta</small><h1>@yield('title', 'Ruang belajar peserta')</h1></div>
-        <div class="workspace-topbar-actions"><a href="{{ route('profile.edit') }}" class="workspace-profile"><i class="bi bi-person-circle"></i> {{ Auth::user()->name ?? 'Profil' }}</a><form id="logout-form" action="{{ route('logout') }}" method="POST">@csrf</form><button type="submit" form="logout-form" class="workspace-logout">Keluar</button></div>
-    </header>
-    <nav x-data="{ mobileMenuOpen: false }" class="role-nav sticky top-0 z-50 border-b shadow-2xl">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex min-h-[4.75rem] items-center justify-between gap-4">
-                <a href="{{ route('peserta.dashboard') }}" class="flex min-w-0 items-center gap-3">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo Balai Kursus" class="h-full w-full object-contain">
-                    </span>
-                    <span class="min-w-0">
-                        <span class="block text-[10px] font-bold uppercase tracking-[0.22em] text-sky-300">Ruang Peserta</span>
-                        <span class="block truncate text-base font-bold text-white">Balai Kursus</span>
-                    </span>
+
+        <nav class="bk-side__scroll" aria-label="Navigasi peserta">
+            <div class="bk-side__sec">Ruang belajar</div>
+            @foreach ($navItems as $item)
+                <a href="{{ $item['url'] }}"
+                   class="bk-nav {{ $item['active'] ? 'is-aktif' : '' }}"
+                   @if ($item['active']) aria-current="page" @endif
+                   @click="open = false">
+                    <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
+                    <span>{{ $item['label'] }}</span>
                 </a>
+            @endforeach
+        </nav>
 
-                <div class="hidden items-center gap-1 md:flex">
-                    <a href="{{ route('peserta.dashboard') }}" class="role-nav-link {{ request()->is('peserta/dashboard*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-grid-1x2-fill mr-2"></i>Ringkasan</a>
-                    <a href="{{ url('/peserta/program') }}" class="role-nav-link {{ request()->is('peserta/program*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-compass-fill mr-2"></i>Program</a>
-                    <a href="{{ url('/peserta/pendaftaran') }}" class="role-nav-link {{ request()->is('peserta/pendaftaran*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-clipboard-check-fill mr-2"></i>Pendaftaran</a>
-                    <a href="{{ url('/peserta/kursus/saya') }}" class="role-nav-link {{ request()->is('peserta/kursus/saya*') ? 'active' : '' }} rounded-xl px-4 py-2.5 text-sm font-semibold"><i class="bi bi-journal-bookmark-fill mr-2"></i>Kelas Saya</a>
-                </div>
+        <div class="bk-side__foot">
+            <div class="bk-side__sec">Tautan</div>
+            <a href="{{ url('/papan-informasi') }}" class="bk-side__out">
+                <span><i class="bi bi-display" aria-hidden="true"></i> Papan Informasi</span>
+                <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+            </a>
 
-                <div class="hidden items-center gap-2 md:flex">
-                    <a href="{{ route('profile.edit') }}" class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10"><i class="bi bi-person-circle text-sky-300"></i>{{ Auth::user()->name ?? 'Peserta' }}</a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST">@csrf</form>
-                    <button type="submit" form="logout-form" class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-sky-500"><i class="bi bi-box-arrow-right"></i>Keluar</button>
-                </div>
+            <a href="{{ route('profile.edit') }}" class="bk-side__me">
+                <span class="bk-side__av">{{ $inisial }}</span>
+                <span style="min-width:0">
+                    <b>{{ $me->name ?? 'Peserta' }}</b>
+                    <span>{{ $me->email ?? '' }}</span>
+                </span>
+            </a>
+        </div>
+    </aside>
 
-                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-sky-300/20 bg-sky-400/10 text-sky-200 md:hidden" @click="mobileMenuOpen = !mobileMenuOpen" :aria-expanded="mobileMenuOpen.toString()" aria-label="Buka menu navigasi">
-                    <i class="bi text-xl" :class="mobileMenuOpen ? 'bi-x-lg' : 'bi-list'"></i>
+    <div x-cloak x-show="open" class="bk-overlay" @click="open = false"></div>
+
+    <main class="bk-main">
+        <header class="bk-topbar">
+            <div style="display:flex;align-items:center;gap:.75rem;min-width:0">
+                <button type="button" class="bk-menubtn" @click="open = true" aria-label="Buka menu">
+                    <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
-            </div>
-
-            <div x-cloak x-show="mobileMenuOpen" x-transition.opacity class="border-t border-white/10 py-4 md:hidden">
-                <div class="grid gap-2">
-                    <a href="{{ route('peserta.dashboard') }}" class="role-nav-link {{ request()->is('peserta/dashboard*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-grid-1x2-fill mr-3"></i>Ringkasan</a>
-                    <a href="{{ url('/peserta/program') }}" class="role-nav-link {{ request()->is('peserta/program*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-compass-fill mr-3"></i>Program</a>
-                    <a href="{{ url('/peserta/pendaftaran') }}" class="role-nav-link {{ request()->is('peserta/pendaftaran*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-clipboard-check-fill mr-3"></i>Pendaftaran</a>
-                    <a href="{{ url('/peserta/kursus/saya') }}" class="role-nav-link {{ request()->is('peserta/kursus/saya*') ? 'active' : '' }} rounded-xl px-4 py-3 text-sm font-semibold"><i class="bi bi-journal-bookmark-fill mr-3"></i>Kelas Saya</a>
-                </div>
-                <div class="mt-4 grid gap-2 sm:grid-cols-2">
-                    <a href="{{ route('profile.edit') }}" class="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold"><i class="bi bi-person-circle mr-2 text-sky-300"></i>Profil Saya</a>
-                    <button type="submit" form="logout-form" class="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold"><i class="bi bi-box-arrow-right mr-2"></i>Keluar</button>
+                <div style="min-width:0">
+                    <div class="bk-topbar__crumb">Peserta</div>
+                    <h1 class="bk-topbar__title">@yield('title', 'Ruang belajar')</h1>
                 </div>
             </div>
-        </div>
-    </nav>
+            <div class="bk-tools">
+                <span class="bk-muted bk-nowrap" style="font-size:.78rem">{{ now()->translatedFormat('l, j F Y') }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="bk-btn bk-btn--sm">
+                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Keluar
+                    </button>
+                </form>
+            </div>
+        </header>
 
-    <main class="min-h-[calc(100vh-4.75rem)] overflow-x-hidden">@yield('content')</main>
-
-    <footer class="border-t border-sky-300/10 bg-[#061a2b]">
-        <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-            <span>Balai Kursus · Ruang Peserta</span>
-            <a href="{{ url('/papan-informasi') }}" class="font-semibold text-sky-300 hover:text-amber-300">Papan Informasi Publik</a>
-        </div>
-    </footer>
-
-    @if($jsFile)
-        <script src="{{ asset('build/' . $jsFile) }}" type="module"></script>
-    @endif
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+        <section class="bk-content">@yield('content')</section>
+    </main>
+</div>
+@yield('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.bk-table, .admin-table').forEach((t) => {
+            const heads = [...t.querySelectorAll('thead th')].map((x) => x.textContent.trim());
+            if (!heads.length) return;
+            t.querySelectorAll('tbody tr').forEach((r) => {
+                [...r.children].forEach((c, i) => {
+                    if (!c.dataset.label) c.dataset.label = heads[i] || '';
+                });
+            });
+        });
+    });
+</script>
 </body>
 </html>

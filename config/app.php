@@ -70,7 +70,10 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Balai Kursus melayani satu wilayah waktu. Menyimpan dan menampilkan
+    // dalam WIB membuat jadwal, absensi, dan jatuh tempo tagihan konsisten
+    // dengan jam dinding pengguna tanpa konversi di tiap view.
+    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +86,9 @@ return [
     |
     */
 
-    'locale' => 'en',
+    // Seluruh antarmuka berbahasa Indonesia; ini membuat Carbon menerjemahkan
+    // nama hari dan bulan (translatedFormat) tanpa dipaksa per pemanggilan.
+    'locale' => env('APP_LOCALE', 'id'),
 
     /*
     |--------------------------------------------------------------------------
@@ -109,7 +114,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => env('APP_FAKER_LOCALE', 'id_ID'),
 
     /*
     |--------------------------------------------------------------------------
