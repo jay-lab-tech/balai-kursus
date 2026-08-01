@@ -1,27 +1,15 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
-
-    <form method="POST" action="{{ route('password.confirm') }}">
+<x-guest-layout judul="Konfirmasi kata sandi." kicker="Area terbatas"
+                lede="Bagian ini menyimpan data sensitif. Masukkan kembali kata sandi Anda untuk melanjutkan.">
+    <form method="POST" action="{{ route('password.confirm') }}" class="bk-gate__form">
         @csrf
 
-        <!-- Password -->
         <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-input-label for="password" value="Kata sandi" />
+            <x-text-input id="password" type="password" name="password"
+                          required autofocus autocomplete="current-password" placeholder="Masukkan kata sandi" />
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
+        <x-primary-button class="bk-btn--blok">Lanjutkan</x-primary-button>
     </form>
 </x-guest-layout>

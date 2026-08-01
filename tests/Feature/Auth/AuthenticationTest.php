@@ -19,7 +19,10 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertSeeText('Masuk dengan email');
+        // Diikat ke label ruas, bukan ke teks tombol, supaya perubahan salinan
+        // tidak menumbangkan test yang sebetulnya memeriksa formulir lokal ada.
+        $response->assertSeeText('Alamat email');
+        $response->assertSeeText('Kata sandi');
     }
 
     public function test_trusted_device_users_can_authenticate_using_email_only(): void

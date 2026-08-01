@@ -1,25 +1,22 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+<x-guest-layout judul="Pulihkan kata sandi." kicker="Tidak bisa masuk"
+                lede="Masukkan alamat email akun Anda. Kami kirimkan tautan untuk membuat kata sandi baru.">
+    <x-auth-session-status :status="session('status')" />
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="bk-gate__form">
         @csrf
 
-        <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="email" value="Alamat email" />
+            <x-text-input id="email" type="email" name="email" :value="old('email')"
+                          required autofocus autocomplete="username" placeholder="nama@contoh.com" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+        <x-primary-button class="bk-btn--blok">Kirim tautan pemulihan</x-primary-button>
     </form>
+
+    <p class="bk-gate__ask">
+        Ingat kata sandinya?
+        <a href="{{ route('login') }}">Kembali ke halaman masuk</a>
+    </p>
 </x-guest-layout>

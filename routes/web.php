@@ -13,6 +13,11 @@ Route::get('/', function () {
 });
 
 Route::get('/papan-informasi', InformationBoardController::class)->name('information-board');
+
+// Alamat lama dari modul Pendaftaran yang sudah dihapus; tetap dialihkan agar
+// tautan atau bookmark lama tidak berujung 404.
+Route::redirect('/pendaftaran', '/peserta/pendaftaran');
+
 // Export nilai peserta instruktur
 Route::get('/instruktur/kursus/{kursus}/nilai/export', [\Modules\Instruktur\Http\Controllers\NilaiController::class, 'export'])->name('instruktur.nilai.export');
 

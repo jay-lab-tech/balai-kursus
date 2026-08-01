@@ -284,22 +284,6 @@ class CertificateController extends Controller
         return $this->buildCertificatePdf($certificate)->stream('certificate-preview-'.$certificate->id.'.pdf');
     }
 
-    public function myCertificates()
-    {
-        $user = auth()->user();
-        $peserta = Peserta::where('user_id', $user->id)->first();
-        if (! $peserta) {
-            return view('user.certificates.index', ['certificates' => collect()]);
-        }
-
-        $certificates = Certificate::where('participant_id', $peserta->id)
-            ->where('status', Certificate::STATUS_PUBLISHED)
-            ->with('course')
-            ->get();
-
-        return view('user.certificates.index', compact('certificates'));
-    }
-
     public function download($id)
     {
         $certificate = Certificate::with(['course.program', 'participant.user', 'template'])->findOrFail($id);
