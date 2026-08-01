@@ -12,7 +12,13 @@ use Illuminate\Support\Facades\DB;
 
 class PendaftaranPlacementService
 {
-    public function placeFromScore(Score $score): array
+    /**
+     * Tempatkan peserta ke level dan kelas berdasarkan hasil tes penempatan.
+     *
+     * Penempatan tidak akan menggeser peserta yang sudah menyetorkan pembayaran,
+     * kecuali dipaksa lewat $force.
+     */
+    public function placeFromScore(Score $score, bool $force = false): array
     {
         $pendaftaran = $score->pendaftaran()->with(['program', 'level', 'kursus'])->first();
 
@@ -27,25 +33,59 @@ class PendaftaranPlacementService
         $levels = $this->availableLevelsForProgram($pendaftaran->program_id);
         $level = $this->resolveLevelFromScore($levels, (float) $score->final_score);
 
-        return DB::transaction(function () use ($pendaftaran, $level) {
+        return DB::transaction(function () use ($pendaftaran, $level, $force) {
             $previousKursusId = $pendaftaran->kursus_id;
-            $selectedKursus = $level ? $this->findAvailableClass($pendaftaran->program_id, $level->id) : null;
 
-            if ($previousKursusId && $previousKursusId !== optional($selectedKursus)->id) {
+            // Peserta yang sudah membayar tidak boleh dipindah otomatis: uang yang
+            // sudah masuk terikat ke kelas tersebut.
+            if (! $force && $previousKursusId && (int) $pendaftaran->terbayar > 0) {
+                return [
+                    'level' => $pendaftaran->level,
+                    'kursus' => $pendaftaran->kursus,
+                    'message' => 'Nilai diperbarui. Penempatan dipertahankan karena peserta sudah melakukan pembayaran pada kelas '
+                        .($pendaftaran->kursus->nama ?? '-').'.',
+                ];
+            }
+
+            $selectedKursus = $level
+                ? $this->findAvailableClass($pendaftaran->program_id, $level->id, $previousKursusId, $pendaftaran->id)
+                : null;
+
+            $kursusChanged = $previousKursusId !== $selectedKursus?->id;
+
+            if ($kursusChanged && $previousKursusId) {
                 PesertaKursusLevel::where('peserta_id', $pendaftaran->peserta_id)
                     ->where('kursus_id', $previousKursusId)
                     ->delete();
             }
 
-            $pendaftaran->fill([
+            $attributes = [
                 'level_id' => $level?->id,
                 'kursus_id' => $selectedKursus?->id,
-                'status_pendaftaran' => $selectedKursus ? Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN : Pendaftaran::STATUS_MENUNGGU_PENEMPATAN,
-                'status_pembayaran' => Pendaftaran::PAYMENT_PENDING,
-                'total_bayar' => $selectedKursus?->harga ?? 0,
-                'terbayar' => $selectedKursus ? min((int) $pendaftaran->terbayar, (int) ($selectedKursus->harga ?? 0)) : 0,
                 'diklasifikasikan_at' => now(),
-            ]);
+            ];
+
+            if (! $selectedKursus) {
+                // Belum ada kelas yang bisa dipakai: kembalikan ke antrean penempatan.
+                $attributes['status_pendaftaran'] = Pendaftaran::STATUS_MENUNGGU_PENEMPATAN;
+                $attributes['status_pembayaran'] = Pendaftaran::PAYMENT_PENDING;
+                $attributes['total_bayar'] = 0;
+                $attributes['terbayar'] = 0;
+            } elseif ($kursusChanged) {
+                // Kelas berubah: biaya mengikuti kelas baru, setoran yang sudah ada tetap dihitung.
+                $total = (int) ($selectedKursus->harga ?? 0);
+                $terbayar = min((int) $pendaftaran->terbayar, $total);
+
+                $attributes['total_bayar'] = $total;
+                $attributes['terbayar'] = $terbayar;
+                $attributes['status_pembayaran'] = $this->resolvePaymentStatus($total, $terbayar);
+                $attributes['status_pendaftaran'] = $total > 0 && $terbayar >= $total
+                    ? Pendaftaran::STATUS_AKTIF
+                    : Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN;
+            }
+            // Kelas sama: status dan angka pembayaran dibiarkan apa adanya.
+
+            $pendaftaran->fill($attributes);
             $pendaftaran->save();
 
             if ($level && $selectedKursus) {
@@ -64,13 +104,32 @@ class PendaftaranPlacementService
             return [
                 'level' => $level,
                 'kursus' => $selectedKursus,
-                'message' => $selectedKursus
-                    ? 'Peserta berhasil diklasifikasikan ke level '.$level->nama.' dan ditempatkan ke kelas '.$selectedKursus->nama.'.'
-                    : ($level
-                        ? 'Peserta cocok ke level '.$level->nama.', tetapi semua kelas pada level tersebut sedang penuh.'
-                        : 'Sistem belum menemukan level yang cocok untuk program ini.'),
+                'message' => $this->buildMessage($level, $selectedKursus),
             ];
         });
+    }
+
+    /**
+     * Ringkas kondisi penempatan sebuah score tanpa mengubah apa pun.
+     * Dipakai controller agar penempatan hanya dijalankan sekali (oleh observer).
+     */
+    public function describe(Score $score): array
+    {
+        $pendaftaran = $score->pendaftaran()->with(['level', 'kursus'])->first();
+
+        if (! $pendaftaran || $score->jenis !== Score::TYPE_PLACEMENT || $score->final_score === null) {
+            return [
+                'level' => null,
+                'kursus' => null,
+                'message' => 'Belum ada hasil tes penempatan yang bisa diproses.',
+            ];
+        }
+
+        return [
+            'level' => $pendaftaran->level,
+            'kursus' => $pendaftaran->kursus,
+            'message' => $this->buildMessage($pendaftaran->level, $pendaftaran->kursus),
+        ];
     }
 
     public function resetPlacement(Pendaftaran $pendaftaran): void
@@ -92,6 +151,28 @@ class PendaftaranPlacementService
                 'diklasifikasikan_at' => null,
             ]);
         });
+    }
+
+    private function buildMessage(?Level $level, ?Kursus $kursus): string
+    {
+        if ($level && $kursus) {
+            return 'Peserta berhasil diklasifikasikan ke level '.$level->nama.' dan ditempatkan ke kelas '.$kursus->nama.'.';
+        }
+
+        if ($level) {
+            return 'Peserta cocok ke level '.$level->nama.', tetapi semua kelas pada level tersebut sedang penuh.';
+        }
+
+        return 'Sistem belum menemukan level yang cocok untuk program ini.';
+    }
+
+    private function resolvePaymentStatus(int $total, int $terbayar): string
+    {
+        if ($total > 0 && $terbayar >= $total) {
+            return Pendaftaran::PAYMENT_LUNAS;
+        }
+
+        return $terbayar > 0 ? Pendaftaran::PAYMENT_CICIL : Pendaftaran::PAYMENT_PENDING;
     }
 
     private function availableLevelsForProgram(?int $programId): Collection
@@ -132,23 +213,51 @@ class PendaftaranPlacementService
         return $last;
     }
 
-    private function findAvailableClass(?int $programId, ?int $levelId): ?Kursus
-    {
+    /**
+     * Cari kelas yang masih punya sisa kuota. Baris kursus dikunci selama
+     * transaksi agar dua penempatan bersamaan tidak melewati kuota, dan
+     * pendaftaran yang dibatalkan tidak dihitung sebagai kursi terpakai.
+     */
+    private function findAvailableClass(
+        ?int $programId,
+        ?int $levelId,
+        ?int $preferKursusId = null,
+        ?int $excludePendaftaranId = null
+    ): ?Kursus {
         if (! $programId || ! $levelId) {
             return null;
         }
 
-        return Kursus::query()
+        $candidates = Kursus::query()
             ->where('program_id', $programId)
             ->where('level_id', $levelId)
-            ->whereIn('status', ['buka', 'berjalan'])
-            ->withCount('pendaftarans')
+            ->openForRegistration()
             ->orderByRaw("CASE WHEN status = 'buka' THEN 0 ELSE 1 END")
             ->orderBy('tanggal_mulai')
             ->orderBy('id')
-            ->get()
-            ->first(function (Kursus $kursus) {
-                return $kursus->pendaftarans_count < $kursus->kuota;
-            });
+            ->lockForUpdate()
+            ->get();
+
+        if ($candidates->isEmpty()) {
+            return null;
+        }
+
+        // Pertahankan kelas yang sudah ditempati bila masih valid untuk level ini,
+        // supaya nilai yang diperbarui tidak memindah peserta tanpa alasan.
+        if ($preferKursusId && $current = $candidates->firstWhere('id', $preferKursusId)) {
+            return $current;
+        }
+
+        $occupancy = Pendaftaran::query()
+            ->whereIn('kursus_id', $candidates->pluck('id'))
+            ->where('status_pendaftaran', '!=', Pendaftaran::STATUS_DIBATALKAN)
+            ->when($excludePendaftaranId, fn ($query) => $query->where('id', '!=', $excludePendaftaranId))
+            ->selectRaw('kursus_id, COUNT(*) as total')
+            ->groupBy('kursus_id')
+            ->pluck('total', 'kursus_id');
+
+        return $candidates->first(function (Kursus $kursus) use ($occupancy) {
+            return (int) ($occupancy[$kursus->id] ?? 0) < (int) $kursus->kuota;
+        });
     }
 }

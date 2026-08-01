@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
             RisalahSeeder::class,
             AbsensiSeeder::class,
             PesertaKursusLevelSeeder::class,
-            PesertaKursusSeeder::class,
             CertificateSeeder::class,
         ]);
     }

@@ -8,6 +8,7 @@ use App\Services\MidtransService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
@@ -39,19 +40,39 @@ class PaymentController extends Controller
                 'amount' => 'nullable|integer|min:1',
             ]);
 
-            $amount = (int) ($validated['amount'] ?? $pendaftaran->sisa());
-
             // Check if already paid
             if ($pendaftaran->isLunas()) {
                 return response()->json(['error' => 'Pembayaran sudah lunas'], 400);
             }
+
+            // Tagihan yang masih menggantung di Midtrans ikut mengurangi sisa yang
+            // boleh ditagih lagi, supaya peserta tidak membayar dua kali untuk
+            // porsi yang sama. Snap kedaluwarsa dalam 24 jam, jadi tagihan lama
+            // tidak memblokir peserta selamanya.
+            $pendingAmount = (int) Payment::query()
+                ->where('pendaftaran_id', $pendaftaran->id)
+                ->where('status', 'pending')
+                ->where('created_at', '>=', now()->subDay())
+                ->sum('amount');
+
+            $payable = max(0, (int) $pendaftaran->sisa() - $pendingAmount);
+
+            if ($payable < 1) {
+                return response()->json([
+                    'error' => $pendingAmount > 0
+                        ? 'Masih ada tagihan yang belum diselesaikan. Selesaikan atau tunggu tagihan itu kedaluwarsa.'
+                        : 'Tidak ada tagihan yang perlu dibayar.',
+                ], 400);
+            }
+
+            $amount = (int) ($validated['amount'] ?? $payable);
 
             if ($amount < 1) {
                 return response()->json(['error' => 'Tidak ada tagihan yang perlu dibayar.'], 400);
             }
 
             // Check if amount exceeds outstanding balance
-            if ($amount > $pendaftaran->sisa()) {
+            if ($amount > $payable) {
                 return response()->json(['error' => 'Jumlah pembayaran melebihi sisa yang harus dibayar'], 400);
             }
 
@@ -286,20 +307,19 @@ class PaymentController extends Controller
      */
     protected function updatePaymentStatus(string $orderId, string $status): void
     {
-        $payment = Payment::where('order_id', $orderId)->first();
+        // Midtrans dapat mengirim notifikasi berulang, bahkan bersamaan. Baris
+        // payment dan pendaftaran dikunci agar hanya satu proses yang menghitung.
+        DB::transaction(function () use ($orderId, $status) {
+            $payment = Payment::where('order_id', $orderId)->lockForUpdate()->first();
 
-        if (! $payment) {
-            return;
-        }
+            if (! $payment || $payment->status === $status) {
+                return;
+            }
 
-        $previousStatus = $payment->status;
-        $payment->update(['status' => $status]);
+            $payment->update(['status' => $status]);
 
-        // Notification Midtrans dapat dikirim ulang. Update pendaftaran hanya
-        // dilakukan saat payment baru berubah menjadi success.
-        if ($status === 'success' && $previousStatus !== 'success') {
-            $this->updatePendaftaranStatus($payment);
-        }
+            $this->syncPendaftaranPayment($payment);
+        });
     }
 
     /**
@@ -307,7 +327,7 @@ class PaymentController extends Controller
      */
     public function paymentSuccess(string $orderId): RedirectResponse
     {
-        $payment = Payment::where('order_id', $orderId)->first();
+        $payment = $this->findOwnedPayment($orderId);
 
         if (! $payment) {
             return redirect()->route('peserta.pendaftaran.index')->with('error', 'Pembayaran tidak ditemukan');
@@ -341,9 +361,16 @@ class PaymentController extends Controller
      */
     public function paymentFailed(string $orderId): RedirectResponse
     {
-        $payment = Payment::where('order_id', $orderId)->first();
+        $payment = $this->findOwnedPayment($orderId);
 
-        if ($payment) {
+        if (! $payment) {
+            return redirect()->route('peserta.pendaftaran.index')->with('error', 'Pembayaran tidak ditemukan');
+        }
+
+        // Callback ini hanya sinyal dari browser, bukan dari Midtrans. Karena itu
+        // ia cuma boleh menutup tagihan yang masih pending; pembayaran yang sudah
+        // berhasil tidak boleh diturunkan dari sini.
+        if ($payment->status === 'pending') {
             $payment->update(['status' => 'failed']);
         }
 
@@ -351,24 +378,66 @@ class PaymentController extends Controller
     }
 
     /**
-     * Handle payment with lunas/cicilan flow
-     * Update pendaftaran status based on payment completion
+     * Ambil payment milik user yang sedang login. Order id ada di URL, jadi
+     * kepemilikan wajib diperiksa sebelum statusnya boleh disentuh.
      */
-    protected function updatePendaftaranStatus(Payment $payment): void
+    protected function findOwnedPayment(string $orderId): ?Payment
+    {
+        if (! auth()->id()) {
+            return null;
+        }
+
+        return Payment::query()
+            ->where('order_id', $orderId)
+            ->where('user_id', auth()->id())
+            ->first();
+    }
+
+    /**
+     * Hitung ulang posisi pembayaran pendaftaran dari catatan payment yang
+     * berhasil. Dihitung ulang (bukan ditambah) supaya notifikasi berulang atau
+     * refund tidak membuat angka terbayar melenceng.
+     */
+    protected function syncPendaftaranPayment(Payment $payment): void
     {
         if (! $payment->pendaftaran_id) {
             return;
         }
 
-        $pendaftaran = Pendaftaran::findOrFail($payment->pendaftaran_id);
-        $pendaftaran->terbayar += $payment->amount;
+        $pendaftaran = Pendaftaran::query()
+            ->whereKey($payment->pendaftaran_id)
+            ->lockForUpdate()
+            ->first();
 
-        // Update status pembayaran
-        if ($pendaftaran->terbayar >= $pendaftaran->total_bayar) {
+        if (! $pendaftaran) {
+            return;
+        }
+
+        $terbayar = (int) Payment::query()
+            ->where('pendaftaran_id', $pendaftaran->id)
+            ->where('status', 'success')
+            ->sum('amount');
+
+        $total = (int) $pendaftaran->total_bayar;
+
+        $pendaftaran->terbayar = $terbayar;
+
+        if ($total > 0 && $terbayar >= $total) {
             $pendaftaran->status_pembayaran = Pendaftaran::PAYMENT_LUNAS;
-            $pendaftaran->status_pendaftaran = Pendaftaran::STATUS_AKTIF;
+
+            if ($pendaftaran->status_pendaftaran === Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN) {
+                $pendaftaran->status_pendaftaran = Pendaftaran::STATUS_AKTIF;
+            }
         } else {
-            $pendaftaran->status_pembayaran = Pendaftaran::PAYMENT_CICIL;
+            $pendaftaran->status_pembayaran = $terbayar > 0
+                ? Pendaftaran::PAYMENT_CICIL
+                : Pendaftaran::PAYMENT_PENDING;
+
+            // Pembayaran dibatalkan/refund setelah kelas aktif: kembalikan ke
+            // antrean pembayaran, tanpa mengubah kelas yang sudah selesai.
+            if ($pendaftaran->status_pendaftaran === Pendaftaran::STATUS_AKTIF) {
+                $pendaftaran->status_pendaftaran = Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN;
+            }
         }
 
         $pendaftaran->save();

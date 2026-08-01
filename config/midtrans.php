@@ -24,6 +24,14 @@ return [
     'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
 
     /*
+     * Alamat Snap.js. Diturunkan dari is_production supaya halaman pembayaran
+     * tidak pernah memuat skrip sandbox di lingkungan produksi.
+     */
+    'snap_url' => env('MIDTRANS_IS_PRODUCTION', false)
+        ? 'https://app.midtrans.com/snap/snap.js'
+        : 'https://app.sandbox.midtrans.com/snap/snap.js',
+
+    /*
      * Midtrans Sanitizer
      */
     'sanitize' => env('MIDTRANS_SANITIZE', true),
@@ -35,15 +43,22 @@ return [
 
     /*
      * Midtrans Notification URLs
+     *
+     * Default mengarah ke rute aplikasi sendiri supaya callback tidak pernah
+     * dikirim sebagai string kosong ketika .env belum lengkap.
      */
-    'notification_url' => env('MIDTRANS_NOTIFICATION_URL', ''),
+    'notification_url' => env('MIDTRANS_NOTIFICATION_URL')
+        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pembayaran-notification',
 
     /*
      * Midtrans Finish Redirect URLs
      */
-    'finish_redirect_url' => env('MIDTRANS_FINISH_REDIRECT_URL', ''),
+    'finish_redirect_url' => env('MIDTRANS_FINISH_REDIRECT_URL')
+        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pendaftaran',
 
-    'unfinish_redirect_url' => env('MIDTRANS_UNFINISH_REDIRECT_URL', ''),
+    'unfinish_redirect_url' => env('MIDTRANS_UNFINISH_REDIRECT_URL')
+        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pendaftaran',
 
-    'error_redirect_url' => env('MIDTRANS_ERROR_REDIRECT_URL', ''),
+    'error_redirect_url' => env('MIDTRANS_ERROR_REDIRECT_URL')
+        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pendaftaran',
 ];

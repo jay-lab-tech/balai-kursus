@@ -101,7 +101,9 @@ class ScoreController extends Controller
             'jenis' => Score::TYPE_PLACEMENT,
         ]));
 
-        $result = app(PendaftaranPlacementService::class)->placeFromScore($score);
+        // Penempatan dijalankan oleh ScoreObserver saat score dibuat; di sini
+        // kita hanya membaca hasilnya untuk pesan ke admin.
+        $result = app(PendaftaranPlacementService::class)->describe($score);
 
         return redirect('/admin/score')->with('success', $result['message']);
     }
@@ -164,7 +166,8 @@ class ScoreController extends Controller
             'jenis' => Score::TYPE_PLACEMENT,
         ]));
 
-        $result = app(PendaftaranPlacementService::class)->placeFromScore($score->fresh());
+        // Idem: ScoreObserver sudah menempatkan ulang bila final_score berubah.
+        $result = app(PendaftaranPlacementService::class)->describe($score->fresh());
 
         return redirect('/admin/score')->with('success', $result['message']);
     }

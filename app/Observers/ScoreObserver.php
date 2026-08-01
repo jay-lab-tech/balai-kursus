@@ -7,13 +7,23 @@ use App\Services\PendaftaranPlacementService;
 
 class ScoreObserver
 {
-    public function saved(Score $score): void
+    public function created(Score $score): void
     {
-        if ($score->jenis !== Score::TYPE_PLACEMENT) {
+        $this->place($score);
+    }
+
+    /**
+     * Penempatan hanya diulang bila hasil tes atau pendaftaran tujuannya berubah.
+     * Menyimpan ulang catatan lain (keterangan, evaluator) tidak boleh mengacak
+     * kelas dan status pembayaran peserta.
+     */
+    public function updated(Score $score): void
+    {
+        if (! $score->wasChanged(['final_score', 'pendaftaran_id', 'jenis'])) {
             return;
         }
 
-        app(PendaftaranPlacementService::class)->placeFromScore($score);
+        $this->place($score);
     }
 
     public function deleted(Score $score): void
@@ -23,5 +33,14 @@ class ScoreObserver
         }
 
         app(PendaftaranPlacementService::class)->resetPlacement($score->pendaftaran);
+    }
+
+    private function place(Score $score): void
+    {
+        if ($score->jenis !== Score::TYPE_PLACEMENT) {
+            return;
+        }
+
+        app(PendaftaranPlacementService::class)->placeFromScore($score);
     }
 }
