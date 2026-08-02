@@ -101,10 +101,17 @@ class MidtransService
 
         // Callback ini untuk browser user. Webhook server-to-server Midtrans
         // dikonfigurasi melalui Payment Notification URL, bukan callback Snap.
+        //
+        // Dibangun dengan route() dan orderId, bukan string tetap dari .env.
+        // Dulu 'finish' langsung menuju daftar pendaftaran, sehingga rute
+        // pembayaran-success yang justru memverifikasi status ke Midtrans tidak
+        // pernah dilewati — status hanya ikut berubah bila webhook sampai.
+        // 'unfinish' berarti pengguna membatalkan di tengah jalan; tidak ada
+        // yang perlu diverifikasi, jadi cukup dikembalikan ke daftar.
         $transaction['callbacks'] = [
-            'finish' => config('midtrans.finish_redirect_url'),
-            'unfinish' => config('midtrans.unfinish_redirect_url'),
-            'error' => config('midtrans.error_redirect_url'),
+            'finish' => route('peserta.pembayaran-success', $orderId),
+            'unfinish' => route('peserta.pendaftaran.index'),
+            'error' => route('peserta.pembayaran-failed', $orderId),
         ];
 
         return $transaction;

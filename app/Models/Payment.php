@@ -67,4 +67,22 @@ class Payment extends Model
     {
         return $query->where('status', 'failed');
     }
+
+    /**
+     * Status dalam bahasa Indonesia untuk ditampilkan.
+     *
+     * Nilai di kolom status adalah istilah kita sendiri, bukan istilah Midtrans
+     * (Midtrans memakai settlement, capture, deny, expire) — jadi tidak ada
+     * alasan menuliskannya apa adanya ke layar. Status di luar daftar ini
+     * dikembalikan seadanya supaya nilai tak terduga tetap terlihat.
+     */
+    public function getLabelStatusAttribute(): string
+    {
+        return match ($this->status) {
+            'success' => 'Berhasil',
+            'pending' => 'Menunggu',
+            'failed' => 'Gagal',
+            default => (string) $this->status,
+        };
+    }
 }

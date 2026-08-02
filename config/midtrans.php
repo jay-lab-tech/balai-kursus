@@ -51,14 +51,12 @@ return [
         ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pembayaran-notification',
 
     /*
-     * Midtrans Finish Redirect URLs
+     * Alamat kembalinya browser setelah membayar TIDAK lagi diatur di sini.
+     *
+     * Rute tujuannya berbentuk /peserta/pembayaran-success/{orderId}, jadi
+     * alamatnya berbeda untuk setiap transaksi dan mustahil ditulis sebagai
+     * satu string tetap di .env. MIDTRANS_ERROR_REDIRECT_URL yang lama bahkan
+     * kehilangan segmen {orderId} sehingga selalu berujung 404. Sekarang
+     * ketiganya dibangun dengan route() di MidtransService::createTransaction().
      */
-    'finish_redirect_url' => env('MIDTRANS_FINISH_REDIRECT_URL')
-        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pendaftaran',
-
-    'unfinish_redirect_url' => env('MIDTRANS_UNFINISH_REDIRECT_URL')
-        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pendaftaran',
-
-    'error_redirect_url' => env('MIDTRANS_ERROR_REDIRECT_URL')
-        ?: rtrim((string) env('APP_URL', ''), '/').'/peserta/pendaftaran',
 ];
