@@ -1,241 +1,150 @@
 @extends('peserta::layouts.student')
 
-@section('title', 'Pendaftaran Saya - Balai Kursus')
+@section('title', 'Pendaftaran saya')
+@section('page-context', 'Peserta · Pendaftaran')
+@section('page-description', 'Hasil tes penempatan, kelas yang didapat, dan tagihan tiap program yang Anda daftar.')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl space-y-8">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="text-4xl font-bold text-white">
-                    <i class="bi bi-clipboard-check text-yellow-400 mr-3"></i>Pendaftaran Saya
-                </h1>
-                <p class="mt-2 max-w-3xl text-gray-400">
-                    Pantau hasil placement test, level, kelas yang didapat, dan selesaikan pembayaran kelas langsung dari halaman ini.
-                </p>
-            </div>
-            <a href="{{ route('peserta.program.index') }}" class="inline-flex items-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">
-                <i class="bi bi-plus-circle mr-2"></i>Daftar Program Lain
+
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="bk-note bk-note--perlu">
+        <i class="bi bi-exclamation-triangle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
+
+@if ($pendaftarans->isEmpty())
+    <section class="bk-panel">
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-clipboard-x" aria-hidden="true"></i></span>
+            <h3>Belum ada pendaftaran</h3>
+            <p>Anda mendaftar ke program dulu, bukan langsung ke kelas. Kelas ditentukan setelah hasil tes penempatan masuk.</p>
+            <a href="{{ route('peserta.program.index') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                <i class="bi bi-compass" aria-hidden="true"></i> Telusuri program
             </a>
         </div>
+    </section>
+@else
+    @foreach ($pendaftarans as $p)
+        @php
+            $bisaBayar = $p->canBePaid() && $p->sisa() > 0;
+            $rupa = match ($p->status_pendaftaran) {
+                \App\Models\Pendaftaran::STATUS_AKTIF => '',
+                \App\Models\Pendaftaran::STATUS_SELESAI => 'bk-tag--info',
+                \App\Models\Pendaftaran::STATUS_DIBATALKAN => 'bk-tag--gagal',
+                \App\Models\Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN => 'bk-tag--perlu',
+                default => 'bk-tag--diam',
+            };
+        @endphp
 
-        @if(session('success'))
-            <div class="rounded-2xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-green-100">
-                {{ session('success') }}
+        <section class="bk-panel">
+            <div class="bk-panel__head">
+                <div>
+                    <h2 class="bk-panel__title">{{ $p->program->nama ?? 'Program sudah dihapus' }}</h2>
+                    <p class="bk-panel__subtitle">
+                        <span class="bk-code">{{ $p->nomor }}</span> ·
+                        terdaftar atas {{ $p->participant_email_snapshot ?? auth()->user()->email }}
+                    </p>
+                </div>
+                <span class="bk-tag {{ $rupa }}">{{ $p->label_status }}</span>
             </div>
-        @endif
 
-        @if(session('error'))
-            <div class="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-4 text-yellow-100">
-                {{ session('error') }}
+            <div class="bk-panel__body">
+                <div class="bk-note {{ $p->status_pendaftaran === \App\Models\Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN ? 'bk-note--perlu' : 'bk-note--baik' }}">
+                    <i class="bi bi-signpost-split-fill bk-note__icon" aria-hidden="true"></i>
+                    <span>{{ $p->petunjuk }}</span>
+                </div>
+
+                <dl class="bk-kv">
+                    <div>
+                        <dt>Nilai tes penempatan</dt>
+                        <dd>{{ optional($p->placementScore)->final_score ?? 'Belum diinput admin' }}</dd>
+                    </div>
+                    <div>
+                        <dt>Level</dt>
+                        <dd>{{ $p->level->nama ?? 'Belum ditentukan' }}</dd>
+                    </div>
+                    <div>
+                        <dt>Kelas</dt>
+                        <dd>{{ $p->kursus->nama ?? 'Belum ditempatkan' }}</dd>
+                    </div>
+                </dl>
             </div>
-        @endif
 
-        @if($pendaftarans->isEmpty())
-            <div class="rounded-3xl border border-dashed border-white/10 px-8 py-16 text-center text-gray-400">
-                Anda belum memiliki pendaftaran program.
-            </div>
-        @else
-            <div class="space-y-6">
-                @foreach($pendaftarans as $pendaftaran)
-                    @php
-                        $statusPendaftaran = str_replace('_', ' ', ucfirst($pendaftaran->status_pendaftaran));
-                        $statusBayar = strtoupper($pendaftaran->status_pembayaran);
-                        $isPayable = $pendaftaran->canBePaid() && $pendaftaran->sisa() > 0;
-                    @endphp
+            <div class="bk-duo bk-duo--even" style="margin:0">
+                <div class="bk-panel__body">
+                    <h3 class="bk-eyebrow">Tagihan kelas</h3>
+                    <dl class="bk-facts">
+                        <div><dt>Biaya kelas</dt><dd class="bk-num">Rp {{ number_format($p->total_bayar, 0, ',', '.') }}</dd></div>
+                        <div><dt>Sudah terbayar</dt><dd class="bk-num">Rp {{ number_format($p->terbayar, 0, ',', '.') }}</dd></div>
+                        <div><dt>Sisa</dt><dd class="bk-num">Rp {{ number_format($p->sisa(), 0, ',', '.') }}</dd></div>
+                        <div><dt>Status bayar</dt><dd>{{ $p->label_pembayaran }}</dd></div>
+                    </dl>
 
-                    <article class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
-                        <div class="grid gap-0 xl:grid-cols-[1.15fr_0.85fr]">
-                            <div class="border-b border-white/10 p-6 xl:border-b-0 xl:border-r">
-                                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.25em] text-gray-400">{{ $pendaftaran->nomor }}</p>
-                                        <h2 class="mt-3 text-3xl font-bold text-white">{{ $pendaftaran->program->nama ?? 'Program tidak ditemukan' }}</h2>
-                                        <p class="mt-2 text-sm text-gray-400">
-                                            Email terdaftar:
-                                            <span class="font-medium text-white">{{ $pendaftaran->participant_email_snapshot ?? auth()->user()?->email ?? '-' }}</span>
-                                        </p>
-                                        <p class="mt-3 text-sm leading-7 text-gray-400">
-                                            Setelah nilai placement test diinput admin, sistem menempatkan Anda ke level dan kelas yang paling sesuai.
-                                        </p>
-                                    </div>
-                                    <span class="inline-flex w-fit items-center rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white">
-                                        {{ $statusPendaftaran }}
-                                    </span>
-                                </div>
-
-                                <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                    <div class="rounded-2xl bg-black/20 p-4">
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">Status</p>
-                                        <p class="mt-2 text-base font-semibold text-white">{{ $statusPendaftaran }}</p>
-                                    </div>
-                                    <div class="rounded-2xl bg-black/20 p-4">
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">Nilai Tes Masuk</p>
-                                        <p class="mt-2 text-base font-semibold text-white">{{ $pendaftaran->placementScore?->final_score ?? 'Belum diinput' }}</p>
-                                    </div>
-                                    <div class="rounded-2xl bg-black/20 p-4">
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">Level</p>
-                                        <p class="mt-2 text-base font-semibold text-white">{{ $pendaftaran->level->nama ?? 'Belum ditentukan' }}</p>
-                                    </div>
-                                    <div class="rounded-2xl bg-black/20 p-4">
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">Kelas / Kursus</p>
-                                        <p class="mt-2 text-base font-semibold text-white">{{ $pendaftaran->kursus->nama ?? 'Belum ditempatkan' }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-7 text-gray-300">
-                                    @if($pendaftaran->status_pendaftaran === \App\Models\Pendaftaran::STATUS_MENUNGGU_TES)
-                                        Menunggu admin memasukkan hasil tes penempatan.
-                                    @elseif($pendaftaran->status_pendaftaran === \App\Models\Pendaftaran::STATUS_MENUNGGU_PENEMPATAN)
-                                        Hasil tes sudah masuk, tetapi kelas yang sesuai masih belum tersedia atau sedang penuh.
-                                    @elseif($pendaftaran->status_pendaftaran === \App\Models\Pendaftaran::STATUS_MENUNGGU_PEMBAYARAN)
-                                        Kelas sudah ditentukan. Saat ini Anda bisa langsung membayar sisa tagihan kelas.
-                                    @elseif($pendaftaran->status_pendaftaran === \App\Models\Pendaftaran::STATUS_AKTIF)
-                                        Pendaftaran aktif dan kelas sudah bisa diikuti.
-                                    @else
-                                        Status pendaftaran saat ini: {{ $pendaftaran->status_pendaftaran }}.
-                                    @endif
-                                </div>
-                            </div>
-
-                            <aside class="p-6">
-                                <div class="rounded-2xl border border-white/10 bg-black/20 p-5">
-                                    <p class="text-xs uppercase tracking-wider text-gray-400">Ringkasan Pembayaran Kelas</p>
-                                    <div class="mt-5 space-y-3 text-sm text-gray-300">
-                                        <div class="flex items-center justify-between gap-4">
-                                            <span>Biaya Kelas</span>
-                                            <span class="text-lg font-semibold text-white">Rp {{ number_format($pendaftaran->total_bayar, 0, ',', '.') }}</span>
-                                        </div>
-                                        <div class="flex items-center justify-between gap-4">
-                                            <span>Terbayar</span>
-                                            <span class="text-lg font-semibold text-white">Rp {{ number_format($pendaftaran->terbayar, 0, ',', '.') }}</span>
-                                        </div>
-                                        <div class="flex items-center justify-between gap-4">
-                                            <span>Sisa Tagihan</span>
-                                            <span class="text-lg font-semibold text-white">Rp {{ number_format($pendaftaran->sisa(), 0, ',', '.') }}</span>
-                                        </div>
-                                        <div class="flex items-center justify-between gap-4">
-                                            <span>Status Bayar</span>
-                                            <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase text-white">{{ $statusBayar }}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-5">
-                                        <div class="mb-2 flex items-center justify-between text-xs text-gray-400">
-                                            <span>Progress</span>
-                                            <span>{{ $pendaftaran->progress() }}%</span>
-                                        </div>
-                                        <div class="h-3 overflow-hidden rounded-full bg-gray-700">
-                                            <div class="h-full bg-gradient-to-r from-yellow-400 to-sky-500" style="width: {{ $pendaftaran->progress() }}%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-5 grid gap-3">
-                                    @if($isPayable)
-                                        <button
-                                            type="button"
-                                            data-pendaftaran-id="{{ $pendaftaran->id }}"
-                                            data-amount="{{ $pendaftaran->sisa() }}"
-                                            class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 font-semibold text-white hover:from-sky-500 hover:to-sky-600 transition"
-                                            onclick="startPayment(this)"
-                                        >
-                                            <i class="bi bi-credit-card mr-2"></i>Bayar Langsung via Midtrans
-                                        </button>
-                                        <p class="text-xs leading-6 text-gray-400">
-                                            Tombol ini langsung membuat tagihan sebesar sisa pembayaran kelas Anda.
-                                        </p>
-                                    @endif
-
-                                    @if($pendaftaran->kursus)
-                                        <a href="{{ route('peserta.kursus.detail', $pendaftaran->kursus) }}" class="inline-flex items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">
-                                            <i class="bi bi-book mr-2"></i>Buka Detail Kelas
-                                        </a>
-                                    @endif
-                                </div>
-
-                                @if($pendaftaran->payments->isNotEmpty())
-                                    <div class="mt-5 rounded-2xl border border-white/10 bg-black/20 p-5">
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">Riwayat Pembayaran Kelas</p>
-                                        <div class="mt-4 space-y-3">
-                                            @foreach($pendaftaran->payments->sortByDesc('id')->take(3) as $payment)
-                                                <div class="rounded-xl bg-white/5 px-4 py-3 text-sm text-gray-200">
-                                                    <div class="flex items-center justify-between">
-                                                        <span>Rp {{ number_format($payment->amount, 0, ',', '.') }}</span>
-                                                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs uppercase">{{ $payment->status }}</span>
-                                                    </div>
-                                                    <p class="mt-1 text-xs text-gray-400">{{ $payment->description }}</p>
-                                                    <p class="mt-1 text-xs text-gray-400">{{ $payment->created_at->format('d M Y H:i') }}</p>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-                            </aside>
+                    <div style="padding:0 var(--bk-pad-x)">
+                        <div class="bk-row" style="padding-left:0;padding-right:0;border:0">
+                            <span class="bk-muted bk-row__sp">Pelunasan</span>
+                            <span class="bk-num">{{ $p->progress() }}%</span>
                         </div>
-                    </article>
-                @endforeach
+                        <span class="bk-meter" role="img"
+                              aria-label="Pelunasan {{ $p->progress() }} persen dari total tagihan">
+                            <i class="{{ $p->progress() >= 100 ? '' : 'is-perlu' }}" style="width: {{ min(100, $p->progress()) }}%"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bk-panel__body">
+                    <h3 class="bk-eyebrow">Riwayat pembayaran</h3>
+                    @forelse ($p->payments->sortByDesc('id')->take(3) as $bayar)
+                        <div class="bk-row" style="padding-left:0;padding-right:0">
+                            <span class="bk-row__sp">
+                                <b class="bk-num">Rp {{ number_format($bayar->amount, 0, ',', '.') }}</b><br>
+                                <span class="bk-muted">{{ optional($bayar->created_at)->translatedFormat('j M Y, H:i') ?? '—' }}</span>
+                            </span>
+                            <span class="bk-tag {{ $bayar->status === 'success' ? '' : ($bayar->status === 'failed' ? 'bk-tag--gagal' : 'bk-tag--diam') }}">
+                                {{ $bayar->label_status }}
+                            </span>
+                        </div>
+                    @empty
+                        <p class="bk-hint" style="padding:0">Belum ada transaksi untuk pendaftaran ini.</p>
+                    @endforelse
+                </div>
             </div>
-        @endif
-    </div>
-</div>
 
-<script>
-function startPayment(button) {
-    const pendaftaranId = Number(button.dataset.pendaftaranId);
-    const amount = Number(button.dataset.amount);
-
-    if (!pendaftaranId || !amount || amount < 1) {
-        alert('Tagihan kelas tidak valid.');
-        return;
-    }
-
-    if (typeof snap === 'undefined') {
-        alert('Midtrans Snap belum termuat. Muat ulang halaman lalu coba lagi.');
-        return;
-    }
-
-    button.disabled = true;
-    const originalHtml = button.innerHTML;
-    button.innerHTML = '<i class="bi bi-arrow-repeat mr-2 animate-spin"></i>Memproses...';
-
-    fetch(`/peserta/pembayaran-online/${pendaftaranId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-        },
-        body: JSON.stringify({ amount: amount })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        snap.pay(data.snap_token, {
-            onSuccess: function () {
-                window.location.href = '/peserta/pembayaran-success/' + data.order_id;
-            },
-            onPending: function () {
-                window.location.reload();
-            },
-            onError: function () {
-                alert('Pembayaran gagal diproses.');
-                button.disabled = false;
-                button.innerHTML = originalHtml;
-            },
-            onClose: function () {
-                button.disabled = false;
-                button.innerHTML = originalHtml;
-            }
-        });
-    })
-    .catch(error => {
-        alert(error.message);
-        button.disabled = false;
-        button.innerHTML = originalHtml;
-    });
-}
-</script>
+            <div class="bk-panel__foot">
+                <span class="bk-muted">
+                    @if ($bisaBayar)
+                        Pembayaran diproses Midtrans. Tagihan yang dibuat sebesar sisa yang belum lunas.
+                    @else
+                        Tidak ada tagihan terbuka pada pendaftaran ini.
+                    @endif
+                </span>
+                <span class="bk-row" style="border:0">
+                    @if ($p->kursus)
+                        <a href="{{ route('peserta.kursus.detail', $p->kursus) }}" class="bk-btn bk-btn--sm">
+                            <i class="bi bi-journal-bookmark" aria-hidden="true"></i> Buka kelas
+                        </a>
+                    @endif
+                    @if ($bisaBayar)
+                        {{-- Ditangani penyimak bersama di peserta::partials.bayar --}}
+                        <button type="button" class="bk-btn bk-btn--pri bk-btn--sm"
+                                data-bk-bayar
+                                data-pendaftaran="{{ $p->id }}"
+                                data-tagihan="{{ $p->sisa() }}">
+                            <i class="bi bi-credit-card" aria-hidden="true"></i>
+                            Bayar Rp {{ number_format($p->sisa(), 0, ',', '.') }}
+                        </button>
+                    @endif
+                </span>
+            </div>
+        </section>
+    @endforeach
+@endif
 @endsection

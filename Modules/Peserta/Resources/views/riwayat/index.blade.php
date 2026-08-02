@@ -1,17 +1,100 @@
 @extends('peserta::layouts.student')
 
-@section('title', 'Riwayat Pembayaran - Balai Kursus')
+@section('title', 'Riwayat pembayaran')
+@section('page-context', 'Peserta · Keuangan')
+@section('page-description', 'Semua transaksi pembayaran kelas yang tercatat di akun Anda.')
 
 @section('content')
-<div class="min-h-screen bg-[#f7f8f6] px-4 py-8 sm:px-6 lg:px-10">
-    <div class="mx-auto max-w-7xl">
-        <header class="mb-8 border-b border-[#dce7e5] pb-7"><p class="font-mono text-xs uppercase tracking-[0.22em] text-[#0d9488]">Ruang peserta / keuangan</p><h1 class="mt-2 text-4xl font-bold tracking-tight text-[#173f5f]">Riwayat pembayaran</h1><p class="mt-3 text-[#718596]">Semua transaksi pembayaran kelas yang tercatat di akun Anda.</p></header>
-        @if($payments->isEmpty())
-            <div class="border border-dashed border-[#b8cbc8] bg-white px-6 py-16 text-center"><i class="bi bi-receipt text-4xl text-[#0d9488]"></i><h2 class="mt-4 text-2xl font-bold text-[#173f5f]">Belum ada transaksi</h2><p class="mt-2 text-[#718596]">Transaksi pembayaran akan muncul setelah Anda menyelesaikan pembayaran kelas.</p></div>
-        @else
-            <section class="mb-7 grid gap-4 md:grid-cols-3"><div class="border-l-4 border-[#0d9488] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]"><p class="font-mono text-xs uppercase tracking-[0.16em] text-[#718596]">Total transaksi</p><p class="mt-3 text-4xl font-bold text-[#173f5f]">{{ $payments->count() }}</p></div><div class="border-l-4 border-[#16a34a] bg-white p-5 shadow-[0_14px_35px_rgba(23,63,95,.06)]"><p class="font-mono text-xs uppercase tracking-[0.16em] text-[#718596]">Berhasil</p><p class="mt-3 text-4xl font-bold text-[#173f5f]">{{ $payments->where('status','success')->count() }}</p></div><div class="border-l-4 border-[#d97706] bg-[#fffaf0] p-5"><p class="font-mono text-xs uppercase tracking-[0.16em] text-[#b45309]">Nominal berhasil</p><p class="mt-3 text-2xl font-bold text-[#173f5f]">Rp {{ number_format($payments->where('status','success')->sum('amount'),0,',','.') }}</p></div></section>
-            <section class="overflow-hidden border border-[#dce7e5] bg-white shadow-[0_14px_35px_rgba(23,63,95,.06)]"><div class="border-b border-[#e8efed] px-5 py-5 sm:px-6"><p class="font-mono text-xs uppercase tracking-[0.18em] text-[#0d9488]">Ledger transaksi</p><h2 class="mt-1 text-xl font-bold text-[#173f5f]">Pembayaran terbaru</h2></div><div class="overflow-x-auto"><table class="min-w-full divide-y divide-[#e8efed]"><thead class="bg-[#f3f7f6] text-left font-mono text-[11px] uppercase tracking-[0.16em] text-[#718596]"><tr><th class="px-5 py-4">Tanggal</th><th class="px-5 py-4">Program / kelas</th><th class="px-5 py-4">Nominal</th><th class="px-5 py-4">Status</th><th class="px-5 py-4">Order ID</th></tr></thead><tbody class="divide-y divide-[#e8efed] text-sm text-[#40627d]">@foreach($payments as $payment)<tr class="transition hover:bg-[#f3f7f6]"><td class="whitespace-nowrap px-5 py-5">{{ $payment->created_at->format('d M Y H:i') }}</td><td class="min-w-[250px] px-5 py-5"><p class="font-semibold text-[#173f5f]">{{ $payment->pendaftaran->program->nama ?? '-' }}</p><p class="mt-1 text-xs text-[#718596]">{{ $payment->pendaftaran->kursus->nama ?? 'Belum ada kelas saat transaksi dibuat' }}</p></td><td class="whitespace-nowrap px-5 py-5 font-semibold text-[#173f5f]">Rp {{ number_format($payment->amount,0,',','.') }}</td><td class="px-5 py-5"><span class="rounded-full bg-[#e8f7f4] px-3 py-1 font-mono text-[11px] font-semibold uppercase text-[#0f766e]">{{ $payment->status }}</span></td><td class="whitespace-nowrap px-5 py-5 font-mono text-xs text-[#718596]">{{ $payment->order_id }}</td></tr>@endforeach</tbody></table></div></section>
-        @endif
+
+@php
+    $berhasil = $payments->where('status', 'success');
+@endphp
+
+<div class="bk-panel__head" style="border:0;padding-left:0;padding-right:0">
+    <div>
+        <h1 class="bk-panel__title">Riwayat pembayaran</h1>
+        <p class="bk-panel__subtitle">Tercatat sejak akun Anda dibuat, terbaru di atas.</p>
     </div>
+    <a href="{{ route('peserta.pendaftaran.index') }}" class="bk-btn bk-btn--sm">
+        <i class="bi bi-clipboard-check" aria-hidden="true"></i> Pendaftaran saya
+    </a>
 </div>
+
+@if ($payments->isEmpty())
+    <section class="bk-panel">
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-receipt" aria-hidden="true"></i></span>
+            <h3>Belum ada transaksi</h3>
+            <p>Transaksi muncul di sini setelah Anda memulai pembayaran kelas.</p>
+            <a href="{{ route('peserta.pendaftaran.index') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                <i class="bi bi-credit-card" aria-hidden="true"></i> Lihat tagihan
+            </a>
+        </div>
+    </section>
+@else
+    <div class="bk-stats bk-stats--3">
+        <article class="bk-stat">
+            <span class="bk-stat__icon"><i class="bi bi-list-ul" aria-hidden="true"></i></span>
+            <span class="bk-stat__label">Transaksi</span>
+            <p class="bk-stat__value">{{ $payments->count() }}</p>
+            <p class="bk-stat__hint">seluruh percobaan pembayaran</p>
+        </article>
+        <article class="bk-stat">
+            <span class="bk-stat__icon"><i class="bi bi-check2-circle" aria-hidden="true"></i></span>
+            <span class="bk-stat__label">Berhasil</span>
+            <p class="bk-stat__value">{{ $berhasil->count() }}</p>
+            <p class="bk-stat__hint">sudah terkonfirmasi Midtrans</p>
+        </article>
+        <article class="bk-stat bk-stat--amber">
+            <span class="bk-stat__icon"><i class="bi bi-cash-stack" aria-hidden="true"></i></span>
+            <span class="bk-stat__label">Nominal berhasil</span>
+            <p class="bk-stat__value">Rp {{ number_format($berhasil->sum('amount'), 0, ',', '.') }}</p>
+            <p class="bk-stat__hint">total yang sudah masuk</p>
+        </article>
+    </div>
+
+    <section class="bk-panel">
+        <div class="bk-panel__head">
+            <div>
+                <h2 class="bk-panel__title">Buku transaksi</h2>
+                <p class="bk-panel__subtitle">Order ID dipakai bila Anda perlu menanyakan satu transaksi ke admin.</p>
+            </div>
+        </div>
+
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th class="nw">Tanggal</th>
+                    <th>Program &amp; kelas</th>
+                    <th class="r nw">Nominal</th>
+                    <th class="nw">Status</th>
+                    <th class="nw">Order ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($payments as $payment)
+                    <tr>
+                        <td class="nw">{{ optional($payment->created_at)->translatedFormat('j M Y, H:i') ?? '—' }}</td>
+                        <td>
+                            <b>{{ $payment->pendaftaran->program->nama ?? 'Program sudah dihapus' }}</b><br>
+                            <span class="bk-muted">
+                                {{ $payment->pendaftaran->kursus->nama ?? 'Belum ada kelas saat transaksi dibuat' }}
+                            </span>
+                        </td>
+                        <td class="r nw bk-num">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
+                        <td class="nw">
+                            <span class="bk-tag {{ match ($payment->status) {
+                                'success' => '',
+                                'pending' => 'bk-tag--jalan',
+                                'failed' => 'bk-tag--gagal',
+                                default => 'bk-tag--diam',
+                            } }}">{{ $payment->label_status }}</span>
+                        </td>
+                        <td class="nw"><span class="bk-code">{{ $payment->order_id }}</span></td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </section>
+@endif
 @endsection

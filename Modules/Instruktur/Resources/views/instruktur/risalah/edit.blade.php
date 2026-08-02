@@ -1,66 +1,87 @@
 @extends('instruktur::layouts.master')
 
+@section('title', 'Ubah risalah pertemuan '.$risalah->pertemuan_ke)
+@section('page-context', 'Instruktur · '.($risalah->kursus->nama ?? 'Kursus'))
+@section('page-description', 'Catat materi yang disampaikan dan lampirkan dokumen pendukung bila ada.')
+
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0">
-            <i class="bi bi-pencil-square me-2"></i>Edit Risalah
-        </h2>
-        <a href="/instruktur/kursus/{{ $risalah->kursus_id }}/risalah" class="btn btn-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Kembali
-        </a>
+
+@if ($errors->any())
+    <div class="bk-note bk-note--perlu">
+        <i class="bi bi-exclamation-triangle-fill bk-note__icon" aria-hidden="true"></i>
+        <div>
+            <b>Ada isian yang perlu diperbaiki.</b>
+            <ul>
+                @foreach ($errors->all() as $pesan)
+                    <li>{{ $pesan }}</li>
+                @endforeach
+            </ul>
+        </div>
     </div>
+@endif
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <form action="/instruktur/risalah/{{ $risalah->id }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
+<form method="POST" action="{{ route('instruktur.risalah.update', $risalah) }}" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kursus</label>
-                            <input type="text" class="form-control" value="{{ $risalah->kursus->nama }}" disabled>
-                            <small class="text-muted d-block mt-1">
-                                Program: {{ $risalah->kursus->program->nama }} | Level: {{ $risalah->kursus->level->nama }}
-                            </small>
-                        </div>
+    <section class="bk-panel">
+        <div class="bk-panel__head">
+            <div>
+                <h2 class="bk-panel__title">Pertemuan {{ $risalah->pertemuan_ke }}</h2>
+                <p class="bk-panel__subtitle">
+                    {{ $risalah->kursus->program->nama ?? 'Tanpa program' }} ·
+                    {{ $risalah->kursus->level->nama ?? 'Level belum ditentukan' }} ·
+                    {{ $risalah->tgl_pertemuan ? \Carbon\Carbon::parse($risalah->tgl_pertemuan)->translatedFormat('j F Y') : 'Tanggal belum ditentukan' }}
+                </p>
+            </div>
+        </div>
 
-                        <div class="mb-3">
-                            <label for="materi" class="form-label fw-bold">Materi</label>
-                            <input type="text" class="form-control @error('materi') is-invalid @enderror"
-                                   id="materi" name="materi" value="{{ old('materi', $risalah->materi) }}" required>
-                            @error('materi')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+        <div class="bk-panel__body">
+            <div class="bk-fields">
+                <div class="bk-field bk-field--wide">
+                    <label class="bk-label" for="materi">Materi <span aria-hidden="true">*</span></label>
+                    <input type="text" id="materi" name="materi" class="bk-input"
+                           value="{{ old('materi', $risalah->materi) }}" required
+                           placeholder="Misal: Simple past tense dan latihan percakapan">
+                    @error('materi')<p class="bk-error">{{ $message }}</p>@enderror
+                </div>
 
-                        <div class="mb-3">
-                            <label for="catatan" class="form-label fw-bold">Catatan (opsional)</label>
-                            <textarea name="catatan" id="catatan" rows="6" class="form-control">{{ old('catatan', $risalah->catatan) }}</textarea>
-                        </div>
+                <div class="bk-field bk-field--wide">
+                    <label class="bk-label" for="catatan">Catatan pertemuan</label>
+                    <textarea id="catatan" name="catatan" rows="6" class="bk-textarea"
+                              placeholder="Hal yang perlu diingat: peserta yang tertinggal, tugas yang diberikan, rencana pertemuan berikutnya.">{{ old('catatan', $risalah->catatan) }}</textarea>
+                    <p class="bk-hint">Opsional. Hanya dibaca oleh Anda dan admin.</p>
+                    @error('catatan')<p class="bk-error">{{ $message }}</p>@enderror
+                </div>
 
-                        <div class="mb-3">
-                            <label for="dokumen" class="form-label fw-bold">Upload Dokumen Risalah (opsional)</label>
-                            <input type="file" class="form-control @error('dokumen') is-invalid @enderror" id="dokumen" name="dokumen" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
-                            @error('dokumen')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <small class="text-muted">File: PDF, Word, Excel, Gambar, dll.</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-2"></i>Simpan Perubahan
-                            </button>
-                            <a href="/instruktur/kursus/{{ $risalah->kursus_id }}/risalah" class="btn btn-outline-secondary">
-                                <i class="bi bi-x me-2"></i>Batal
-                            </a>
-                        </div>
-                    </form>
+                <div class="bk-field bk-field--wide">
+                    <label class="bk-label" for="dokumen">Dokumen pendukung</label>
+                    @if ($risalah->dokumen)
+                        <p class="bk-hint">
+                            Sudah ada berkas terlampir —
+                            <a href="{{ route('instruktur.risalah.download', $risalah) }}" class="bk-linkbtn">unduh berkas saat ini</a>.
+                            Mengunggah berkas baru akan menggantikannya.
+                        </p>
+                    @endif
+                    <input type="file" id="dokumen" name="dokumen" class="bk-input"
+                           accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png">
+                    <p class="bk-hint">PDF, Word, Excel, PowerPoint, atau gambar. Maksimal 5 MB.</p>
+                    @error('dokumen')<p class="bk-error">{{ $message }}</p>@enderror
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <div class="bk-panel__foot">
+            <a href="{{ route('instruktur.risalah.index', $risalah->kursus_id) }}" class="bk-linkbtn">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Kembali ke daftar pertemuan
+            </a>
+            <span class="bk-row">
+                <a href="{{ route('instruktur.risalah.index', $risalah->kursus_id) }}" class="bk-btn bk-btn--sm">Batal</a>
+                <button type="submit" class="bk-btn bk-btn--pri bk-btn--sm">
+                    <i class="bi bi-check2" aria-hidden="true"></i> Simpan perubahan
+                </button>
+            </span>
+        </div>
+    </section>
+</form>
 @endsection

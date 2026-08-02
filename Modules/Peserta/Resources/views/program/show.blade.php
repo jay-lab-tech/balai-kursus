@@ -1,122 +1,139 @@
 @extends('peserta::layouts.student')
 
-@section('title', $program->nama . ' - Balai Kursus')
+@section('title', $program->nama)
+@section('page-context', 'Peserta · Program')
+@section('page-description', 'Struktur level dan kelas pada program '.$program->nama.'.')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-6xl mx-auto space-y-8">
-        <a href="{{ route('peserta.program.index') }}" class="inline-flex items-center text-sm text-yellow-300 hover:text-yellow-200">
-            <i class="bi bi-arrow-left mr-2"></i>Kembali ke daftar program
+
+<a href="{{ route('peserta.program.index') }}" class="bk-linkbtn">
+    <i class="bi bi-arrow-left" aria-hidden="true"></i> Kembali ke daftar program
+</a>
+
+<div class="bk-hello">
+    <p class="bk-hello__kicker">Program</p>
+    <h1 class="bk-hello__title">{{ $program->nama }}</h1>
+    <p class="bk-hello__lede">
+        Anda mendaftar ke program, bukan ke kelas. Tes penempatan dilakukan di luar sistem, hasilnya dimasukkan
+        admin, lalu Anda ditempatkan ke kelas selevel yang kuotanya masih ada.
+    </p>
+    <div class="bk-hello__actions">
+        @if (! $registration)
+            <form action="{{ route('peserta.program.daftar', $program) }}" method="POST">
+                @csrf
+                <button type="submit" class="bk-btn bk-btn--pri bk-btn--sm">
+                    <i class="bi bi-check2-circle" aria-hidden="true"></i> Daftar program ini
+                </button>
+            </form>
+        @else
+            <a href="{{ route('peserta.pendaftaran.index') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i> Lihat status pendaftaran
+            </a>
+        @endif
+        <a href="{{ route('peserta.kursus.saya') }}" class="bk-btn bk-btn--sm">
+            <i class="bi bi-door-open" aria-hidden="true"></i> Kelas saya
         </a>
+    </div>
+</div>
 
-        <div class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
-            <div class="p-8" style="background: linear-gradient(135deg, {{ $program->warna ?? '#dc2626' }}, #111827);">
-                <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.25em] text-white/70">Program</p>
-                        <h1 class="mt-2 text-4xl font-bold text-white">{{ $program->nama }}</h1>
-                        <p class="mt-3 max-w-3xl text-white/80">Alur pendaftaran program ini: daftar program, ikut tes penempatan di luar website, admin input hasil tes, lalu sistem menempatkan Anda ke level dan kelas yang kuotanya masih tersedia.</p>
-                    </div>
-                    @if($registration)
-                        <div class="rounded-2xl border border-white/20 bg-black/20 p-5 text-white">
-                            <p class="text-xs uppercase tracking-wider text-white/70">Status Anda</p>
-                            <p class="mt-2 text-2xl font-bold">{{ str_replace('_', ' ', ucfirst($registration->status_pendaftaran)) }}</p>
-                            <p class="mt-2 text-sm text-white/80">
-                                @if($registration->level)
-                                    Level: {{ $registration->level->nama }}
-                                @else
-                                    Menunggu hasil tes penempatan
-                                @endif
-                                @if($registration->kursus)
-                                    <br>Kelas: {{ $registration->kursus->nama }}
-                                @endif
-                            </p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <div class="grid gap-8 p-8 lg:grid-cols-[1.2fr_0.8fr]">
-                <div class="space-y-5">
-                    <h2 class="text-lg font-semibold uppercase tracking-[0.2em] text-yellow-300">Struktur Level dan Kelas</h2>
-                    @forelse($program->kursuses->groupBy(fn ($kursus) => $kursus->level?->nama ?? 'Tanpa Level') as $levelName => $kelasList)
-                        <div class="rounded-2xl border border-white/10 bg-black/20 p-5">
-                            <div class="flex flex-col gap-2 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <h3 class="text-xl font-bold text-white">{{ $levelName }}</h3>
-                                    @php $firstClass = $kelasList->first(); @endphp
-                                    @if($firstClass?->level?->rentang_nilai)
-                                        <p class="text-sm text-gray-400">Rentang rekomendasi skor: {{ $firstClass->level->rentang_nilai }}</p>
-                                    @endif
-                                </div>
-                                <span class="text-sm text-gray-300">{{ $kelasList->count() }} kelas</span>
-                            </div>
-
-                            <div class="mt-4 space-y-3">
-                                @foreach($kelasList as $kelas)
-                                    @php
-                                        $sisaKuota = max(0, $kelas->kuota - $kelas->pendaftarans_count);
-                                    @endphp
-                                    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
-                                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                                            <div>
-                                                <p class="font-semibold text-white">{{ $kelas->nama }}</p>
-                                                <p class="text-sm text-gray-400">
-                                                    Periode {{ $kelas->periode ?: 'belum diatur' }}
-                                                    @if($kelas->tanggal_mulai)
-                                                        | Mulai {{ $kelas->tanggal_mulai->format('d M Y') }}
-                                                    @endif
-                                                </p>
-                                            </div>
-                                            <div class="text-sm text-gray-300">
-                                                Kuota tersisa {{ $sisaKuota }} / {{ $kelas->kuota }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @empty
-                        <div class="rounded-2xl border border-dashed border-white/10 px-5 py-8 text-gray-400">
-                            Belum ada kelas yang dikaitkan dengan program ini.
-                        </div>
-                    @endforelse
-                </div>
-
-                <div class="space-y-5">
-                    <div class="rounded-2xl border border-white/10 bg-black/20 p-6">
-                        <h2 class="text-lg font-semibold text-white">Yang Akan Anda Dapatkan</h2>
-                        <div class="mt-4 space-y-3 text-sm text-gray-300">
-                            <p>1. Pendaftaran program tanpa pilih kelas dulu.</p>
-                            <p>2. Hasil tes diproses admin ke level yang cocok.</p>
-                            <p>3. Sistem menempatkan Anda ke kelas dengan level sama dan kuota masih tersedia.</p>
-                            <p>4. Pembayaran baru dibuka setelah kelas berhasil ditentukan.</p>
-                        </div>
-                    </div>
-
-                    <div class="rounded-2xl border border-white/10 bg-black/20 p-6">
-                        <h2 class="text-lg font-semibold text-white">Aksi</h2>
-                        <div class="mt-5 space-y-3">
-                            @if(!$registration)
-                                <form action="{{ route('peserta.program.daftar', $program) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 font-semibold text-white hover:from-sky-500 hover:to-sky-600 transition">
-                                        <i class="bi bi-check2-circle mr-2"></i>Daftar Program Ini
-                                    </button>
-                                </form>
-                            @else
-                                <a href="{{ route('peserta.pendaftaran.index') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-yellow-400 px-5 py-3 font-semibold text-gray-900 hover:bg-yellow-300 transition">
-                                    <i class="bi bi-clipboard-check mr-2"></i>Lihat Status Pendaftaran
-                                </a>
-                            @endif
-                            <a href="{{ route('peserta.kursus.saya') }}" class="inline-flex w-full items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">
-                                <i class="bi bi-door-open mr-2"></i>Lihat Kelas Saya
-                            </a>
-                        </div>
-                    </div>
-                </div>
+<div class="bk-duo">
+    <section class="bk-panel">
+        <div class="bk-panel__head">
+            <div>
+                <h2 class="bk-panel__title">Struktur level dan kelas</h2>
+                <p class="bk-panel__subtitle">Kuota di bawah dihitung dari jumlah pendaftaran yang sudah masuk tiap kelas.</p>
             </div>
         </div>
+
+        @forelse ($program->kursuses->groupBy(fn ($kursus) => $kursus->level?->nama ?? 'Tanpa level') as $namaLevel => $daftarKelas)
+            @php $rentang = $daftarKelas->first()?->level?->rentang_nilai; @endphp
+            <div class="bk-panel__body" @unless ($loop->last) style="border-bottom:1px solid var(--bk-sand-100)" @endunless>
+                <div class="bk-row" style="padding:0 0 .6rem">
+                    <span class="bk-row__sp">
+                        <b>{{ $namaLevel }}</b>
+                        @if ($rentang)
+                            <span class="bk-muted">· rekomendasi skor {{ $rentang }}</span>
+                        @endif
+                    </span>
+                    <span class="bk-muted bk-num">{{ $daftarKelas->count() }} kelas</span>
+                </div>
+
+                <table class="bk-table is-padat">
+                    <thead>
+                        <tr>
+                            <th>Kelas</th>
+                            <th>Periode</th>
+                            <th class="r nw">Sisa kuota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($daftarKelas as $kelas)
+                            <tr>
+                                <td>
+                                    <b>{{ $kelas->nama }}</b>
+                                    @unless ($kelas->masihMenerima())
+                                        <span class="bk-tag bk-tag--diam">tutup</span>
+                                    @endunless
+                                </td>
+                                <td>
+                                    {{ $kelas->periode ?: 'belum diatur' }}
+                                    @if ($kelas->tanggal_mulai)
+                                        <br><span class="bk-muted">mulai {{ $kelas->tanggal_mulai->translatedFormat('j M Y') }}</span>
+                                    @endif
+                                </td>
+                                <td class="r nw bk-num">{{ $kelas->sisaKuota() }} / {{ $kelas->kuota }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @empty
+            <div class="bk-empty">
+                <span class="bk-empty__icon"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+                <h3>Belum ada kelas</h3>
+                <p>Program ini belum punya kelas yang dikaitkan, jadi penempatan belum bisa dilakukan.</p>
+            </div>
+        @endforelse
+    </section>
+
+    <div>
+        @if ($registration)
+            <section class="bk-panel">
+                <div class="bk-panel__head">
+                    <div>
+                        <h2 class="bk-panel__title">Status Anda</h2>
+                        <p class="bk-panel__subtitle">{{ $registration->label_status }}</p>
+                    </div>
+                </div>
+                <dl class="bk-facts">
+                    <div><dt>Nomor</dt><dd><span class="bk-code">{{ $registration->nomor }}</span></dd></div>
+                    <div>
+                        <dt>Nilai tes</dt>
+                        <dd>{{ optional($registration->placementScore)->final_score ?? 'Belum diinput' }}</dd>
+                    </div>
+                    <div><dt>Level</dt><dd>{{ $registration->level->nama ?? 'Belum ditentukan' }}</dd></div>
+                    <div><dt>Kelas</dt><dd>{{ $registration->kursus->nama ?? 'Belum ditempatkan' }}</dd></div>
+                </dl>
+                <div class="bk-panel__body" style="padding-top:0">
+                    @include('peserta::partials.alur', ['pendaftaran' => $registration])
+                </div>
+            </section>
+        @else
+            <section class="bk-panel">
+                <div class="bk-panel__head">
+                    <div>
+                        <h2 class="bk-panel__title">Alur pendaftaran</h2>
+                        <p class="bk-panel__subtitle">Empat tahap sebelum kelas bisa diikuti.</p>
+                    </div>
+                </div>
+                <ol class="bk-steps">
+                    <li><b>Daftar program</b><small>Tanpa memilih kelas terlebih dahulu.</small></li>
+                    <li><b>Tes penempatan</b><small>Dilakukan di luar sistem, hasilnya dimasukkan admin.</small></li>
+                    <li><b>Penempatan kelas</b><small>Sistem mencari kelas selevel yang kuotanya masih ada.</small></li>
+                    <li><b>Pembayaran</b><small>Tagihan terbit setelah kelas ditentukan.</small></li>
+                </ol>
+            </section>
+        @endif
     </div>
 </div>
 @endsection

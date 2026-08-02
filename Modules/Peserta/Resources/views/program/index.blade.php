@@ -1,140 +1,132 @@
 @extends('peserta::layouts.student')
 
-@section('title', 'Program Tersedia - Balai Kursus')
+@section('title', 'Program tersedia')
+@section('page-context', 'Peserta · Program')
+@section('page-description', 'Anda mendaftar ke program dulu; level dan kelas ditentukan setelah tes penempatan.')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto space-y-8">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="text-4xl font-bold text-white">
-                    <i class="bi bi-diagram-3 text-yellow-400 mr-3"></i>Daftar Program
-                </h1>
-                <p class="mt-2 text-gray-400">Peserta mendaftar ke program terlebih dahulu, lalu sistem akan menempatkan ke level dan kelas setelah hasil tes penempatan diinput admin.</p>
-            </div>
-            <a href="{{ route('peserta.pendaftaran.index') }}" class="inline-flex items-center px-5 py-3 rounded-xl bg-white/10 border border-yellow-400/30 text-white hover:bg-white/20 transition">
-                <i class="bi bi-clipboard-check mr-2"></i>Lihat Pendaftaran Saya
-            </a>
+
+<div class="bk-panel__head" style="border:0;padding-left:0;padding-right:0">
+    <div>
+        <h1 class="bk-panel__title">Daftar program</h1>
+        <p class="bk-panel__subtitle">
+            Pilih program, ikuti tes penempatan, lalu admin memasukkan hasilnya. Penempatan kelas menyusul.
+        </p>
+    </div>
+    <a href="{{ route('peserta.pendaftaran.index') }}" class="bk-btn bk-btn--sm">
+        <i class="bi bi-clipboard-check" aria-hidden="true"></i> Pendaftaran saya
+    </a>
+</div>
+
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="bk-note bk-note--perlu">
+        <i class="bi bi-exclamation-triangle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
+
+@if ($programs->isEmpty())
+    <section class="bk-panel">
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-collection" aria-hidden="true"></i></span>
+            <h3>Belum ada program</h3>
+            <p>Admin belum membuka program apa pun. Coba lagi nanti.</p>
         </div>
+    </section>
+@else
+    <div class="bk-duo bk-duo--even">
+        @foreach ($programs as $program)
+            @php
+                $pendaftaran = $registrations->get($program->id);
+                $perLevel = $program->kursuses
+                    ->filter(fn ($kursus) => $kursus->level)
+                    ->groupBy(fn ($kursus) => $kursus->level->nama);
+                // masihMenerima() memakai daftar status yang sama dengan scope di model.
+                $terbuka = $program->kursuses->filter(fn ($kursus) => $kursus->masihMenerima())->count();
+            @endphp
 
-        @if(session('success'))
-            <div class="rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-green-200">
-                {{ session('success') }}
-            </div>
-        @endif
+            <section class="bk-panel">
+                <div class="bk-panel__head">
+                    <div>
+                        <p class="bk-eyebrow">Program</p>
+                        <h2 class="bk-panel__title">{{ $program->nama }}</h2>
+                    </div>
+                    @if ($pendaftaran)
+                        <span class="bk-tag {{ $pendaftaran->status_pendaftaran === \App\Models\Pendaftaran::STATUS_DIBATALKAN ? 'bk-tag--gagal' : 'bk-tag--info' }}">
+                            {{ $pendaftaran->label_status }}
+                        </span>
+                    @elseif ($terbuka > 0)
+                        <span class="bk-tag">Menerima peserta</span>
+                    @else
+                        <span class="bk-tag bk-tag--diam">Belum ada kelas terbuka</span>
+                    @endif
+                </div>
 
-        @if(session('error'))
-            <div class="rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-4 text-yellow-100">
-                {{ session('error') }}
-            </div>
-        @endif
+                <dl class="bk-kv">
+                    <div><dt>Level</dt><dd class="bk-num">{{ $perLevel->count() }}</dd></div>
+                    <div><dt>Kelas</dt><dd class="bk-num">{{ $program->kursuses->count() }}</dd></div>
+                    <div><dt>Masih menerima</dt><dd class="bk-num">{{ $terbuka }}</dd></div>
+                </dl>
 
-        @if($programs->isEmpty())
-            <div class="rounded-3xl border border-white/10 bg-white/5 px-8 py-16 text-center text-gray-300">
-                Belum ada program yang tersedia.
-            </div>
-        @else
-            <div class="grid gap-6 lg:grid-cols-2">
-                @foreach($programs as $program)
-                    @php
-                        $registration = $registrations->get($program->id);
-                        $levels = $program->kursuses
-                            ->filter(fn ($kursus) => $kursus->level)
-                            ->groupBy(fn ($kursus) => $kursus->level->nama);
-                    @endphp
-                    <div class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur">
-                        <div class="p-6" style="background: linear-gradient(135deg, {{ $program->warna ?? '#dc2626' }}, #111827);">
-                            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                                <div>
-                                    <p class="text-xs uppercase tracking-[0.25em] text-white/70">Program</p>
-                                    <h2 class="mt-2 text-3xl font-bold text-white">{{ $program->nama }}</h2>
-                                </div>
-                                @if($registration)
-                                    <span class="inline-flex items-center rounded-full border border-white/20 bg-black/20 px-4 py-2 text-sm font-semibold text-white">
-                                        <i class="bi bi-check-circle mr-2"></i>{{ str_replace('_', ' ', ucfirst($registration->status_pendaftaran)) }}
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
+                @forelse ($perLevel as $namaLevel => $kelas)
+                    <div class="bk-row">
+                        <span class="bk-row__sp">
+                            <b>{{ $namaLevel }}</b><br>
+                            <span class="bk-muted">{{ $kelas->count() }} kelas pada level ini</span>
+                        </span>
+                        @php $siap = $kelas->filter(fn ($kursus) => $kursus->masihMenerima())->count(); @endphp
+                        <span class="bk-tag {{ $siap > 0 ? '' : 'bk-tag--diam' }}">
+                            {{ $siap }} masih bisa diisi
+                        </span>
+                    </div>
+                @empty
+                    <div class="bk-panel__body">
+                        <p class="bk-hint" style="padding:0">Level dan kelas belum dikonfigurasi untuk program ini.</p>
+                    </div>
+                @endforelse
 
-                        <div class="space-y-6 p-6 text-gray-200">
-                            <div class="grid gap-4 sm:grid-cols-3">
-                                <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                    <p class="text-xs uppercase tracking-wider text-gray-400">Total Level</p>
-                                    <p class="mt-2 text-2xl font-bold text-white">{{ $levels->count() }}</p>
-                                </div>
-                                <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                    <p class="text-xs uppercase tracking-wider text-gray-400">Total Kelas</p>
-                                    <p class="mt-2 text-2xl font-bold text-white">{{ $program->kursuses->count() }}</p>
-                                </div>
-                                <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
-                                    <p class="text-xs uppercase tracking-wider text-gray-400">Kelas Tersedia</p>
-                                    <p class="mt-2 text-2xl font-bold text-white">
-                                        {{ $program->kursuses->filter(fn ($kursus) => $kursus->pendaftarans_count < $kursus->kuota && in_array($kursus->status, ['buka', 'berjalan'], true))->count() }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="space-y-3">
-                                <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-yellow-300">Level dan Kelas</h3>
-                                @forelse($levels as $levelName => $kelas)
-                                    <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                            <div>
-                                                <p class="font-semibold text-white">{{ $levelName }}</p>
-                                                <p class="text-sm text-gray-400">{{ $kelas->count() }} kelas tersedia pada level ini</p>
-                                            </div>
-                                            <div class="text-sm text-gray-300">
-                                                @php
-                                                    $availableCount = $kelas->filter(fn ($kursus) => $kursus->pendaftarans_count < $kursus->kuota && in_array($kursus->status, ['buka', 'berjalan'], true))->count();
-                                                @endphp
-                                                {{ $availableCount }} kelas masih bisa diisi
-                                            </div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="rounded-2xl border border-dashed border-white/10 px-4 py-6 text-sm text-gray-400">
-                                        Level dan kelas belum dikonfigurasi untuk program ini.
-                                    </div>
-                                @endforelse
-                            </div>
-
-                            @if($registration)
-                                <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-100">
-                                    Program ini sudah Anda daftar.
-                                    @if($registration->level)
-                                        Hasil sementara: level <strong>{{ $registration->level->nama }}</strong>
-                                        @if($registration->kursus)
-                                            , kelas <strong>{{ $registration->kursus->nama }}</strong>.
-                                        @endif
-                                    @else
-                                        Pendaftaran sedang menunggu proses tes penempatan.
-                                    @endif
-                                </div>
-                            @endif
-
-                            <div class="flex flex-col gap-3 sm:flex-row">
-                                <a href="{{ route('peserta.program.show', $program) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-white/10 px-5 py-3 font-semibold text-white hover:bg-white/20 transition">
-                                    <i class="bi bi-eye mr-2"></i>Lihat Detail
-                                </a>
-                                @if(!$registration)
-                                    <form action="{{ route('peserta.program.daftar', $program) }}" method="POST" class="flex-1">
-                                        @csrf
-                                        <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 font-semibold text-white hover:from-sky-500 hover:to-sky-600 transition">
-                                            <i class="bi bi-check2-circle mr-2"></i>Daftar Program
-                                        </button>
-                                    </form>
+                @if ($pendaftaran)
+                    <div class="bk-panel__body">
+                        <div class="bk-note bk-note--baik">
+                            <i class="bi bi-info-circle-fill bk-note__icon" aria-hidden="true"></i>
+                            <span>
+                                Anda sudah terdaftar di program ini.
+                                @if ($pendaftaran->level)
+                                    Level <b>{{ $pendaftaran->level->nama }}</b>@if ($pendaftaran->kursus), kelas <b>{{ $pendaftaran->kursus->nama }}</b>@endif.
                                 @else
-                                    <a href="{{ route('peserta.pendaftaran.index') }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-yellow-400 px-5 py-3 font-semibold text-gray-900 hover:bg-yellow-300 transition">
-                                        <i class="bi bi-arrow-right-circle mr-2"></i>Lihat Status
-                                    </a>
+                                    {{ $pendaftaran->petunjuk }}
                                 @endif
-                            </div>
+                            </span>
                         </div>
                     </div>
-                @endforeach
-            </div>
-        @endif
+                @endif
+
+                <div class="bk-panel__foot">
+                    <a href="{{ route('peserta.program.show', $program) }}" class="bk-linkbtn">
+                        Lihat rincian level <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    @if ($pendaftaran)
+                        <a href="{{ route('peserta.pendaftaran.index') }}" class="bk-btn bk-btn--sm">
+                            <i class="bi bi-clipboard-check" aria-hidden="true"></i> Lihat status
+                        </a>
+                    @else
+                        <form action="{{ route('peserta.program.daftar', $program) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="bk-btn bk-btn--pri bk-btn--sm">
+                                <i class="bi bi-check2-circle" aria-hidden="true"></i> Daftar program
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </section>
+        @endforeach
     </div>
-</div>
+@endif
 @endsection

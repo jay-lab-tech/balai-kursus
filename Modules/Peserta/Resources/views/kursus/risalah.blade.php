@@ -1,238 +1,175 @@
 @extends('peserta::layouts.student')
 
-@section('title', 'Risalah ' . $kursus->nama . ' - Balai Kursus')
+@section('title', 'Risalah '.$kursus->nama)
+@section('page-context', 'Peserta · Risalah')
+@section('page-description', 'Catatan tiap pertemuan kelas '.$kursus->nama.'.')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-12">
-            <div>
-                <h1 class="text-4xl font-bold text-white mb-2">
-                    <i class="bi bi-file-earmark text-yellow-400 mr-3"></i>{{ $kursus->nama }}
-                </h1>
-                <p class="text-gray-400">Daftar Risalah Pertemuan</p>
-            </div>
-            <a href="/peserta/kursus" class="inline-flex items-center px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors">
-                <i class="bi bi-arrow-left mr-2"></i>
-                Kembali
-            </a>
-        </div>
 
-        <!-- Search Box -->
-        <div class="mb-8">
-            <form method="GET" action="" class="flex gap-3">
-                <div class="flex-grow relative">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari materi, catatan..." 
-                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition-colors duration-200"
-                    />
-                    <i class="bi bi-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
-                    <i class="bi bi-search mr-2"></i>Cari
-                </button>
+{{--
+    Dulu halaman ini mencetak satu modal per risalah, lalu menambal
+    <style>[id^="risalahModal"]{display:flex!important}</style> — yang justru
+    mengalahkan .hidden milik Tailwind, sehingga semua modal tampil sekaligus
+    begitu halaman dibuka. Sekarang cukup satu modal yang isinya diganti
+    lewat Alpine, sama seperti halaman nilai instruktur.
+--}}
+<div x-data="risalahKelas()">
+
+    <div class="bk-panel__head" style="border:0;padding-left:0;padding-right:0">
+        <div>
+            <p class="bk-eyebrow">{{ $kursus->program->nama ?? 'Program' }}</p>
+            <h1 class="bk-panel__title">Risalah {{ $kursus->nama }}</h1>
+            <p class="bk-panel__subtitle">Catatan pertemuan yang diisi pengajar, terbaru di atas.</p>
+        </div>
+        <a href="{{ route('peserta.kursus.detail', $kursus) }}" class="bk-btn bk-btn--sm">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Kembali ke kelas
+        </a>
+    </div>
+
+    <section class="bk-panel">
+        <div class="bk-panel__head">
+            <div>
+                <h2 class="bk-panel__title">{{ $risalahs->count() }} pertemuan tercatat</h2>
+                @if (request('search'))
+                    <p class="bk-panel__subtitle">Hasil pencarian &ldquo;{{ request('search') }}&rdquo;.</p>
+                @endif
+            </div>
+            {{-- action="" dulu dikosongkan; di URL berparameter itu membuat query lama ikut terbawa. --}}
+            <form method="GET" action="{{ route('peserta.kursus.risalah', $kursus) }}" class="bk-tools">
+                <label class="bk-pillfield bk-pillfield--cari">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <span class="bk-sr">Cari materi atau catatan</span>
+                    <input type="search" name="search" value="{{ request('search') }}"
+                           placeholder="Cari materi atau catatan">
+                </label>
+                <button type="submit" class="bk-btn bk-btn--sm">Cari</button>
+                @if (request('search'))
+                    <a href="{{ route('peserta.kursus.risalah', $kursus) }}" class="bk-linkbtn">Bersihkan</a>
+                @endif
             </form>
         </div>
 
-        @if($risalahs && count($risalahs) > 0)
-            <!-- Meetings List -->
-            <div class="space-y-4">
-                @foreach($risalahs as $r)
-                <div class="group bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 hover:border-yellow-500/50 rounded-xl p-6 transition-all duration-200 cursor-pointer" onclick="showRisalah({{ $r->id }})">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-grow">
-                            <!-- Meeting Header -->
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="text-xl font-bold text-white">Pertemuan {{ $r->pertemuan_ke }}</h3>
-                                @if($r->materi)
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-500/20 text-green-400 border border-green-500/30">
-                                        <i class="bi bi-check-circle mr-1"></i>Ada Materi
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-500/20 text-gray-400 border border-gray-500/30">
-                                        <i class="bi bi-clock mr-1"></i>Belum Ada
-                                    </span>
-                                @endif
-                            </div>
-
-                            <!-- Meeting Details -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-400">
-                                <div class="flex items-center">
-                                    <i class="bi bi-calendar2 text-yellow-400 mr-2 flex-shrink-0"></i>
-                                    <span>{{ $r->tgl_pertemuan ? \Carbon\Carbon::parse($r->tgl_pertemuan)->translatedFormat('d F Y') : 'Belum ditentukan' }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="bi bi-book text-blue-400 mr-2 flex-shrink-0"></i>
-                                    <span class="line-clamp-1">{{ $r->materi ? Str::limit($r->materi, 50, '...') : 'Belum ada materi' }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="bi bi-people-fill text-sky-400 mr-2 flex-shrink-0"></i>
-                                    <span>{{ $r->absensis()->count() ?? 0 }} peserta hadir</span>
-                                </div>
-                            </div>
-
-                            <!-- Catatan Preview -->
-                            @if($r->catatan)
-                            <div class="mt-3 pt-3 border-t border-gray-700">
-                                <p class="text-xs text-gray-500 mb-1 font-semibold">Catatan</p>
-                                <p class="text-gray-300 text-sm line-clamp-1">{{ $r->catatan }}</p>
-                            </div>
-                            @endif
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="flex-shrink-0 ml-4">
-                            <button onclick="event.stopPropagation(); showRisalah({{ $r->id }})" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors group-hover:scale-110">
-                                <i class="bi bi-eye text-xl"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Download Link -->
-                    @if($r->dokumen)
-                    <div class="mt-4 pt-4 border-t border-gray-700">
-                        <a href="{{ route('instruktur.risalah.download', $r->id) }}" class="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors text-sm font-semibold" onclick="event.stopPropagation();" target="_blank">
-                            <i class="bi bi-download mr-2"></i>
-                            Download Dokumen
-                        </a>
-                    </div>
+        @if ($risalahs->isEmpty())
+            <div class="bk-empty">
+                <span class="bk-empty__icon"><i class="bi bi-journal" aria-hidden="true"></i></span>
+                <h3>{{ request('search') ? 'Tidak ada risalah yang cocok' : 'Belum ada risalah' }}</h3>
+                <p>
+                    @if (request('search'))
+                        Coba kata kunci lain, atau bersihkan pencarian untuk melihat seluruh pertemuan.
+                    @else
+                        Pengajar menambahkan catatan pertemuan setelah kelas berlangsung.
                     @endif
-                </div>
-                @endforeach
-            </div>
-        @else
-            <!-- Empty State -->
-            <div class="text-center py-20">
-                <div class="inline-flex items-center justify-center h-24 w-24 bg-gray-700/50 rounded-full mb-6">
-                    <i class="bi bi-inbox text-4xl text-gray-400"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-white mb-2">Belum Ada Risalah</h2>
-                <p class="text-gray-400">Instruktur akan menambahkan risalah pertemuan setelah setiap sesi pembelajaran.</p>
-            </div>
-        @endif
-    </div>
-</div>
-
-<!-- MODAL CONTAINER -->
-@if($risalahs && count($risalahs) > 0)
-@foreach($risalahs as $r)
-<div id="risalahModal{{ $r->id }}" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="if(event.target === this) closeRisalah({{ $r->id }})">
-    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl max-w-2xl w-full border border-gray-700 animate-fade-in-up">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-700">
-            <h3 class="text-2xl font-bold text-white">
-                <i class="bi bi-file-earmark mr-2 text-yellow-400"></i>Risalah Pertemuan {{ $r->pertemuan_ke }}
-            </h3>
-            <button onclick="closeRisalah({{ $r->id }})" class="text-gray-400 hover:text-white text-2xl transition-colors">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-6 max-h-96 overflow-y-auto space-y-6">
-            <!-- Kursus -->
-            <div class="pb-4 border-b border-gray-700">
-                <p class="text-gray-400 text-sm mb-1 font-semibold">Kursus</p>
-                <p class="text-white text-lg font-semibold">{{ $kursus->nama }}</p>
-            </div>
-
-            <!-- Pertemuan Ke -->
-            <div class="pb-4 border-b border-gray-700">
-                <p class="text-gray-400 text-sm mb-1 font-semibold">Pertemuan Ke-</p>
-                <p class="text-white text-lg font-semibold">{{ $r->pertemuan_ke }}</p>
-            </div>
-
-            <!-- Tanggal -->
-            <div class="pb-4 border-b border-gray-700">
-                <p class="text-yellow-400 text-sm mb-2 font-semibold">Tanggal Pertemuan</p>
-                <p class="text-white text-lg">
-                    {{ $r->tgl_pertemuan ? \Carbon\Carbon::parse($r->tgl_pertemuan)->translatedFormat('d F Y') : 'Belum ditentukan' }}
                 </p>
             </div>
+        @else
+            <table class="bk-table">
+                <thead>
+                    <tr>
+                        <th class="nw">Pertemuan</th>
+                        <th class="nw">Tanggal</th>
+                        <th>Materi</th>
+                        <th class="r nw">Hadir</th>
+                        <th class="r nw">Rincian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($risalahs as $r)
+                        <tr>
+                            <td class="nw"><b class="bk-num">{{ $r->pertemuan_ke }}</b></td>
+                            <td class="nw">{{ $r->tgl_pertemuan?->translatedFormat('j M Y') ?? '—' }}</td>
+                            <td>
+                                @if ($r->materi)
+                                    {{ \Illuminate\Support\Str::limit($r->materi, 70) }}
+                                @else
+                                    <span class="bk-muted">Belum dicatat</span>
+                                @endif
+                            </td>
+                            <td class="r nw bk-num">{{ $r->jumlah_hadir }}</td>
+                            <td class="r nw">
+                                @if ($r->dokumen)
+                                    <a href="{{ route('instruktur.risalah.download', $r) }}" class="bk-iconbtn"
+                                       title="Unduh dokumen pertemuan {{ $r->pertemuan_ke }}">
+                                        <i class="bi bi-download" aria-hidden="true"></i>
+                                        <span class="bk-sr">Unduh dokumen pertemuan {{ $r->pertemuan_ke }}</span>
+                                    </a>
+                                @endif
+                                <button type="button" class="bk-iconbtn"
+                                        title="Lihat rincian pertemuan {{ $r->pertemuan_ke }}"
+                                        @click="buka({{ Js::from([
+                                            'pertemuan' => $r->pertemuan_ke,
+                                            'tanggal' => $r->tgl_pertemuan?->translatedFormat('j F Y') ?? 'Belum ditentukan',
+                                            'materi' => $r->materi,
+                                            'catatan' => $r->catatan,
+                                            'hadir' => $r->jumlah_hadir,
+                                            'dokumen' => $r->dokumen ? route('instruktur.risalah.download', $r) : null,
+                                        ]) }})">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                    <span class="bk-sr">Lihat rincian pertemuan {{ $r->pertemuan_ke }}</span>
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </section>
 
-            <!-- Materi -->
-            <div class="pb-4 border-b border-gray-700">
-                <p class="text-blue-400 text-sm mb-2 font-semibold">Materi Pembelajaran</p>
-                @if($r->materi)
-                    <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-gray-300 text-sm">
-                        {{ $r->materi }}
-                    </div>
-                @else
-                    <p class="text-gray-400 italic">Belum ada materi</p>
-                @endif
-            </div>
-
-            <!-- Catatan -->
-            <div class="pb-4 border-b border-gray-700">
-                <p class="text-green-400 text-sm mb-2 font-semibold">Catatan</p>
-                @if($r->catatan)
-                    <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-gray-300 text-sm">
-                        {{ $r->catatan }}
-                    </div>
-                @else
-                    <p class="text-gray-400 italic">Tidak ada catatan</p>
-                @endif
-            </div>
-
-            <!-- Peserta Hadir -->
-            <div>
-                <p class="text-indigo-400 text-sm mb-2 font-semibold">Jumlah Peserta Hadir</p>
-                <div class="inline-flex items-center px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30 font-semibold">
-                    <i class="bi bi-people-fill mr-2"></i>
-                    <span>{{ $r->absensis()->count() ?? 0 }} peserta</span>
+    <div x-cloak x-show="tampil" class="bk-modal" @keydown.escape.window="tutup()">
+        <div class="bk-modal__box" @click.outside="tutup()">
+            <div class="bk-modal__head">
+                <div>
+                    <h2 class="bk-panel__title">Pertemuan <span x-text="isi.pertemuan"></span></h2>
+                    <p class="bk-panel__subtitle" x-text="isi.tanggal"></p>
                 </div>
+                <button type="button" class="bk-iconbtn" @click="tutup()" title="Tutup">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    <span class="bk-sr">Tutup</span>
+                </button>
             </div>
-        </div>
 
-        <!-- Modal Footer -->
-        <div class="flex items-center justify-between p-6 border-t border-gray-700 bg-gray-900/50">
-            @if($r->dokumen)
-                <a href="{{ route('instruktur.risalah.download', $r->id) }}" class="flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-200" target="_blank">
-                    <i class="bi bi-download mr-2"></i>Download Dokumen
-                </a>
-            @else
-                <div></div>
-            @endif
-            <button onclick="closeRisalah({{ $r->id }})" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors duration-200">
-                Tutup
-            </button>
+            <div class="bk-modal__body">
+                <dl class="bk-facts">
+                    <div><dt>Kelas</dt><dd>{{ $kursus->nama }}</dd></div>
+                    <div><dt>Peserta hadir</dt><dd class="bk-num" x-text="isi.hadir"></dd></div>
+                </dl>
+
+                <h3 class="bk-eyebrow">Materi</h3>
+                <p x-text="isi.materi || 'Belum ada materi yang dicatat.'"></p>
+
+                <h3 class="bk-eyebrow">Catatan pengajar</h3>
+                <p x-text="isi.catatan || 'Tidak ada catatan.'"></p>
+            </div>
+
+            <div class="bk-modal__foot">
+                <template x-if="isi.dokumen">
+                    <a :href="isi.dokumen" class="bk-linkbtn">
+                        <i class="bi bi-download" aria-hidden="true"></i> Unduh dokumen
+                    </a>
+                </template>
+                <template x-if="! isi.dokumen">
+                    <span class="bk-muted">Tidak ada dokumen terlampir.</span>
+                </template>
+                <button type="button" class="bk-btn bk-btn--sm" @click="tutup()">Tutup</button>
+            </div>
         </div>
     </div>
 </div>
-@endforeach
-@endif
+@endsection
 
+@section('scripts')
 <script>
-function showRisalah(id) {
-    const modal = document.getElementById('risalahModal' + id);
-    if (modal) {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+    function risalahKelas() {
+        return {
+            tampil: false,
+            isi: { pertemuan: '', tanggal: '', materi: '', catatan: '', hadir: 0, dokumen: null },
+            buka(data) {
+                this.isi = data;
+                this.tampil = true;
+            },
+            tutup() {
+                this.tampil = false;
+            },
+        };
     }
-}
-
-function closeRisalah(id) {
-    const modal = document.getElementById('risalahModal' + id);
-    if (modal) {
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-}
-
-// Close modal on Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('[id^="risalahModal"]').forEach(modal => {
-            modal.classList.add('hidden');
-        });
-        document.body.style.overflow = 'auto';
-    }
-});
 </script>
-
-<style>
-    [id^="risalahModal"] {
-        display: flex !important;
-    }
-</style>
 @endsection

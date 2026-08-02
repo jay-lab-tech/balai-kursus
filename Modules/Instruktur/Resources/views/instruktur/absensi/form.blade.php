@@ -1,33 +1,105 @@
 @extends('instruktur::layouts.master')
 
-@section('title', 'Absensi Pertemuan '.$risalah->pertemuan_ke)
+@section('title', 'Absensi pertemuan '.$risalah->pertemuan_ke)
+@section('page-context', 'Instruktur · '.($risalah->kursus->nama ?? 'Kursus'))
+@section('page-description', $risalah->tgl_pertemuan
+    ? \Carbon\Carbon::parse($risalah->tgl_pertemuan)->translatedFormat('l, j F Y')
+    : 'Tanggal pertemuan belum ditentukan')
 
 @section('content')
-<div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-10">
-    <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <a href="{{ route('instruktur.kursus.show', $risalah->kursus) }}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#526875] transition hover:text-[#0d9488]"><i class="bi bi-arrow-left"></i> Kembali ke kursus</a>
-        <span class="font-mono text-xs uppercase tracking-[.16em] text-[#6c7c82]">Pertemuan / {{ $risalah->pertemuan_ke }}</span>
+
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
     </div>
+@endif
 
-    <header class="border-b border-[#cfc8bb] pb-6"><p class="font-mono text-xs uppercase tracking-[.18em] text-[#0d9488]">Pencatatan kehadiran</p><h2 class="mt-2 text-4xl tracking-tight text-[#173f5f]">Pertemuan {{ $risalah->pertemuan_ke }}</h2><p class="mt-2 text-[#6c7c82]">{{ $risalah->kursus->nama ?? 'Kursus' }} <span class="mx-2 text-[#cfc8bb]">/</span> {{ $risalah->tgl_pertemuan ? \Carbon\Carbon::parse($risalah->tgl_pertemuan)->format('d F Y') : 'Tanggal belum ditentukan' }}</p></header>
+@if (session('error'))
+    <div class="bk-note bk-note--buruk">
+        <i class="bi bi-exclamation-octagon-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
 
-    @if(session('success'))<div class="mt-6 border-l-4 border-[#0d9488] bg-[#dff2ef] px-4 py-3 text-sm font-semibold text-[#0f766e]">{{ session('success') }}</div>@endif
-    @if($errors->any())<div class="mt-6 border-l-4 border-[#a84a2a] bg-[#f8e5d8] px-4 py-3 text-sm text-[#8a3b22]"><p class="font-semibold">Periksa kembali data absensi.</p><ul class="mt-1 list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
-
-    <form method="POST" class="mt-8 overflow-hidden border border-[#cfc8bb] bg-[#fffefa]">
-        @csrf
-        <div class="flex flex-col gap-3 border-b border-[#cfc8bb] bg-[#f5f2ea] px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><div><h3 class="text-xl text-[#173f5f]">Daftar peserta</h3><p class="mt-1 text-sm text-[#6c7c82]">Pilih status kehadiran untuk setiap peserta.</p></div><span class="font-mono text-sm text-[#a84a2a]">{{ $pendaftaran->count() }} peserta</span></div>
-        <div class="divide-y divide-[#e5e0d6]">
-            @foreach($pendaftaran as $p)
-                @php $current = $risalah->absensis()->where('pendaftaran_id', $p->id)->value('status'); @endphp
-                <div class="grid gap-4 px-5 py-4 md:grid-cols-[3rem_minmax(0,1fr)_14rem] md:items-center">
-                    <span class="font-mono text-sm text-[#a84a2a]">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
-                    <div><p class="font-semibold text-[#173f5f]">{{ $p->peserta->user->name }}</p><p class="mt-1 text-xs text-[#6c7c82]">{{ $p->peserta->nomor_peserta ?? 'Nomor peserta belum tersedia' }}</p></div>
-                    <label class="sr-only" for="absen-{{ $p->id }}">Status {{ $p->peserta->user->name }}</label><select id="absen-{{ $p->id }}" class="w-full border border-[#cfc8bb] bg-white px-3 py-2.5 text-sm text-[#173f5f] focus:border-[#0d9488] focus:outline-none" name="absen[{{ $p->id }}]" required><option value="">Pilih status</option><option value="H" @selected($current === 'H')>Hadir</option><option value="S" @selected($current === 'S')>Sakit</option><option value="I" @selected($current === 'I')>Izin</option><option value="A" @selected($current === 'A')>Alpha</option></select>
-                </div>
-            @endforeach
+@if ($errors->any())
+    <div class="bk-note bk-note--perlu">
+        <i class="bi bi-exclamation-triangle-fill bk-note__icon" aria-hidden="true"></i>
+        <div>
+            <b>Periksa kembali data absensi.</b>
+            <ul>
+                @foreach ($errors->all() as $pesan)
+                    <li>{{ $pesan }}</li>
+                @endforeach
+            </ul>
         </div>
-        <div class="flex flex-wrap justify-end gap-3 border-t border-[#cfc8bb] bg-[#f5f2ea] px-5 py-4"><a href="{{ route('instruktur.kursus.show', $risalah->kursus) }}" class="inline-flex items-center gap-2 border border-[#cfc8bb] bg-[#fffefa] px-4 py-2.5 text-sm font-semibold text-[#526875]">Batal</a><button type="submit" class="inline-flex items-center gap-2 bg-[#0d9488] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f766e]"><i class="bi bi-check2"></i>Simpan absensi</button></div>
-    </form>
-</div>
+    </div>
+@endif
+
+{{-- Aksi form dulu dikosongkan sehingga bergantung pada URL halaman saat ini;
+     rutenya kebetulan sama, tapi jadi diam-diam rapuh. Sekarang ditulis tegas. --}}
+<form method="POST" action="{{ route('instruktur.absensi.store', $risalah) }}">
+    @csrf
+
+    <section class="bk-panel">
+        <div class="bk-panel__head">
+            <div>
+                <h2 class="bk-panel__title">Kehadiran pertemuan {{ $risalah->pertemuan_ke }}</h2>
+                <p class="bk-panel__subtitle">Pilih status setiap peserta, lalu simpan sekali di bawah.</p>
+            </div>
+            <span class="bk-chip">{{ $pendaftaran->count() }} peserta</span>
+        </div>
+
+        @if ($pendaftaran->isEmpty())
+            <div class="bk-empty">
+                <span class="bk-empty__icon"><i class="bi bi-person-x" aria-hidden="true"></i></span>
+                <h3>Belum ada peserta</h3>
+                <p>Kelas ini belum memiliki peserta terdaftar, jadi belum ada kehadiran yang bisa dicatat.</p>
+            </div>
+        @else
+            <table class="bk-table is-padat">
+                <thead>
+                    <tr>
+                        <th class="r">No</th>
+                        <th>Peserta</th>
+                        <th class="nw">Status kehadiran</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($pendaftaran as $p)
+                        @php $terpilih = old("absen.{$p->id}", $statusTersimpan[$p->id] ?? ''); @endphp
+                        <tr>
+                            <td class="r">{{ $loop->iteration }}</td>
+                            <td>
+                                <b>{{ $p->peserta->user->name ?? 'Peserta tanpa nama' }}</b><br>
+                                <span class="bk-muted bk-code">{{ $p->peserta->nomor_peserta ?? $p->nomor }}</span>
+                            </td>
+                            <td class="nw">
+                                <label class="bk-sr" for="absen-{{ $p->id }}">
+                                    Status kehadiran {{ $p->peserta->user->name ?? 'peserta' }}
+                                </label>
+                                <select id="absen-{{ $p->id }}" name="absen[{{ $p->id }}]" class="bk-select" required>
+                                    <option value="">Pilih status</option>
+                                    @foreach (\App\Models\Absensi::LABEL_STATUS as $kode => $label)
+                                        <option value="{{ $kode }}" @selected($terpilih === $kode)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <div class="bk-panel__foot">
+                <span>Menyimpan akan menimpa kehadiran yang sudah tercatat untuk pertemuan ini.</span>
+                <span class="bk-row">
+                    <a href="{{ route('instruktur.kursus.show', $risalah->kursus) }}" class="bk-btn bk-btn--sm">Batal</a>
+                    <button type="submit" class="bk-btn bk-btn--pri bk-btn--sm">
+                        <i class="bi bi-check2" aria-hidden="true"></i> Simpan absensi
+                    </button>
+                </span>
+            </div>
+        @endif
+    </section>
+</form>
 @endsection
