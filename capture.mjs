@@ -41,12 +41,17 @@ const FIGS = [
   ['Tampilan Dashboard Peserta', 'peserta', '/peserta/dashboard'],
   ['Tampilan Daftar Program', 'peserta', '/peserta/program'],
   ['Tampilan Detail dan Pendaftaran Program', 'peserta', '/peserta/program/1'],
-  ['Tampilan Daftar Kursus', 'peserta', '/peserta/kursus'],
+  // Katalog kelas untuk peserta sudah dihapus: peserta mendaftar ke program,
+  // lalu admin menempatkannya ke level dan kelas setelah tes. Gambar lamanya
+  // pun sebenarnya menampilkan Daftar Program, yang sudah punya entri sendiri.
   ['Tampilan Kursus Saya', 'peserta', '/peserta/kursus/saya'],
   // Id kelas ikut berubah setiap kali data di-seed ulang, jadi alamatnya
   // diambil dari halaman "Kursus Saya" saat capture berjalan.
   ['Tampilan Detail Kursus dan Risalah', 'peserta', { resolveFrom: '/peserta/kursus/saya', linkPattern: '/detail' }],
   ['Tampilan Daftar Pendaftaran Peserta', 'peserta', '/peserta/pendaftaran'],
+  // Tidak ada halaman khusus "pembayaran berhasil"; yang dilihat peserta adalah
+  // daftar pendaftaran dengan pesan kilat. Dipicu lewat rute bantuan lokal.
+  ['Tampilan Status Pembayaran Berhasil', 'peserta', '/dokumentasi/pembayaran-berhasil'],
   ['Tampilan Riwayat Pembayaran', 'peserta', '/peserta/riwayat-pembayaran'],
   ['Tampilan Profil Peserta', 'peserta', '/profile'],
   ['Tampilan Daftar dan Unduh Sertifikat Peserta', 'peserta', '/profile/certificates'],
