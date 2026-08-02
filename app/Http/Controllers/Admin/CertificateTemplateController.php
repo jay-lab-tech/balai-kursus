@@ -12,7 +12,11 @@ class CertificateTemplateController extends Controller
     {
         $templates = CertificateTemplate::withCount('certificates')->latest()->paginate(10);
 
-        return view('admin.certificate-templates.index', compact('templates'));
+        // Daftarnya dipaginasi, jadi keberadaan template aktif tidak bisa
+        // disimpulkan dari halaman yang kebetulan sedang tampil.
+        $adaTemplateAktif = CertificateTemplate::active()->exists();
+
+        return view('admin.certificate-templates.index', compact('templates', 'adaTemplateAktif'));
     }
 
     public function create()
@@ -53,8 +57,17 @@ class CertificateTemplateController extends Controller
 
     public function destroy(CertificateTemplate $template)
     {
+        // Dua penolakan ini sebelumnya dikirim lewat flash 'success', jadi
+        // tampil sebagai kabar baik padahal templatenya tidak jadi dihapus.
         if ($template->is_active) {
-            return back()->with('success', 'Template aktif tidak bisa dihapus sebelum ada template aktif pengganti.');
+            return back()->with('error', 'Template aktif tidak bisa dihapus sebelum ada template aktif pengganti.');
+        }
+
+        // Kolom template_id memakai nullOnDelete, jadi menghapus template yang
+        // sudah dipakai akan memutus sertifikat terbit dari logo, latar, dan
+        // tanda tangannya — PDF-nya tetap tergenerate tapi tanpa aset resmi.
+        if ($template->certificates()->exists()) {
+            return back()->with('error', 'Template ini sudah dipakai sertifikat yang terbit, jadi tidak bisa dihapus. Nonaktifkan saja supaya tidak terpakai lagi.');
         }
 
         $template->delete();

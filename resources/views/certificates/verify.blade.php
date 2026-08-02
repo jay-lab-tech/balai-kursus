@@ -50,7 +50,8 @@
                 </div>
                 <div>
                     <dt>Program</dt>
-                    <dd>{{ $certificate->program_name_snapshot ?? optional($certificate->course->program)->nama_program ?? '-' }}</dd>
+                    {{-- Kolomnya bernama nama, bukan nama_program; cadangan ini dulu selalu kosong. --}}
+                    <dd>{{ $certificate->program_name_snapshot ?? $certificate->course->program->nama ?? '-' }}</dd>
                 </div>
                 <div>
                     <dt>Kursus</dt>

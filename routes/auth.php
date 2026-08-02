@@ -47,7 +47,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Rute hapus akun bawaan Breeze sengaja tidak dipasang. pesertas.user_id
+    // dan instrukturs.user_id memakai cascadeOnDelete, jadi satu klik akan
+    // ikut menghapus pendaftaran, absensi, nilai, dan sertifikat orang itu.
+    // Penonaktifan akun adalah wewenang admin, bukan swalayan.
 
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');

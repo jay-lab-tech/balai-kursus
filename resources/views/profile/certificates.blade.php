@@ -1,24 +1,81 @@
-@extends('profile.layout')
+@extends('peserta::layouts.student')
+
+@section('title', 'Sertifikat saya')
+@section('page-context', 'Peserta · Sertifikat')
+@section('page-description', 'Sertifikat yang sudah diterbitkan admin untuk kelas yang Anda selesaikan.')
 
 @section('content')
-<div class="max-w-5xl mx-auto mt-8">
-    <h2 class="text-2xl font-bold mb-6">Sertifikat Saya</h2>
-    @if($certificates->isEmpty())
-        <div class="text-gray-600">Belum ada sertifikat yang diterbitkan.</div>
-    @else
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach($certificates as $certificate)
-        <div class="bg-white rounded shadow p-4 flex flex-col">
-            <div class="mb-2 font-semibold">{{ $certificate->certificate_name }}</div>
-            <div class="text-sm text-gray-500 mb-2">Kursus: {{ $certificate->course->nama ?? '-' }}</div>
-            <div class="text-sm text-gray-500 mb-2">Diterbitkan: {{ $certificate->created_at->format('d M Y') }}</div>
-            <div class="flex space-x-2 mt-2">
-                <a href="{{ route('profile.certificate.detail', $certificate->id) }}" class="bg-yellow-500 text-black px-3 py-2 rounded text-center font-semibold">Detail</a>
-                <a href="{{ route('profile.certificate.download', $certificate->id) }}" class="bg-blue-600 text-white px-3 py-2 rounded text-center font-semibold">Download PDF</a>
+
+<div class="bk-panel__head" style="border:0;padding-left:0;padding-right:0">
+    <div>
+        <h1 class="bk-panel__title">Sertifikat saya</h1>
+        <p class="bk-panel__subtitle">Hanya sertifikat berstatus terbit yang muncul di sini; yang masih draf belum bisa diunduh.</p>
+    </div>
+    <a href="{{ route('peserta.kursus.saya') }}" class="bk-btn bk-btn--sm">
+        <i class="bi bi-journal-bookmark" aria-hidden="true"></i> Kelas saya
+    </a>
+</div>
+
+@if ($certificates->isEmpty())
+    <section class="bk-panel">
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-patch-check" aria-hidden="true"></i></span>
+            <h3>Belum ada sertifikat</h3>
+            <p>Sertifikat terbit setelah kelas Anda dinyatakan selesai dan admin menerbitkannya.</p>
+            <a href="{{ route('peserta.kursus.saya') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                <i class="bi bi-arrow-right" aria-hidden="true"></i> Lihat kelas saya
+            </a>
+        </div>
+    </section>
+@else
+    <section class="bk-panel">
+        <div class="bk-panel__head">
+            <div>
+                <h2 class="bk-panel__title">{{ $certificates->count() }} sertifikat terbit</h2>
+                <p class="bk-panel__subtitle">Nomor seri di bawah bisa dipakai siapa pun untuk memeriksa keaslian lewat halaman verifikasi.</p>
             </div>
         </div>
-        @endforeach
-    </div>
-    @endif
-</div>
+
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th>Sertifikat</th>
+                    <th>Kelas</th>
+                    <th class="nw">Terbit</th>
+                    <th class="r nw">Tindakan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($certificates as $certificate)
+                    <tr>
+                        <td>
+                            <b>{{ $certificate->certificate_name }}</b>
+                            @if ($certificate->serial_number)
+                                <br><span class="bk-code">{{ $certificate->serial_number }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            {{ $certificate->course_name_snapshot ?? $certificate->course->nama ?? 'Kelas sudah dihapus' }}
+                            @if ($nama = $certificate->program_name_snapshot ?? $certificate->course->program->nama ?? null)
+                                <br><span class="bk-muted">{{ $nama }}</span>
+                            @endif
+                        </td>
+                        <td class="nw">
+                            {{-- issued_date diisi saat penerbitan; created_at hanya cadangan untuk data lama. --}}
+                            {{ ($certificate->issued_date ?? $certificate->created_at)?->translatedFormat('j M Y') ?? '-' }}
+                        </td>
+                        <td class="r nw">
+                            <a href="{{ route('profile.certificate.detail', $certificate->id) }}" class="bk-btn bk-btn--sm">
+                                <i class="bi bi-eye" aria-hidden="true"></i> Rincian
+                            </a>
+                            <a href="{{ route('profile.certificate.download', $certificate->id) }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                                <i class="bi bi-download" aria-hidden="true"></i> PDF
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </section>
+@endif
 @endsection

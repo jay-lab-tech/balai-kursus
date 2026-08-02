@@ -15,9 +15,22 @@ class CertificateController extends Controller
 {
     public function index()
     {
-        $certificates = Certificate::with(['course.program', 'participant.user', 'template'])->latest()->get();
+        // Sebelumnya seluruh sertifikat ditarik sekaligus dan hitungan
+        // statusnya dihitung ulang di view dengan memfilter koleksi. Daftarnya
+        // tumbuh terus seiring angkatan, jadi sekarang dipaginasi dan
+        // hitungannya diambil lewat satu kueri agregat.
+        $certificates = Certificate::with(['course.program', 'participant.user', 'template'])
+            ->latest()
+            ->paginate(20);
 
-        return view('admin.certificates.index', compact('certificates'));
+        $jumlahStatus = Certificate::query()
+            ->selectRaw('status, COUNT(*) as jumlah')
+            ->groupBy('status')
+            ->pluck('jumlah', 'status');
+
+        $activeTemplate = CertificateTemplate::active()->first();
+
+        return view('admin.certificates.index', compact('certificates', 'jumlahStatus', 'activeTemplate'));
     }
 
     /**
@@ -209,7 +222,9 @@ class CertificateController extends Controller
 
     public function edit($id)
     {
-        $certificate = Certificate::findOrFail($id);
+        // Peserta dan template ikut ditarik: keduanya ditampilkan di form
+        // sebagai pilihan awal sebelum daftar peserta dimuat lewat fetch.
+        $certificate = Certificate::with(['participant.user', 'template'])->findOrFail($id);
         $courses = Kursus::with('program')->orderBy('nama')->get();
         $activeTemplate = CertificateTemplate::active()->first();
 
