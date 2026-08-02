@@ -1,52 +1,61 @@
 @extends('layouts.admin')
 
 @section('title', 'Risalah Kelas')
-
-@section('page-title', 'Risalah Kelas')
-
-@section('page-description', 'Pantau dokumentasi materi per pertemuan untuk kelas yang sedang ditinjau.')
+@section('page-context', 'Akademik · Kelas ' . $kursus->nama)
+@section('page-title', 'Risalah kelas')
+@section('page-description', ($kursus->program->nama ?? 'Program') . ' · ' . ($kursus->level->nama ?? 'Level') . ' — catatan materi tiap pertemuan yang diisi instruktur.')
 
 @section('content')
-<div class="space-y-8">
-    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300"><i class="bi bi-journal-richtext text-sky-400"></i>Risalah Per Kelas</div>
-                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">{{ $kursus->nama }}</h1>
-                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Semua dokumentasi materi, tanggal pertemuan, dan instruktur untuk kelas ini terkumpul dalam satu tampilan.</p>
-            </div>
-            <div class="flex flex-wrap gap-3"><a href="{{ route('admin.kursus.index') }}" class="admin-btn admin-btn-secondary"><i class="bi bi-arrow-left"></i>Kembali ke Kelas</a></div>
-        </div>
 
-        <div class="mt-6 grid gap-4 md:grid-cols-2">
-            <article class="admin-stat-card"><span class="admin-stat-card__label">Total Risalah</span><div class="admin-stat-card__value">{{ $risalahs->count() }}</div><p class="admin-stat-card__hint">Jumlah risalah yang sudah terdokumentasi untuk kelas ini.</p></article>
-            <article class="admin-stat-card"><span class="admin-stat-card__label">Kelas Aktif</span><div class="text-base font-semibold leading-7 text-white">{{ $kursus->nama }}</div><p class="mt-3 text-sm text-slate-300">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p></article>
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar risalah</h2>
+            <p class="bk-panel__subtitle">{{ $risalahs->total() }} pertemuan terdokumentasi untuk kelas ini.</p>
         </div>
-    </section>
-
-    <section class="admin-panel overflow-hidden rounded-[2rem]">
-        <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-white"><i class="bi bi-journal-bookmark-fill mr-3 text-yellow-300"></i>Daftar Risalah</h2>
-                <p class="mt-2 text-slate-400">Menampilkan pertemuan, tanggal, instruktur, dan materi yang diajarkan.</p>
-            </div>
-            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">{{ $risalahs->count() }} risalah</span>
+        <div class="bk-row">
+            <a href="{{ route('admin.kursus.absensi', $kursus) }}" class="bk-btn bk-btn--sm">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i> Absensi kelas
+            </a>
+            <a href="{{ route('admin.kursus.index') }}" class="bk-btn bk-btn--sm">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Daftar kelas
+            </a>
         </div>
+    </div>
 
-        @if($risalahs->isEmpty())
-            <div class="admin-empty-state"><div class="admin-empty-state__icon"><i class="bi bi-journal-x"></i></div><h3>Belum ada risalah</h3><p>Dokumentasi materi akan muncul di sini setelah instruktur mengisi risalah pertemuan.</p></div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead><tr><th>Pertemuan</th><th>Tanggal</th><th>Instruktur</th><th>Materi</th></tr></thead>
-                    <tbody>
-                        @foreach($risalahs as $r)
-                            <tr><td>{{ $r->pertemuan_ke }}</td><td>{{ $r->tgl_pertemuan->format('d M Y') }}</td><td>{{ $r->instruktur->nama_instr }}</td><td>{{ $r->materi }}</td></tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+    @if ($risalahs->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-journal-text" aria-hidden="true"></i></span>
+            <h3>Belum ada risalah</h3>
+            <p>Risalah muncul di sini setelah instruktur mengisi catatan pertemuan kelas ini.</p>
+        </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th class="r nw">Pertemuan</th>
+                    <th class="nw">Tanggal</th>
+                    <th>Instruktur</th>
+                    <th>Materi</th>
+                    <th class="r nw">Absensi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($risalahs as $risalah)
+                    <tr>
+                        <td class="r nw"><b>{{ $risalah->pertemuan_ke ?? '—' }}</b></td>
+                        <td class="nw">{{ $risalah->tgl_pertemuan?->translatedFormat('j M Y') ?? '—' }}</td>
+                        <td>{{ $risalah->instruktur->nama_instr ?? '—' }}</td>
+                        <td>{{ $risalah->materi ?: '—' }}</td>
+                        <td class="r nw">{{ $risalah->absensis_count }} peserta</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        @if ($risalahs->hasPages())
+            <div class="bk-panel__foot">{{ $risalahs->links() }}</div>
         @endif
-    </section>
-</div>
+    @endif
+</section>
 @endsection

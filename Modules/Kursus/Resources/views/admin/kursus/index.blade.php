@@ -1,29 +1,134 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Kelas')
-@section('page-title', 'Manajemen Kelas')
-@section('page-description', 'Kelola kelas program, kuota, jadwal, dan peserta dalam satu daftar operasional.')
+@section('title', 'Kelas Program')
+@section('page-context', 'Akademik · Kelas Program')
+@section('page-title', 'Kelas program')
+@section('page-description', 'Satu kelas adalah gabungan program, level, dan periode — tempat peserta ditempatkan setelah lulus tes.')
 
 @section('content')
-<div class="space-y-7">
-    <header class="flex flex-col gap-5 border-b border-[#cfc8bb] pb-6 lg:flex-row lg:items-end lg:justify-between">
-        <div><p class="font-mono text-xs uppercase tracking-[.18em] text-[#0d9488]">Akademik / Kelas program</p><h1 class="mt-2 text-4xl tracking-tight text-[#173f5f]">Kelas yang sedang dikelola</h1><p class="mt-3 max-w-2xl text-sm leading-6 text-[#6c7c82]">Pantau penempatan peserta, kapasitas, periode, dan instruktur dari satu halaman kerja.</p></div>
-        <div class="flex flex-wrap gap-2"><a href="{{ route('admin.jadwal.all') }}" class="admin-btn admin-btn-secondary"><i class="bi bi-calendar3"></i>Jadwal</a><a href="{{ route('admin.kursus.create') }}" class="admin-btn admin-btn-primary"><i class="bi bi-plus-lg"></i>Tambah kelas</a></div>
-    </header>
 
-    @if(session('success'))<div class="admin-alert border-l-4 border-[#0d9488] bg-[#dff2ef] text-[#0f766e]"><i class="bi bi-check-circle"></i><div><p class="font-semibold">Perubahan berhasil disimpan</p><p class="mt-1 text-sm">{{ session('success') }}</p></div></div>@endif
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
 
-    <section class="grid gap-4 sm:grid-cols-3" aria-label="Ringkasan kelas"><div class="border border-[#cfc8bb] bg-[#fffefa] p-5"><p class="font-mono text-xs uppercase tracking-[.15em] text-[#6c7c82]">Total kelas</p><p class="mt-2 text-3xl font-semibold text-[#173f5f]">{{ $kursus->total() }}</p><p class="mt-1 text-sm text-[#6c7c82]">Seluruh kelas program</p></div><div class="border border-[#cfc8bb] bg-[#fffefa] p-5"><p class="font-mono text-xs uppercase tracking-[.15em] text-[#6c7c82]">Halaman</p><p class="mt-2 text-3xl font-semibold text-[#173f5f]">{{ $kursus->currentPage() }}</p><p class="mt-1 text-sm text-[#6c7c82]">Dari daftar berhalaman</p></div><div class="border border-[#cfc8bb] bg-[#fffefa] p-5"><p class="font-mono text-xs uppercase tracking-[.15em] text-[#6c7c82]">Per halaman</p><p class="mt-2 text-3xl font-semibold text-[#173f5f]">{{ $kursus->perPage() }}</p><p class="mt-1 text-sm text-[#6c7c82]">Baris data ditampilkan</p></div></section>
+@php
+    $terisi = $kursus->sum('pendaftarans_count');
+    $kapasitas = $kursus->sum('kuota');
+    $penuh = $kursus->filter(fn ($item) => $item->pendaftarans_count >= $item->kuota)->count();
+@endphp
 
-    <section class="admin-panel overflow-hidden">
-        <div class="flex flex-col gap-2 border-b border-[#cfc8bb] px-5 py-4 sm:flex-row sm:items-end sm:justify-between"><div><p class="font-mono text-xs uppercase tracking-[.15em] text-[#0d9488]">Daftar kerja</p><h2 class="mt-1 text-2xl text-[#173f5f]">Semua kelas</h2></div><span class="text-sm text-[#6c7c82]">{{ $kursus->total() }} kelas ditemukan</span></div>
-        @if($kursus->isEmpty())<div class="px-6 py-16 text-center"><i class="bi bi-book text-3xl text-[#0d9488]"></i><h3 class="mt-3 text-xl text-[#173f5f]">Belum ada kelas program</h3><p class="mt-2 text-sm text-[#6c7c82]">Tambahkan kelas untuk mulai menempatkan peserta.</p></div>@else
-            <div class="overflow-x-auto"><table class="admin-table"><thead><tr><th>Kelas</th><th>Program / Level</th><th>Periode</th><th>Peserta</th><th>Status</th><th>Aksi</th></tr></thead><tbody>
-                @foreach($kursus as $kelas)
-                    <tr><td><p class="font-semibold text-[#173f5f]">{{ $kelas->nama }}</p><p class="mt-1 text-sm text-[#6c7c82]">Rp {{ number_format($kelas->harga, 0, ',', '.') }}</p></td><td><p class="text-sm text-[#1e2d36]">{{ $kelas->program->nama ?? '-' }}</p><p class="mt-1 text-xs text-[#6c7c82]">{{ $kelas->level->nama ?? '-' }}</p></td><td class="text-sm text-[#526875]">{{ $kelas->periode ?? '-' }}</td><td><span class="font-semibold text-[#173f5f]">{{ $kelas->pendaftarans_count }}</span><span class="text-[#6c7c82]"> / {{ $kelas->kuota }}</span></td><td><span class="admin-badge {{ $kelas->status === 'buka' ? 'admin-badge-info' : ($kelas->status === 'berjalan' ? 'admin-badge-warning' : 'admin-badge-muted') }}">{{ ucfirst($kelas->status) }}</span></td><td><div class="flex flex-wrap gap-2"><a href="{{ route('admin.kursus.edit', $kelas) }}" class="admin-btn admin-btn-secondary admin-btn-sm"><i class="bi bi-pencil"></i>Edit</a><a href="{{ route('admin.kursus.peserta', $kelas) }}" class="admin-btn admin-btn-secondary admin-btn-sm"><i class="bi bi-people"></i>Peserta</a><form action="{{ route('admin.kursus.destroy', $kelas) }}" method="POST" onsubmit="return confirm('Hapus kelas ini?')">@csrf @method('DELETE')<button type="submit" class="admin-btn admin-btn-danger admin-btn-sm"><i class="bi bi-trash"></i>Hapus</button></form></div></td></tr>
-                @endforeach
-            </tbody></table></div><div class="border-t border-[#cfc8bb] px-5 py-4">{{ $kursus->links() }}</div>
-        @endif
-    </section>
+<div class="bk-stats bk-stats--3">
+    <article class="bk-stat">
+        <span class="bk-stat__icon"><i class="bi bi-mortarboard" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Kelas tercatat</span>
+        <p class="bk-stat__value">{{ $kursus->total() }}</p>
+        <p class="bk-stat__hint">Seluruh kelas program, termasuk yang sudah tutup.</p>
+    </article>
+    <article class="bk-stat bk-stat--amber">
+        <span class="bk-stat__icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Keterisian halaman ini</span>
+        <p class="bk-stat__value">{{ $terisi }}</p>
+        <p class="bk-stat__hint">Peserta terdaftar dari {{ $kapasitas }} kursi yang tersedia.</p>
+    </article>
+    <article class="bk-stat bk-stat--terra">
+        <span class="bk-stat__icon"><i class="bi bi-exclamation-diamond" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Kelas penuh</span>
+        <p class="bk-stat__value">{{ $penuh }}</p>
+        <p class="bk-stat__hint">Sudah mencapai kuota; pendaftar baru perlu kelas lain.</p>
+    </article>
 </div>
+
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar kelas</h2>
+            <p class="bk-panel__subtitle">{{ $kursus->total() }} kelas dikelola. Keterisian dihitung dari pendaftaran yang belum dibatalkan.</p>
+        </div>
+        <div class="bk-row">
+            <a href="{{ route('admin.jadwal.all') }}" class="bk-btn bk-btn--sm">
+                <i class="bi bi-calendar3" aria-hidden="true"></i> Semua jadwal
+            </a>
+            <a href="{{ route('admin.kursus.create') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah kelas
+            </a>
+        </div>
+    </div>
+
+    @if ($kursus->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-mortarboard" aria-hidden="true"></i></span>
+            <h3>Belum ada kelas program</h3>
+            <p>Tambahkan kelas agar peserta yang lulus tes punya tempat untuk ditempatkan.</p>
+            <a href="{{ route('admin.kursus.create') }}" class="bk-btn bk-btn--pri">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah kelas
+            </a>
+        </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th>Kelas</th>
+                    <th>Program / level</th>
+                    <th class="nw">Periode</th>
+                    <th class="r nw">Terisi</th>
+                    <th>Status</th>
+                    <th class="r">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($kursus as $kelas)
+                    <tr>
+                        <td>
+                            <b>{{ $kelas->nama }}</b><br>
+                            <span class="bk-muted">Rp {{ number_format($kelas->harga, 0, ',', '.') }}</span>
+                        </td>
+                        <td>
+                            {{ $kelas->program->nama ?? '—' }}<br>
+                            <span class="bk-muted">{{ $kelas->level->nama ?? 'Tanpa level' }}</span>
+                        </td>
+                        <td class="nw">{{ $kelas->periode ?: '—' }}</td>
+                        <td class="r nw">
+                            <b>{{ $kelas->pendaftarans_count }}</b><span class="bk-muted">/{{ $kelas->kuota }}</span>
+                        </td>
+                        <td>
+                            <span class="bk-tag {{ ['buka' => 'bk-tag--info', 'berjalan' => 'bk-tag--jalan'][$kelas->status] ?? 'bk-tag--diam' }}">
+                                {{ ucfirst($kelas->status) }}
+                            </span>
+                        </td>
+                        <td class="r nw">
+                            <a href="{{ route('admin.kursus.peserta', $kelas) }}" class="bk-iconbtn" title="Peserta {{ $kelas->nama }}">
+                                <i class="bi bi-people" aria-hidden="true"></i>
+                                <span class="bk-sr">Peserta</span>
+                            </a>
+                            <a href="{{ route('admin.jadwal.index', $kelas) }}" class="bk-iconbtn" title="Jadwal {{ $kelas->nama }}">
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                <span class="bk-sr">Jadwal</span>
+                            </a>
+                            <a href="{{ route('admin.kursus.edit', $kelas) }}" class="bk-iconbtn" title="Ubah {{ $kelas->nama }}">
+                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                <span class="bk-sr">Ubah</span>
+                            </a>
+                            <form method="POST" action="{{ route('admin.kursus.destroy', $kelas) }}" style="display:inline"
+                                  onsubmit="return confirm('Hapus kelas {{ $kelas->nama }}? Pendaftaran, jadwal, dan risalahnya ikut terdampak.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bk-iconbtn bk-iconbtn--danger" title="Hapus {{ $kelas->nama }}">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span class="bk-sr">Hapus</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        @if ($kursus->hasPages())
+            <div class="bk-panel__foot">{{ $kursus->links() }}</div>
+        @endif
+    @endif
+</section>
 @endsection

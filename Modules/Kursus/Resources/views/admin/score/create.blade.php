@@ -1,115 +1,31 @@
 @extends('layouts.admin')
 
 @section('title', 'Input Tes Penempatan')
-
-@section('page-title', 'Input Tes Penempatan')
-
-@section('page-description', 'Input hasil placement test dan biarkan sistem menempatkan peserta ke level serta kelas yang paling sesuai.')
+@section('page-context', 'Peserta · Nilai')
+@section('page-title', 'Input hasil tes penempatan')
+@section('page-description', 'Setelah nilai disimpan, sistem langsung menentukan level peserta dan mencarikan kelas yang kuotanya masih tersisa.')
 
 @section('content')
-<div class="space-y-8 max-w-6xl">
-    <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
-        <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-            <i class="bi bi-clipboard-plus-fill text-sky-400"></i>
-            Placement Baru
-        </div>
-        <h1 class="mt-5 text-3xl font-bold text-white">Input hasil tes penempatan peserta.</h1>
-        <p class="mt-3 max-w-3xl text-base leading-7 text-slate-300">Setelah hasil tes disimpan, sistem langsung mencoba menentukan level dan kelas yang sesuai berdasarkan skor akhir serta kuota yang tersedia.</p>
-    </section>
 
-    @if($errors->any())
-        <div class="rounded-[1.5rem] border border-sky-500/20 bg-sky-600/10 px-5 py-4 text-sky-100 shadow-lg">
-            <div class="flex items-start gap-3">
-                <i class="bi bi-exclamation-octagon-fill mt-0.5 text-lg text-sky-300"></i>
-                <div>
-                    <p class="font-semibold">Form belum bisa disimpan</p>
-                    <ul class="mt-2 space-y-1 text-sm text-sky-100/90">
-                        @foreach($errors->all() as $message)
-                            <li>{{ $message }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        </div>
-    @endif
+@if ($errors->any())
+    <div class="bk-note bk-note--buruk">
+        <i class="bi bi-exclamation-triangle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>Ada yang perlu diperbaiki: {{ $errors->first() }}</span>
+    </div>
+@endif
 
-    <form method="POST" action="{{ route('admin.score.store') }}" class="space-y-6">
-        @csrf
+<form method="POST" action="{{ route('admin.score.store') }}">
+    @csrf
 
-        <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
-            <h2 class="text-xl font-bold text-white">Data Pendaftaran</h2>
-            <div class="mt-6">
-                <label for="pendaftaran_id" class="mb-2 block text-sm font-medium text-slate-300">Pendaftaran Program</label>
-                <select id="pendaftaran_id" name="pendaftaran_id" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
-                    <option value="">Pilih pendaftaran</option>
-                    @foreach($pendaftarans as $pendaftaran)
-                        <option value="{{ $pendaftaran->id }}" {{ (string) old('pendaftaran_id', $selectedPendaftaranId) === (string) $pendaftaran->id ? 'selected' : '' }}>
-                            {{ $pendaftaran->nomor }} - {{ $pendaftaran->peserta->user->name ?? '-' }} - {{ $pendaftaran->program->nama ?? '-' }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </section>
+    @include('kursus::admin.score.partials.form')
 
-        <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
-            <h2 class="text-xl font-bold text-white">Komponen Nilai</h2>
-            <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                @foreach(['listening', 'speaking', 'reading', 'writing', 'assignment'] as $field)
-                    <div>
-                        <label for="{{ $field }}" class="mb-2 block text-sm font-medium text-slate-300">{{ ucfirst($field) }}</label>
-                        <input type="number" id="{{ $field }}" name="{{ $field }}" min="0" max="100" value="{{ old($field) }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
-                    </div>
-                @endforeach
-            </div>
-        </section>
-
-        <section class="admin-panel rounded-[2rem] p-6 sm:p-8">
-            <h2 class="text-xl font-bold text-white">Hasil Evaluasi</h2>
-            <div class="mt-6 grid gap-6 md:grid-cols-2">
-                <div>
-                    <label for="final_score" class="mb-2 block text-sm font-medium text-slate-300">Nilai Akhir</label>
-                    <input type="number" step="0.01" id="final_score" name="final_score" min="0" max="100" value="{{ old('final_score') }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
-                </div>
-                <div>
-                    <label for="status" class="mb-2 block text-sm font-medium text-slate-300">Status Hasil</label>
-                    <select id="status" name="status" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
-                        <option value="pass" {{ old('status') === 'pass' ? 'selected' : '' }}>Pass</option>
-                        <option value="fail" {{ old('status') === 'fail' ? 'selected' : '' }}>Fail</option>
-                        <option value="pending" {{ old('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                    </select>
-                </div>
-            </div>
-            <div class="mt-6 grid gap-6 md:grid-cols-2">
-                <div>
-                    <label for="evaluated_by" class="mb-2 block text-sm font-medium text-slate-300">Evaluator</label>
-                    <select id="evaluated_by" name="evaluated_by" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
-                        <option value="">Pilih evaluator</option>
-                        @foreach($instrukturs as $instruktur)
-                            <option value="{{ $instruktur->id }}" {{ (string) old('evaluated_by') === (string) $instruktur->id ? 'selected' : '' }}>{{ $instruktur->nama_instr }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label for="evaluated_at" class="mb-2 block text-sm font-medium text-slate-300">Tanggal Evaluasi</label>
-                    <input type="date" id="evaluated_at" name="evaluated_at" value="{{ old('evaluated_at', now()->format('Y-m-d')) }}" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10" required>
-                </div>
-            </div>
-            <div class="mt-6">
-                <label for="keterangan" class="mb-2 block text-sm font-medium text-slate-300">Catatan</label>
-                <textarea id="keterangan" name="keterangan" rows="4" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-yellow-400/40 focus:outline-none focus:ring-2 focus:ring-yellow-400/10">{{ old('keterangan') }}</textarea>
-            </div>
-        </section>
-
-        <div class="flex flex-wrap gap-3">
-            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
-                <i class="bi bi-check-circle-fill"></i>
-                Simpan Hasil Tes
-            </button>
-            <a href="{{ route('admin.score.index') }}" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10">
-                <i class="bi bi-arrow-left"></i>
-                Kembali
-            </a>
-        </div>
-    </form>
-</div>
+    <div class="bk-row" style="margin-top:1.5rem">
+        <button type="submit" class="bk-btn bk-btn--pri">
+            <i class="bi bi-check2" aria-hidden="true"></i> Simpan hasil tes
+        </button>
+        <a href="{{ route('admin.score.index') }}" class="bk-btn">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i> Kembali
+        </a>
+    </div>
+</form>
 @endsection

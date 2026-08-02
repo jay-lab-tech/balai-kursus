@@ -1,132 +1,98 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Level')
-
+@section('title', 'Level')
+@section('page-context', 'Akademik')
 @section('page-title', 'Level')
+@section('page-description', 'Jenjang dan rentang nilai yang dipakai untuk memetakan hasil tes penempatan.')
 
 @section('content')
-@php
-    $totalLevel = $level->count();
-    $minNilai = $level->min('nilai_min');
-    $maxNilai = $level->max('nilai_max');
-@endphp
 
-<div class="space-y-6">
-    <section class="admin-panel admin-panel--hero">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div class="max-w-3xl space-y-4">
-                <span class="admin-eyebrow">
-                    <i class="bi bi-layers"></i>
-                    Master Akademik
-                </span>
-                <div class="space-y-3">
-                    <h2 class="text-3xl font-semibold tracking-tight text-white">Atur level dan rentang nilai penempatan.</h2>
-                    <p class="max-w-2xl text-sm leading-6 text-slate-300">
-                        Data level dipakai untuk pemetaan hasil tes penempatan dan struktur jenjang pembelajaran di seluruh program.
-                    </p>
-                </div>
-            </div>
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
 
-            <a href="{{ route('admin.level.create') }}" class="admin-btn admin-btn-primary">
-                <i class="bi bi-plus-circle"></i>
-                Tambah Level
+<div class="bk-stats bk-stats--3">
+    <article class="bk-stat">
+        <span class="bk-stat__icon"><i class="bi bi-bar-chart-steps" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Total level</span>
+        <p class="bk-stat__value">{{ $level->count() }}</p>
+        <p class="bk-stat__hint">Jenjang yang tersedia untuk seluruh program.</p>
+    </article>
+    <article class="bk-stat bk-stat--amber">
+        <span class="bk-stat__icon"><i class="bi bi-arrow-down-short" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Nilai terendah</span>
+        <p class="bk-stat__value">{{ $level->min('nilai_min') ?? '-' }}</p>
+        <p class="bk-stat__hint">Batas bawah terkecil dari seluruh rentang.</p>
+    </article>
+    <article class="bk-stat bk-stat--terra">
+        <span class="bk-stat__icon"><i class="bi bi-arrow-up-short" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Nilai tertinggi</span>
+        <p class="bk-stat__value">{{ $level->max('nilai_max') ?? '-' }}</p>
+        <p class="bk-stat__hint">Batas atas terbesar dari seluruh rentang.</p>
+    </article>
+</div>
+
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar level</h2>
+            <p class="bk-panel__subtitle">Urutan menentukan tampilan jenjang; rentang nilai sebaiknya tidak tumpang tindih.</p>
+        </div>
+        <a href="{{ route('admin.level.create') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah level
+        </a>
+    </div>
+
+    @if ($level->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-bar-chart-steps" aria-hidden="true"></i></span>
+            <h3>Belum ada level</h3>
+            <p>Tambahkan level agar hasil tes penempatan bisa dipetakan ke jenjang yang tepat.</p>
+            <a href="{{ route('admin.level.create') }}" class="bk-btn bk-btn--pri">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah level
             </a>
         </div>
-    </section>
-
-    <section class="grid gap-4 md:grid-cols-3">
-        <article class="admin-stat-card">
-            <span class="admin-stat-card__label">Total Level</span>
-            <div class="admin-stat-card__value">{{ $totalLevel }}</div>
-            <p class="admin-stat-card__hint">Jumlah jenjang yang aktif di sistem.</p>
-        </article>
-        <article class="admin-stat-card">
-            <span class="admin-stat-card__label">Nilai Minimum</span>
-            <div class="admin-stat-card__value">{{ $minNilai ?? '-' }}</div>
-            <p class="admin-stat-card__hint">Batas bawah terkecil dari seluruh rentang penempatan.</p>
-        </article>
-        <article class="admin-stat-card">
-            <span class="admin-stat-card__label">Nilai Maksimum</span>
-            <div class="admin-stat-card__value">{{ $maxNilai ?? '-' }}</div>
-            <p class="admin-stat-card__hint">Batas atas terbesar dari seluruh rentang penempatan.</p>
-        </article>
-    </section>
-
-    @if(session('success'))
-        <div class="admin-alert admin-alert-success">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>{{ session('success') }}</span>
-        </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th class="r">Urutan</th>
+                    <th>Level</th>
+                    <th class="r">Rentang nilai</th>
+                    <th class="r">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($level as $item)
+                    <tr>
+                        <td class="r">{{ $item->urutan }}</td>
+                        <td>
+                            <b>{{ $item->nama }}</b>
+                            <small class="bk-muted" style="display:block">{{ $item->deskripsi ?: 'Belum ada deskripsi.' }}</small>
+                        </td>
+                        <td class="r"><span class="bk-tag bk-tag--info">{{ $item->rentang_nilai }}</span></td>
+                        <td class="r nw">
+                            <a href="{{ route('admin.level.edit', $item) }}" class="bk-iconbtn" title="Ubah {{ $item->nama }}">
+                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                <span class="bk-sr">Ubah</span>
+                            </a>
+                            <form method="POST" action="{{ route('admin.level.destroy', $item) }}" style="display:inline"
+                                  onsubmit="return confirm('Hapus level {{ $item->nama }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bk-iconbtn bk-iconbtn--danger" title="Hapus {{ $item->nama }}">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span class="bk-sr">Hapus</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     @endif
-
-    <section class="admin-panel overflow-hidden">
-        <div class="admin-panel__header">
-            <div>
-                <h3 class="admin-panel__title">Daftar Level</h3>
-                <p class="admin-panel__subtitle">Setiap level menyimpan urutan dan rentang nilai yang dipakai untuk hasil tes penempatan.</p>
-            </div>
-        </div>
-
-        @if($level->isEmpty())
-            <div class="admin-empty-state">
-                <div class="admin-empty-state__icon">
-                    <i class="bi bi-layers"></i>
-                </div>
-                <h3>Belum ada level</h3>
-                <p>Tambahkan level agar hasil tes penempatan dapat dipetakan ke jenjang yang tepat.</p>
-                <a href="{{ route('admin.level.create') }}" class="admin-btn admin-btn-primary">
-                    <i class="bi bi-plus-circle"></i>
-                    Tambah Level
-                </a>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Urutan</th>
-                            <th>Nama Level</th>
-                            <th>Rentang Nilai</th>
-                            <th class="text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($level as $item)
-                            <tr>
-                                <td>
-                                    <span class="admin-badge admin-badge-muted">{{ $item->urutan }}</span>
-                                </td>
-                                <td>
-                                    <div class="space-y-1">
-                                        <div class="font-semibold text-white">{{ $item->nama }}</div>
-                                        <div class="text-xs text-slate-400">{{ $item->deskripsi ?: 'Belum ada deskripsi level.' }}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="admin-badge admin-badge-warning">{{ $item->rentang_nilai }}</span>
-                                </td>
-                                <td>
-                                    <div class="flex justify-end gap-2">
-                                        <a href="{{ route('admin.level.edit', $item) }}" class="admin-btn admin-btn-ghost admin-btn-sm">
-                                            <i class="bi bi-pencil-square"></i>
-                                            Edit
-                                        </a>
-                                        <form action="{{ route('admin.level.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus level ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">
-                                                <i class="bi bi-trash3"></i>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-    </section>
-</div>
+</section>
 @endsection

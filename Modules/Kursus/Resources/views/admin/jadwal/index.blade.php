@@ -1,77 +1,89 @@
 @extends('layouts.admin')
 
-@section('title', 'Jadwal Kursus')
-
-@section('page-title', 'Jadwal Kursus')
-
-@section('page-description', 'Kelola jadwal pertemuan untuk kelas yang dipilih, termasuk waktu, lokasi, ruang, dan urutan pertemuan.')
+@section('title', 'Jadwal Kelas')
+@section('page-context', 'Akademik · Kelas ' . $kursus->nama)
+@section('page-title', 'Jadwal pertemuan')
+@section('page-description', ($kursus->program->nama ?? 'Program') . ' · ' . ($kursus->level->nama ?? 'Level') . ' — rangkaian pertemuan yang dipakai untuk absensi dan risalah.')
 
 @section('content')
-<div class="space-y-8">
-    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-calendar-week-fill text-sky-400"></i>
-                    Jadwal Per Kelas
-                </div>
-                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">{{ $kursus->nama }}</h1>
-                <p class="mt-3 text-base text-slate-300">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p>
-                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Susun seluruh pertemuan untuk kelas ini, mulai dari tanggal, jam, lokasi, sampai ruang kelas yang dipakai.</p>
-            </div>
 
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.jadwal.create', $kursus->id) }}" class="admin-btn admin-btn-primary"><i class="bi bi-plus-circle"></i>Tambah Jadwal</a>
-                <a href="{{ route('admin.kursus.index') }}" class="admin-btn admin-btn-secondary"><i class="bi bi-arrow-left"></i>Kembali ke Kelas</a>
-            </div>
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
+
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar pertemuan</h2>
+            <p class="bk-panel__subtitle">{{ $jadwals->total() }} pertemuan tersusun untuk kelas ini.</p>
         </div>
-
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <article class="admin-stat-card"><span class="admin-stat-card__label">Total Pertemuan</span><div class="admin-stat-card__value">{{ $jadwals->total() }}</div><p class="admin-stat-card__hint">Jumlah jadwal yang sudah disusun untuk kelas ini.</p></article>
-            <article class="admin-stat-card"><span class="admin-stat-card__label">Halaman Aktif</span><div class="admin-stat-card__value">{{ $jadwals->currentPage() }}</div><p class="admin-stat-card__hint">Navigasi daftar jadwal per halaman.</p></article>
-            <article class="admin-stat-card"><span class="admin-stat-card__label">Per Halaman</span><div class="admin-stat-card__value">{{ $jadwals->perPage() }}</div><p class="admin-stat-card__hint">Jumlah pertemuan yang dimuat pada halaman ini.</p></article>
+        <div class="bk-row">
+            <a href="{{ route('admin.jadwal.create', $kursus->id) }}" class="bk-btn bk-btn--pri bk-btn--sm">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah jadwal
+            </a>
+            <a href="{{ route('admin.kursus.index') }}" class="bk-btn bk-btn--sm">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Daftar kelas
+            </a>
         </div>
-    </section>
+    </div>
 
-    <section class="admin-panel overflow-hidden rounded-[2rem]">
-        <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-white"><i class="bi bi-calendar3 mr-3 text-yellow-300"></i>Daftar Jadwal Kelas</h2>
-                <p class="mt-2 text-slate-400">Tinjau tanggal, jam, lokasi, ruang, dan aksi pengelolaan setiap pertemuan.</p>
-            </div>
-            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">{{ $jadwals->total() }} jadwal ditemukan</span>
+    @if ($jadwals->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-calendar-x" aria-hidden="true"></i></span>
+            <h3>Belum ada pertemuan</h3>
+            <p>Susun pertemuan pertama agar absensi dan risalah punya tanggal untuk ditempeli.</p>
+            <a href="{{ route('admin.jadwal.create', $kursus->id) }}" class="bk-btn bk-btn--pri">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah jadwal
+            </a>
         </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th class="r">Ke</th>
+                    <th class="nw">Tanggal</th>
+                    <th class="nw">Waktu</th>
+                    <th>Lokasi</th>
+                    <th>Ruang</th>
+                    <th>Hari</th>
+                    <th class="r">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($jadwals as $jadwal)
+                    <tr>
+                        <td class="r">{{ $jadwal->pertemuan_ke ?? '—' }}</td>
+                        <td class="nw">{{ $jadwal->tgl_pertemuan?->translatedFormat('j M Y') ?? '—' }}</td>
+                        <td class="nw">{{ $jadwal->jam_mulai ? substr($jadwal->jam_mulai, 0, 5) : '—' }}–{{ $jadwal->jam_selesai ? substr($jadwal->jam_selesai, 0, 5) : '—' }}</td>
+                        <td>{{ $jadwal->lokasi->nama ?? '—' }}</td>
+                        <td>{{ $jadwal->kela->nama ?? '—' }}</td>
+                        <td>{{ $jadwal->hari->nama ?? '—' }}</td>
+                        <td class="r nw">
+                            <a href="{{ route('admin.jadwal.edit', [$kursus->id, $jadwal->id]) }}" class="bk-iconbtn" title="Ubah pertemuan">
+                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                <span class="bk-sr">Ubah</span>
+                            </a>
+                            <form method="POST" action="{{ route('admin.jadwal.destroy', [$kursus->id, $jadwal->id]) }}" style="display:inline"
+                                  onsubmit="return confirm('Hapus pertemuan ini? Absensi dan risalah yang menempel bisa ikut terdampak.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bk-iconbtn bk-iconbtn--danger" title="Hapus pertemuan">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span class="bk-sr">Hapus</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-        @if($jadwals->isEmpty())
-            <div class="admin-empty-state">
-                <div class="admin-empty-state__icon"><i class="bi bi-calendar-x"></i></div>
-                <h3>Belum ada jadwal</h3>
-                <p>Buat jadwal pertama untuk mulai mengatur rangkaian pertemuan pada kelas ini.</p>
-                <a href="{{ route('admin.jadwal.create', $kursus->id) }}" class="admin-btn admin-btn-primary"><i class="bi bi-plus-circle"></i>Tambah Jadwal</a>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr><th>Pertemuan</th><th>Tanggal</th><th>Waktu</th><th>Lokasi</th><th>Kelas</th><th>Hari</th><th class="text-right">Aksi</th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($jadwals as $jadwal)
-                            <tr>
-                                <td>{{ $jadwal->pertemuan_ke ?? '-' }}</td>
-                                <td>{{ $jadwal->tgl_pertemuan->format('d M Y') }}</td>
-                                <td>{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
-                                <td>{{ $jadwal->lokasi->nama ?? '-' }}</td>
-                                <td>{{ $jadwal->kela->nama ?? '-' }}</td>
-                                <td>{{ $jadwal->hari->nama ?? '-' }}</td>
-                                <td><div class="flex justify-end gap-2"><a href="{{ route('admin.jadwal.edit', [$kursus->id, $jadwal->id]) }}" class="admin-btn admin-btn-ghost admin-btn-sm"><i class="bi bi-pencil-square"></i>Edit</a><form action="{{ route('admin.jadwal.destroy', [$kursus->id, $jadwal->id]) }}" method="POST" onsubmit="return confirm('Hapus jadwal?')">@csrf @method('DELETE')<button type="submit" class="admin-btn admin-btn-danger admin-btn-sm"><i class="bi bi-trash3"></i>Hapus</button></form></div></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            @if($jadwals->hasPages())<div class="border-t border-white/10 px-4 py-5 sm:px-6">{{ $jadwals->links() }}</div>@endif
+        @if ($jadwals->hasPages())
+            <div class="bk-panel__foot">{{ $jadwals->links() }}</div>
         @endif
-    </section>
-</div>
+    @endif
+</section>
 @endsection

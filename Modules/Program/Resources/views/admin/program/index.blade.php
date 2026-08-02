@@ -1,149 +1,119 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Program')
-
+@section('title', 'Program')
+@section('page-context', 'Akademik')
 @section('page-title', 'Program')
+@section('page-description', 'Payung besar yang menaungi level dan kelas. Satu program bisa punya banyak kelas di beberapa level.')
 
 @section('content')
 @php
-    $totalProgram = $program->count();
-    $totalLevel = $program->sum(fn ($item) => $item->kursuses->pluck('level_id')->filter()->unique()->count());
     $totalKursus = $program->sum(fn ($item) => $item->kursuses->count());
+    $tanpaKursus = $program->filter(fn ($item) => $item->kursuses->isEmpty())->count();
 @endphp
 
-<div class="space-y-6">
-    <section class="admin-panel admin-panel--hero">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div class="max-w-3xl space-y-4">
-                <span class="admin-eyebrow">
-                    <i class="bi bi-kanban"></i>
-                    Master Akademik
-                </span>
-                <div class="space-y-3">
-                    <h2 class="text-3xl font-semibold tracking-tight text-white">Kelola struktur program kursus dengan lebih rapi.</h2>
-                    <p class="max-w-2xl text-sm leading-6 text-slate-300">
-                        Program menjadi fondasi pengelompokan level dan kursus. Halaman ini merangkum jumlah level yang aktif,
-                        warna identitas program, dan total kursus yang terhubung.
-                    </p>
-                </div>
-            </div>
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
 
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.program.create') }}" class="admin-btn admin-btn-primary">
-                    <i class="bi bi-plus-circle"></i>
-                    Tambah Program
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <section class="grid gap-4 md:grid-cols-3">
-        <article class="admin-stat-card">
-            <span class="admin-stat-card__label">Total Program</span>
-            <div class="admin-stat-card__value">{{ $totalProgram }}</div>
-            <p class="admin-stat-card__hint">Seluruh kategori utama yang aktif di sistem.</p>
-        </article>
-        <article class="admin-stat-card">
-            <span class="admin-stat-card__label">Level Terhubung</span>
-            <div class="admin-stat-card__value">{{ $totalLevel }}</div>
-            <p class="admin-stat-card__hint">Akumulasi level unik yang terhubung dengan kursus per program.</p>
-        </article>
-        <article class="admin-stat-card">
-            <span class="admin-stat-card__label">Kursus Tercatat</span>
-            <div class="admin-stat-card__value">{{ $totalKursus }}</div>
-            <p class="admin-stat-card__hint">Jumlah kursus yang sudah dikelompokkan ke program.</p>
-        </article>
-    </section>
-
-    @if(session('success'))
-        <div class="admin-alert admin-alert-success">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-
-    <section class="admin-panel overflow-hidden">
-        <div class="admin-panel__header">
-            <div>
-                <h3 class="admin-panel__title">Daftar Program</h3>
-                <p class="admin-panel__subtitle">Lihat ringkasan identitas visual, cakupan level, dan total kursus pada setiap program.</p>
-            </div>
-        </div>
-
-        @if($program->isEmpty())
-            <div class="admin-empty-state">
-                <div class="admin-empty-state__icon">
-                    <i class="bi bi-kanban"></i>
-                </div>
-                <h3>Belum ada program</h3>
-                <p>Tambahkan program pertama untuk mulai menyusun struktur akademik dan relasi kursus.</p>
-                <a href="{{ route('admin.program.create') }}" class="admin-btn admin-btn-primary">
-                    <i class="bi bi-plus-circle"></i>
-                    Tambah Program
-                </a>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Program</th>
-                            <th>Warna</th>
-                            <th>Level</th>
-                            <th>Kursus</th>
-                            <th class="text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($program as $item)
-                            @php
-                                $levelCount = $item->kursuses->pluck('level_id')->filter()->unique()->count();
-                                $kursusCount = $item->kursuses->count();
-                            @endphp
-                            <tr>
-                                <td>
-                                    <div class="space-y-1">
-                                        <div class="font-semibold text-white">{{ $item->nama }}</div>
-                                        <div class="text-xs text-slate-400">Program ID #{{ $item->id }}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <span class="h-10 w-10 rounded-2xl border border-white/10 shadow-inner" style="background-color: {{ $item->warna }}"></span>
-                                        <div>
-                                            <div class="text-sm font-medium text-slate-100">{{ $item->warna }}</div>
-                                            <div class="text-xs text-slate-400">Identitas visual program</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="admin-badge admin-badge-warning">{{ $levelCount }} level</span>
-                                </td>
-                                <td>
-                                    <span class="admin-badge admin-badge-info">{{ $kursusCount }} kursus</span>
-                                </td>
-                                <td>
-                                    <div class="flex justify-end gap-2">
-                                        <a href="{{ route('admin.program.edit', $item) }}" class="admin-btn admin-btn-ghost admin-btn-sm">
-                                            <i class="bi bi-pencil-square"></i>
-                                            Edit
-                                        </a>
-                                        <form method="POST" action="{{ route('admin.program.destroy', $item) }}" onsubmit="return confirm('Hapus program ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">
-                                                <i class="bi bi-trash3"></i>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-    </section>
+<div class="bk-stats bk-stats--3">
+    <article class="bk-stat">
+        <span class="bk-stat__icon"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Total program</span>
+        <p class="bk-stat__value">{{ $program->count() }}</p>
+        <p class="bk-stat__hint">Kategori utama yang tersedia di sistem.</p>
+    </article>
+    <article class="bk-stat bk-stat--terra">
+        <span class="bk-stat__icon"><i class="bi bi-journal-bookmark" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Kelas terhubung</span>
+        <p class="bk-stat__value">{{ $totalKursus }}</p>
+        <p class="bk-stat__hint">Seluruh kelas yang sudah dikelompokkan ke program.</p>
+    </article>
+    <article class="bk-stat bk-stat--amber">
+        <span class="bk-stat__icon"><i class="bi bi-exclamation-circle" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Belum berisi</span>
+        <p class="bk-stat__value">{{ $tanpaKursus }}</p>
+        <p class="bk-stat__hint">Program yang belum punya satu kelas pun.</p>
+    </article>
 </div>
+
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar program</h2>
+            <p class="bk-panel__subtitle">Warna dipakai sebagai penanda program di jadwal dan papan informasi.</p>
+        </div>
+        <a href="{{ route('admin.program.create') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah program
+        </a>
+    </div>
+
+    @if ($program->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+            <h3>Belum ada program</h3>
+            <p>Tambahkan program pertama untuk mulai menyusun level dan kelas di bawahnya.</p>
+            <a href="{{ route('admin.program.create') }}" class="bk-btn bk-btn--pri">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah program
+            </a>
+        </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th class="r">Level</th>
+                    <th class="r">Kelas</th>
+                    <th class="r">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($program as $item)
+                    @php
+                        $jumlahLevel = $item->kursuses->pluck('level_id')->filter()->unique()->count();
+                        $jumlahKursus = $item->kursuses->count();
+                    @endphp
+                    <tr>
+                        <td>
+                            <span class="bk-who">
+                                <span class="bk-who__ini" style="background:{{ $item->warna }};color:#fff">
+                                    {{ mb_strtoupper(mb_substr($item->nama, 0, 2)) }}
+                                </span>
+                                <span>
+                                    <b>{{ $item->nama }}</b>
+                                    <small class="bk-muted bk-nowrap">{{ $item->warna }}</small>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="r">
+                            <span class="bk-tag bk-tag--diam">{{ $jumlahLevel }} level</span>
+                        </td>
+                        <td class="r">
+                            <span class="bk-tag {{ $jumlahKursus ? 'bk-tag--info' : 'bk-tag--perlu' }}">
+                                {{ $jumlahKursus }} kelas
+                            </span>
+                        </td>
+                        <td class="r nw">
+                            <a href="{{ route('admin.program.edit', $item) }}" class="bk-iconbtn" title="Ubah {{ $item->nama }}">
+                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                <span class="bk-sr">Ubah</span>
+                            </a>
+                            <form method="POST" action="{{ route('admin.program.destroy', $item) }}" style="display:inline"
+                                  onsubmit="return confirm('Hapus program {{ $item->nama }}? Kelas di bawahnya ikut terpengaruh.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bk-iconbtn bk-iconbtn--danger" title="Hapus {{ $item->nama }}">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span class="bk-sr">Hapus</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</section>
 @endsection

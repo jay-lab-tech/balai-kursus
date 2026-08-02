@@ -1,114 +1,91 @@
 @extends('layouts.admin')
 
 @section('title', 'Peserta Kelas')
-
-@section('page-title', 'Peserta Kelas')
-
-@section('page-description', 'Lihat daftar peserta yang sudah ditempatkan ke kelas ini beserta level, nilai tes, dan status pendaftarannya.')
+@section('page-context', 'Akademik · Kelas ' . $kursus->nama)
+@section('page-title', 'Peserta kelas')
+@section('page-description', ($kursus->program->nama ?? 'Program') . ' · ' . ($kursus->level->nama ?? 'Level') . ' — peserta yang sudah ditempatkan beserta level dan status pendaftarannya.')
 
 @section('content')
-<div class="space-y-8">
-    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-people-fill text-sky-400"></i>
-                    Peserta Terdaftar
-                </div>
-                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">{{ $kursus->nama }}</h1>
-                <p class="mt-3 text-base text-slate-300">{{ $kursus->program->nama ?? '-' }} • {{ $kursus->level->nama ?? '-' }}</p>
-                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">Daftar ini membantu admin memantau siapa saja yang sudah masuk ke kelas, level penempatannya, nilai tes, dan status pendaftaran terakhir.</p>
-            </div>
 
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.kursus.index') }}" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10">
-                    <i class="bi bi-arrow-left"></i>
-                    Kembali ke Kelas
-                </a>
-            </div>
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
+
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar peserta</h2>
+            <p class="bk-panel__subtitle">{{ $peserta->total() }} pendaftaran tercatat, termasuk yang dibatalkan. Kuota kelas {{ $kursus->kuota }} kursi.</p>
         </div>
-
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Peserta</p>
-                <p class="mt-3 text-4xl font-bold">{{ $peserta->total() }}</p>
-                <p class="mt-2 text-sm text-sky-100/90">Jumlah peserta yang sudah tercatat di kelas ini.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Halaman Saat Ini</p>
-                <p class="mt-3 text-3xl font-bold text-white">{{ $peserta->currentPage() }}</p>
-                <p class="mt-2 text-sm text-slate-300">Navigasi data peserta per halaman.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Kuota Kelas</p>
-                <p class="mt-3 text-3xl font-bold text-white">{{ $kursus->kuota ?? '-' }}</p>
-                <p class="mt-2 text-sm text-slate-300">Kapasitas maksimum peserta untuk kelas ini.</p>
-            </div>
+        <div class="bk-row">
+            <a href="{{ route('admin.kursus.edit', $kursus) }}" class="bk-btn bk-btn--sm">
+                <i class="bi bi-pencil" aria-hidden="true"></i> Ubah kelas
+            </a>
+            <a href="{{ route('admin.kursus.index') }}" class="bk-btn bk-btn--sm">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Daftar kelas
+            </a>
         </div>
-    </section>
+    </div>
 
-    <section class="admin-panel overflow-hidden rounded-[2rem]">
-        <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-white">
-                    <i class="bi bi-person-lines-fill mr-3 text-yellow-300"></i>Daftar Peserta Kelas
-                </h2>
-                <p class="mt-2 text-slate-400">Informasi peserta menampilkan email, level hasil placement, nilai tes, dan status pendaftaran.</p>
-            </div>
-            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
-                {{ $peserta->total() }} peserta ditemukan
-            </span>
+    @if ($peserta->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-people" aria-hidden="true"></i></span>
+            <h3>Belum ada peserta di kelas ini</h3>
+            <p>Peserta muncul di sini setelah penempatan dari hasil tes selesai diproses.</p>
+            <a href="{{ route('admin.score.index') }}" class="bk-btn bk-btn--pri">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i> Lihat nilai tes
+            </a>
         </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th>Peserta</th>
+                    <th>Level</th>
+                    <th class="r nw">Nilai tes</th>
+                    <th>Status</th>
+                    <th class="r">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($peserta as $item)
+                    <tr>
+                        <td>
+                            <b>{{ $item->peserta->user->name ?? '—' }}</b><br>
+                            <span class="bk-muted">{{ $item->participant_email_snapshot ?? $item->peserta->user->email ?? '—' }}</span>
+                        </td>
+                        <td>{{ $item->level->nama ?? 'Belum ada level' }}</td>
+                        <td class="r nw">{{ $item->placementScore?->final_score ?? '—' }}</td>
+                        <td>
+                            @php
+                                // Pil tanpa pengubah sudah berwarna sage — dipakai untuk keadaan beres.
+                                $rupa = match ($item->status_pendaftaran) {
+                                    'aktif', 'selesai' => '',
+                                    'menunggu_pembayaran' => 'bk-tag--perlu',
+                                    'menunggu_tes', 'menunggu_penempatan' => 'bk-tag--jalan',
+                                    default => 'bk-tag--diam',
+                                };
+                            @endphp
+                            <span class="bk-tag {{ $rupa }}">{{ ucfirst(str_replace('_', ' ', $item->status_pendaftaran)) }}</span>
+                        </td>
+                        <td class="r nw">
+                            <a href="{{ route('admin.kursus.assignLevelForm', [$kursus->id, $item->id]) }}" class="bk-iconbtn"
+                               title="Ubah level {{ $item->peserta->user->name ?? 'peserta' }}">
+                                <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                                <span class="bk-sr">Ubah level</span>
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-        @if($peserta->isEmpty())
-            <div class="px-6 py-16 text-center">
-                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-4xl text-yellow-300">
-                    <i class="bi bi-people"></i>
-                </div>
-                <h3 class="mt-6 text-2xl font-bold text-white">Belum ada peserta pada kelas ini</h3>
-                <p class="mt-3 text-slate-400">Peserta akan tampil di sini setelah proses placement atau penempatan kelas dilakukan.</p>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Peserta</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Email</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Level</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Nilai Tes</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($peserta as $item)
-                            <tr class="transition hover:bg-white/[0.03]">
-                                <td class="px-6 py-5 text-sm font-semibold text-white">{{ $item->peserta->user->name ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $item->participant_email_snapshot ?? $item->peserta->user->email ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $item->level->nama ?? 'Belum ada level' }}</td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $item->placementScore?->final_score ?? 'Belum ada nilai tes' }}</td>
-                                <td class="px-6 py-5">
-                                    @php
-                                        $statusClass = match($item->status_pendaftaran) {
-                                            'aktif' => 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300',
-                                            'menunggu_pembayaran' => 'border-yellow-400/20 bg-yellow-400/10 text-yellow-300',
-                                            'menunggu_tes' => 'border-blue-400/20 bg-blue-500/10 text-blue-300',
-                                            default => 'border-white/10 bg-white/5 text-slate-300',
-                                        };
-                                    @endphp
-                                    <span class="inline-flex items-center rounded-full border px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] {{ $statusClass }}">
-                                        {{ str_replace('_', ' ', ucfirst($item->status_pendaftaran)) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="border-t border-white/10 px-6 py-4">
-                {{ $peserta->links() }}
-            </div>
+        @if ($peserta->hasPages())
+            <div class="bk-panel__foot">{{ $peserta->links() }}</div>
         @endif
-    </section>
-</div>
+    @endif
+</section>
 @endsection

@@ -1,139 +1,112 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Instruktur')
-
-@section('page-title', 'Manajemen Instruktur')
-
-@section('page-description', 'Kelola akun instruktur, spesialisasi, dan akses pembaruan data pengajar secara lebih terstruktur.')
+@section('title', 'Instruktur')
+@section('page-context', 'Sumber Daya')
+@section('page-title', 'Instruktur')
+@section('page-description', 'Pengajar yang punya akun di sistem. Dari sini mereka bisa ditugaskan ke kelas, mengisi absensi, dan menulis risalah.')
 
 @section('content')
-<div class="space-y-8">
-    <section class="admin-panel overflow-hidden rounded-[2rem] p-6 sm:p-8">
-        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-600/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-yellow-300">
-                    <i class="bi bi-person-badge-fill text-sky-400"></i>
-                    Tim Instruktur
-                </div>
-                <h1 class="mt-5 text-3xl font-bold text-white sm:text-4xl">Kelola profil pengajar dan spesialisasi keahlian dalam satu direktori.</h1>
-                <p class="mt-4 max-w-3xl text-base leading-7 text-slate-300">
-                    Halaman ini memudahkan admin menjaga data instruktur tetap konsisten, termasuk akun login, identitas pengajar, dan area spesialisasi masing-masing.
-                </p>
-            </div>
+@php
+    $mengampu = $instrukturs->where('kursuses_count', '>', 0)->count();
+@endphp
 
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.instruktur.create') }}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white transition hover:from-sky-500 hover:to-sky-600">
-                    <i class="bi bi-person-plus-fill"></i>
-                    Tambah Instruktur
-                </a>
-            </div>
-        </div>
+@if (session('success'))
+    <div class="bk-note bk-note--baik">
+        <i class="bi bi-check-circle-fill bk-note__icon" aria-hidden="true"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
 
-        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div class="rounded-[1.5rem] bg-gradient-to-br from-sky-600 to-sky-700 p-5 text-white shadow-xl">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">Total Instruktur</p>
-                <p class="mt-3 text-4xl font-bold">{{ $instrukturs->count() }}</p>
-                <p class="mt-2 text-sm text-sky-100/90">Seluruh instruktur yang terdaftar dalam sistem.</p>
-            </div>
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 md:col-span-1 xl:col-span-2">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Fokus Halaman</p>
-                <p class="mt-3 text-xl font-bold text-white">Identitas pengajar dan spesialisasi aktif</p>
-                <p class="mt-2 text-sm text-slate-300">Gunakan halaman ini untuk memastikan instruktur yang mengajar punya akun dan data spesialisasi yang lengkap.</p>
-            </div>
-        </div>
-    </section>
-
-    @if(session('success'))
-        <div class="rounded-[1.5rem] border border-emerald-400/20 bg-emerald-500/10 px-5 py-4 text-emerald-200 shadow-lg">
-            <div class="flex items-start gap-3">
-                <i class="bi bi-check-circle-fill mt-0.5 text-lg text-emerald-300"></i>
-                <div>
-                    <p class="font-semibold">Perubahan berhasil disimpan</p>
-                    <p class="mt-1 text-sm text-emerald-100/90">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    <section class="admin-panel overflow-hidden rounded-[2rem]">
-        <div class="flex flex-col gap-3 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-white">
-                    <i class="bi bi-person-lines-fill mr-3 text-yellow-300"></i>Daftar Instruktur
-                </h2>
-                <p class="mt-2 text-slate-400">Tabel instruktur memuat nama pengajar, akun email, spesialisasi, dan aksi pengelolaan data.</p>
-            </div>
-            <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
-                {{ $instrukturs->count() }} instruktur ditemukan
-            </span>
-        </div>
-
-        @if($instrukturs->isEmpty())
-            <div class="px-6 py-16 text-center">
-                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-4xl text-yellow-300">
-                    <i class="bi bi-person-badge"></i>
-                </div>
-                <h3 class="mt-6 text-2xl font-bold text-white">Belum ada instruktur</h3>
-                <p class="mt-3 text-slate-400">Tambahkan instruktur baru untuk mulai menghubungkan pengajar dengan kelas program.</p>
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">No</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Instruktur</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Email</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Spesialisasi</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($instrukturs as $i)
-                            <tr class="transition hover:bg-white/[0.03]">
-                                <td class="px-6 py-5 text-sm font-semibold text-slate-300">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-5">
-                                    <div class="flex items-center gap-4">
-                                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-600 to-sky-700 text-white shadow-lg">
-                                            <i class="bi bi-person-fill"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-semibold text-white">{{ $i->nama_instr }}</p>
-                                            <p class="mt-1 text-sm text-slate-400">Akun terhubung ke {{ $i->user->email }}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-5 text-sm text-slate-300">{{ $i->user->email }}</td>
-                                <td class="px-6 py-5">
-                                    <span class="inline-flex items-center gap-2 rounded-full border border-yellow-400/20 bg-yellow-400/10 px-3 py-2 text-sm font-medium text-yellow-300">
-                                        <i class="bi bi-star-fill"></i>
-                                        {{ $i->spesialisasi }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-5">
-                                    <div class="flex flex-wrap gap-2">
-                                        <a href="{{ route('admin.instruktur.edit', $i->id) }}" class="admin-btn admin-btn-ghost admin-btn-sm">
-                                            <i class="bi bi-pencil-square text-yellow-300"></i>
-                                            Edit
-                                        </a>
-                                        <form action="{{ route('admin.instruktur.destroy', $i->id) }}" method="POST" onsubmit="return confirm('Yakin hapus instruktur ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">
-                                                <i class="bi bi-trash"></i>
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-    </section>
+<div class="bk-stats bk-stats--3">
+    <article class="bk-stat">
+        <span class="bk-stat__icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Total instruktur</span>
+        <p class="bk-stat__value">{{ $instrukturs->count() }}</p>
+        <p class="bk-stat__hint">Seluruh pengajar yang punya akun.</p>
+    </article>
+    <article class="bk-stat bk-stat--terra">
+        <span class="bk-stat__icon"><i class="bi bi-journal-bookmark" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Sedang mengampu</span>
+        <p class="bk-stat__value">{{ $mengampu }}</p>
+        <p class="bk-stat__hint">Instruktur yang memegang setidaknya satu kelas.</p>
+    </article>
+    <article class="bk-stat bk-stat--amber">
+        <span class="bk-stat__icon"><i class="bi bi-hourglass" aria-hidden="true"></i></span>
+        <span class="bk-stat__label">Belum ditugaskan</span>
+        <p class="bk-stat__value">{{ $instrukturs->count() - $mengampu }}</p>
+        <p class="bk-stat__hint">Bisa dipakai saat menyusun kelas baru.</p>
+    </article>
 </div>
+
+<section class="bk-panel">
+    <div class="bk-panel__head">
+        <div>
+            <h2 class="bk-panel__title">Daftar instruktur</h2>
+            <p class="bk-panel__subtitle">Menghapus instruktur juga menghapus akunnya beserta seluruh riwayat mengajarnya.</p>
+        </div>
+        <a href="{{ route('admin.instruktur.create') }}" class="bk-btn bk-btn--pri bk-btn--sm">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah instruktur
+        </a>
+    </div>
+
+    @if ($instrukturs->isEmpty())
+        <div class="bk-empty">
+            <span class="bk-empty__icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
+            <h3>Belum ada instruktur</h3>
+            <p>Tambahkan instruktur agar kelas program bisa diberi pengajar.</p>
+            <a href="{{ route('admin.instruktur.create') }}" class="bk-btn bk-btn--pri">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Tambah instruktur
+            </a>
+        </div>
+    @else
+        <table class="bk-table">
+            <thead>
+                <tr>
+                    <th>Instruktur</th>
+                    <th>Spesialisasi</th>
+                    <th class="r">Kelas diampu</th>
+                    <th class="r">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($instrukturs as $i)
+                    <tr>
+                        <td>
+                            <span class="bk-who">
+                                <span class="bk-who__ini bk-who__ini--terra">
+                                    {{ mb_strtoupper(mb_substr($i->nama_instr, 0, 2)) }}
+                                </span>
+                                <span>
+                                    <b>{{ $i->nama_instr }}</b>
+                                    <small class="bk-muted">{{ $i->user->email ?? 'Akun terhapus' }}</small>
+                                </span>
+                            </span>
+                        </td>
+                        <td>{{ $i->spesialisasi }}</td>
+                        <td class="r">
+                            <span class="bk-tag {{ $i->kursuses_count ? 'bk-tag--jalan' : 'bk-tag--diam' }}">
+                                {{ $i->kursuses_count }} kelas
+                            </span>
+                        </td>
+                        <td class="r nw">
+                            <a href="{{ route('admin.instruktur.edit', $i->id) }}" class="bk-iconbtn" title="Ubah {{ $i->nama_instr }}">
+                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                <span class="bk-sr">Ubah</span>
+                            </a>
+                            <form method="POST" action="{{ route('admin.instruktur.destroy', $i->id) }}" style="display:inline"
+                                  onsubmit="return confirm('Hapus {{ $i->nama_instr }}? Akun dan riwayat mengajarnya ikut terhapus.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bk-iconbtn bk-iconbtn--danger" title="Hapus instruktur">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span class="bk-sr">Hapus</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</section>
 @endsection
-
-
