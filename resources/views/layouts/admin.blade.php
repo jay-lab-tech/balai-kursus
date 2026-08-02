@@ -7,34 +7,6 @@
     <title>@yield('title', 'Admin') · Balai Kursus</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        /* SEMENTARA — dihapus di akhir rollout view admin (Fase 4).
-           Sebagian view admin masih menyisakan utilitas tema gelap lama
-           (text-white, bg-slate-950/70, border-white/10, dsb.) sehingga teks
-           terang jatuh di atas latar terang dan tidak terbaca. Blok ini
-           menyelaraskannya dengan palet Balai Hangat sampai tiap view
-           ditulis ulang. Cari "SEMENTARA" untuk menemukannya kembali. */
-        .bk-content .text-white,
-        .bk-content .text-slate-100, .bk-content .text-slate-200,
-        .bk-content .text-sky-100, .bk-content .text-sky-100\/90 { color: var(--bk-ink); }
-        .bk-content .text-slate-300, .bk-content .text-slate-400, .bk-content .text-slate-500,
-        .bk-content .text-gray-300, .bk-content .text-gray-400 { color: var(--bk-ink-2); }
-        .bk-content .text-yellow-300, .bk-content .text-yellow-400,
-        .bk-content .text-sky-300, .bk-content .text-sky-400,
-        .bk-content .text-emerald-300 { color: var(--bk-sage-700); }
-        .bk-content .text-rose-300, .bk-content .text-rose-400 { color: var(--bk-terra-900); }
-        .bk-content .bg-slate-950\/70, .bk-content .bg-slate-950\/40,
-        .bk-content .bg-white\/5, .bk-content .bg-white\/10,
-        .bk-content .bg-sky-600\/10, .bk-content .bg-yellow-400\/10,
-        .bk-content .bg-emerald-500\/10 { background-color: var(--bk-sand-100); }
-        .bk-content .bg-gradient-to-r, .bk-content .bg-gradient-to-br { background-image: none; }
-        .bk-content .border-white\/10, .bk-content .border-white\/5,
-        .bk-content .border-sky-500\/30, .bk-content .border-sky-500\/20,
-        .bk-content .border-yellow-400\/40, .bk-content .border-yellow-400\/20,
-        .bk-content .border-emerald-400\/20 { border-color: var(--bk-sand); }
-        .bk-content .rounded-\[2rem\], .bk-content .rounded-3xl,
-        .bk-content .rounded-2xl { border-radius: var(--bk-r); }
-    </style>
     @yield('styles')
 </head>
 <body>
@@ -108,13 +80,14 @@
                 <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
             </a>
 
-            <div class="bk-side__me">
+            {{-- Admin sebelumnya tidak punya jalan ke halaman profilnya sendiri. --}}
+            <a href="{{ route('profile.edit') }}" class="bk-side__me">
                 <span class="bk-side__av">{{ $inisial }}</span>
                 <span style="min-width:0">
                     <b>{{ $me->name }}</b>
                     <span>Administrator</span>
                 </span>
-            </div>
+            </a>
         </div>
     </aside>
 
@@ -153,7 +126,7 @@
     /* Tabel berubah jadi daftar bertumpuk di layar kecil; tiap sel butuh label
        kolomnya sendiri. Diisi di sini supaya view tidak perlu mengulang. */
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.bk-table, .admin-table').forEach((t) => {
+        document.querySelectorAll('.bk-table').forEach((t) => {
             const heads = [...t.querySelectorAll('thead th')].map((x) => x.textContent.trim());
             if (!heads.length) return;
             t.querySelectorAll('tbody tr').forEach((r) => {

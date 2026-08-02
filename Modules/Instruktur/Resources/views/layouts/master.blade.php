@@ -7,30 +7,6 @@
     <title>@yield('title', 'Ruang kerja') · Balai Kursus</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        /* SEMENTARA — dihapus di akhir rollout view instruktur (Fase 4).
-           Sebagian view instruktur masih memakai utilitas tema gelap lama.
-           Blok ini menyelaraskannya dengan palet Balai Hangat sampai tiap
-           view ditulis ulang. Cari "SEMENTARA" untuk menemukannya kembali. */
-        .bk-content .text-white,
-        .bk-content .text-slate-100, .bk-content .text-slate-200,
-        .bk-content .text-sky-100 { color: var(--bk-ink); }
-        .bk-content .text-slate-300, .bk-content .text-slate-400, .bk-content .text-slate-500,
-        .bk-content .text-gray-300, .bk-content .text-gray-400, .bk-content .text-gray-500 { color: var(--bk-ink-2); }
-        .bk-content .text-sky-300, .bk-content .text-sky-400,
-        .bk-content .text-yellow-300, .bk-content .text-yellow-400,
-        .bk-content .text-emerald-300 { color: var(--bk-sage-700); }
-        .bk-content .text-rose-300, .bk-content .text-rose-400 { color: var(--bk-terra-900); }
-        .bk-content .bg-white\/5, .bk-content .bg-white\/10,
-        .bk-content .bg-black\/20, .bk-content .bg-gray-800, .bk-content .bg-gray-900,
-        .bk-content .bg-gray-900\/60, .bk-content .bg-gray-900\/70,
-        .bk-content .bg-slate-800, .bk-content .bg-slate-900,
-        .bk-content .bg-\[\#0b2035\], .bk-content .bg-\[\#102a43\] { background-color: var(--bk-sand-100); }
-        .bk-content [class*="bg-gradient"] { background-image: none; }
-        .bk-content .border-white\/10, .bk-content .border-white\/5,
-        .bk-content .border-gray-700, .bk-content .border-slate-700 { border-color: var(--bk-sand); }
-        .bk-content .rounded-3xl, .bk-content .rounded-2xl { border-radius: var(--bk-r); }
-    </style>
     @yield('styles')
 </head>
 <body>
@@ -94,8 +70,11 @@
                     <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <div style="min-width:0">
-                    <div class="bk-topbar__crumb">Instruktur</div>
+                    <div class="bk-topbar__crumb">@yield('page-context', 'Instruktur')</div>
                     <h1 class="bk-topbar__title">@yield('title', 'Ruang kerja')</h1>
+                    @hasSection('page-description')
+                        <p class="bk-topbar__note">@yield('page-description')</p>
+                    @endif
                 </div>
             </div>
             <div class="bk-tools">
@@ -114,8 +93,10 @@
 </div>
 @yield('scripts')
 <script>
+    /* Tabel berubah jadi daftar bertumpuk di layar kecil; tiap sel butuh label
+       kolomnya sendiri. Diisi di sini supaya view tidak perlu mengulang. */
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.bk-table, .admin-table').forEach((t) => {
+        document.querySelectorAll('.bk-table').forEach((t) => {
             const heads = [...t.querySelectorAll('thead th')].map((x) => x.textContent.trim());
             if (!heads.length) return;
             t.querySelectorAll('tbody tr').forEach((r) => {

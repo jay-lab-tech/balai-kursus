@@ -11,9 +11,8 @@
      · padat (.is-padat)  — tabel data admin, tempat banyak baris harus
                             terlihat sekaligus
 
-   Nama kanonis komponen berawalan .bk-*. Nama lama .admin-* masih ikut di
-   selektor yang sama sebagai jembatan; dicabut per kelompok view saat Fase 4
-   berjalan.
+   Semua komponen berawalan .bk-*. Tidak ada nama lain: kelas warisan .admin-*
+   sudah dicabut setelah seluruh view admin ditulis ulang.
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -168,8 +167,7 @@ textarea {
 }
 
 /* Label kecil di atas judul bagian. */
-.bk-eyebrow,
-.admin-eyebrow {
+.bk-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
@@ -194,6 +192,20 @@ textarea {
     .bk-only-lebar {
         display: none;
     }
+}
+
+/* Hanya dibaca pembaca layar. Dipakai pada tombol yang isinya cuma ikon,
+   supaya aksinya tetap punya nama meski tidak terlihat. */
+.bk-sr {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    white-space: nowrap;
+    border: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -268,8 +280,7 @@ textarea {
    5 · TOMBOL
    -------------------------------------------------------------------------- */
 
-.bk-btn,
-.admin-btn {
+.bk-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -286,58 +297,49 @@ textarea {
     transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
 }
 
-.bk-btn:hover,
-.admin-btn:hover {
+.bk-btn:hover {
     border-color: var(--bk-sage);
     background: var(--bk-sage-soft);
     color: var(--bk-forest);
 }
 
 .bk-btn:disabled,
-.bk-btn[aria-disabled='true'],
-.admin-btn:disabled,
-.admin-btn[aria-disabled='true'] {
+.bk-btn[aria-disabled='true'] {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.bk-btn--pri,
-.admin-btn-primary {
+.bk-btn--pri {
     border-color: var(--bk-terra);
     background: var(--bk-terra);
     color: #fff;
 }
 
-.bk-btn--pri:hover,
-.admin-btn-primary:hover {
+.bk-btn--pri:hover {
     border-color: var(--bk-terra-700);
     background: var(--bk-terra-700);
     color: #fff;
 }
 
-.bk-btn--dark,
-.admin-btn-secondary {
+.bk-btn--dark {
     border-color: var(--bk-forest);
     background: var(--bk-forest);
     color: #fff;
 }
 
-.bk-btn--dark:hover,
-.admin-btn-secondary:hover {
+.bk-btn--dark:hover {
     border-color: var(--bk-forest-600);
     background: var(--bk-forest-600);
     color: #fff;
 }
 
-.bk-btn--quiet,
-.admin-btn-ghost {
+.bk-btn--quiet {
     border-color: transparent;
     background: transparent;
     color: var(--bk-ink-2);
 }
 
-.bk-btn--quiet:hover,
-.admin-btn-ghost:hover {
+.bk-btn--quiet:hover {
     border-color: var(--bk-sand);
     background: var(--bk-sand-100);
     color: var(--bk-ink);
@@ -356,22 +358,19 @@ textarea {
     color: #fff;
 }
 
-.bk-btn--danger,
-.admin-btn-danger {
+.bk-btn--danger {
     border-color: var(--bk-danger);
     background: transparent;
     color: var(--bk-danger-700);
 }
 
-.bk-btn--danger:hover,
-.admin-btn-danger:hover {
+.bk-btn--danger:hover {
     border-color: var(--bk-danger-700);
     background: var(--bk-danger-700);
     color: #fff;
 }
 
-.bk-btn--sm,
-.admin-btn-sm {
+.bk-btn--sm {
     padding: 0.35rem 0.8rem;
     font-size: 0.78rem;
 }
@@ -413,8 +412,7 @@ textarea {
    Wadah utama seluruh isi. Kepala, badan, kaki.
    -------------------------------------------------------------------------- */
 
-.bk-panel,
-.admin-panel {
+.bk-panel {
     overflow: hidden;
     border: 1px solid var(--bk-sand);
     border-radius: var(--bk-r);
@@ -424,15 +422,18 @@ textarea {
 
 .bk-panel + .bk-panel,
 .bk-panel + .bk-note,
-.bk-note + .bk-panel,
-.admin-panel + .admin-panel,
-.admin-panel + .admin-alert,
-.admin-alert + .admin-panel {
+.bk-note + .bk-panel {
     margin-top: 1.5rem;
 }
 
-.bk-panel__head,
-.admin-panel__header {
+/* Di dalam .bk-duo dua panel bersebelahan adalah kolom, bukan tumpukan.
+   Tanpa pembatalan ini kolom kanan turun 1.5rem dari kolom kiri, karena
+   aturan di atas tetap kena pada sesama anak grid. */
+.bk-duo > .bk-panel + .bk-panel {
+    margin-top: 0;
+}
+
+.bk-panel__head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -442,16 +443,14 @@ textarea {
     border-bottom: 1px solid var(--bk-sand-100);
 }
 
-.bk-panel__title,
-.admin-panel__title {
+.bk-panel__title {
     margin: 0;
     color: var(--bk-ink);
     font: 600 1.18rem/1.25 var(--bk-display);
     letter-spacing: -0.01em;
 }
 
-.bk-panel__subtitle,
-.admin-panel__subtitle {
+.bk-panel__subtitle {
     margin: 0.1rem 0 0;
     max-width: 52rem;
     color: var(--bk-ink-2);
@@ -475,32 +474,6 @@ textarea {
     font-size: 0.82rem;
 }
 
-/* Jembatan untuk view lama yang menaruh isi langsung di .admin-panel tanpa
-   pembungkus .bk-panel__body. Dicabut bersama kelas .admin-* di Fase 4. */
-.admin-panel > :not(.admin-panel__header):not(.admin-table):not(table) {
-    padding-left: var(--bk-pad-x);
-    padding-right: var(--bk-pad-x);
-}
-
-.admin-panel--hero {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 1.6rem var(--bk-pad-x);
-}
-
-.admin-panel--hero .admin-panel__header {
-    padding: 0;
-    border-bottom: 0;
-}
-
-.admin-panel--hero > :not(.admin-panel__header) {
-    padding-left: 0;
-    padding-right: 0;
-}
-
 /* Perkakas di kepala panel: pencarian, saringan, tombol. */
 .bk-tools,
 .bk-panel__head .bk-tools {
@@ -508,6 +481,55 @@ textarea {
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Pindah antar tampilan satu objek yang sama — ringkasan, pertemuan, nilai
+   dari satu kelas — tanpa meninggalkan konteksnya. Bukan navigasi utama:
+   itu tugas bilah sisi. Ditaruh di atas panel, bukan di dalamnya. */
+.bk-tabs {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--bk-sand);
+    scrollbar-width: none;
+}
+
+.bk-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.bk-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.7rem 0.95rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    color: var(--bk-ink-2);
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.bk-tab:hover {
+    color: var(--bk-forest);
+}
+
+.bk-tab.is-aktif {
+    border-bottom-color: var(--bk-terra);
+    color: var(--bk-ink);
+}
+
+.bk-tab__cnt {
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    background: var(--bk-sand-100);
+    color: var(--bk-ink-3);
+    font: 600 0.7rem/1.5 var(--bk-mono);
 }
 
 /* --------------------------------------------------------------------------
@@ -529,8 +551,7 @@ textarea {
     grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.bk-stat,
-.admin-stat-card {
+.bk-stat {
     display: flex;
     flex-direction: column;
     padding: 1.15rem 1.25rem;
@@ -562,8 +583,7 @@ textarea {
     color: var(--bk-amber);
 }
 
-.bk-stat__label,
-.admin-stat-card__label {
+.bk-stat__label {
     color: var(--bk-ink-2);
     font-family: var(--bk-sans);
     font-size: 0.8rem;
@@ -572,8 +592,7 @@ textarea {
     text-transform: none;
 }
 
-.bk-stat__value,
-.admin-stat-card__value {
+.bk-stat__value {
     display: flex;
     align-items: baseline;
     gap: 0.5rem;
@@ -594,8 +613,7 @@ textarea {
     color: var(--bk-terra);
 }
 
-.bk-stat__hint,
-.admin-stat-card__hint {
+.bk-stat__hint {
     margin: 0.3rem 0 0;
     color: var(--bk-ink-2);
     font-size: 0.78rem;
@@ -623,16 +641,14 @@ textarea {
    Bawaan lega. Tambahkan .is-padat pada tabel admin yang banyak barisnya.
    -------------------------------------------------------------------------- */
 
-.bk-table,
-.admin-table {
+.bk-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
     text-align: left;
 }
 
-.bk-table th,
-.admin-table thead th {
+.bk-table th {
     padding: 0.75rem 1rem;
     background: var(--bk-sand-100);
     color: var(--bk-ink-2);
@@ -643,8 +659,7 @@ textarea {
     white-space: nowrap;
 }
 
-.bk-table td,
-.admin-table tbody td {
+.bk-table td {
     padding: var(--bk-cell-y) 1rem;
     border-bottom: 1px solid var(--bk-sand-100);
     color: var(--bk-ink);
@@ -652,44 +667,35 @@ textarea {
 }
 
 .bk-table th:first-child,
-.bk-table td:first-child,
-.admin-table thead th:first-child,
-.admin-table tbody td:first-child {
+.bk-table td:first-child {
     padding-left: var(--bk-pad-x);
 }
 
 .bk-table th:last-child,
-.bk-table td:last-child,
-.admin-table thead th:last-child,
-.admin-table tbody td:last-child {
+.bk-table td:last-child {
     padding-right: var(--bk-pad-x);
 }
 
-.bk-table tbody tr:last-child td,
-.admin-table tbody tr:last-child td {
+.bk-table tbody tr:last-child td {
     border-bottom: 0;
 }
 
-.bk-table tbody tr:hover,
-.admin-table tbody tr:hover {
+.bk-table tbody tr:hover {
     background: #fdfaf6;
 }
 
 /* Kolom kanan: nominal, nilai, kuota. */
-.bk-table .r,
-.admin-table .r {
+.bk-table .r {
     text-align: right;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
 
-.bk-table th.r,
-.admin-table th.r {
+.bk-table th.r {
     text-align: right;
 }
 
-.bk-table .nw,
-.admin-table .nw {
+.bk-table .nw {
     white-space: nowrap;
 }
 
@@ -703,19 +709,16 @@ textarea {
 }
 
 /* Tingkat padat: baris lebih rapat, huruf sedikit lebih kecil. */
-.bk-table.is-padat,
-.admin-table.is-padat {
+.bk-table.is-padat {
     font-size: 0.83rem;
 }
 
-.bk-table.is-padat td,
-.admin-table.is-padat tbody td {
+.bk-table.is-padat td {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
 
-.bk-table.is-padat th,
-.admin-table.is-padat thead th {
+.bk-table.is-padat th {
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
 }
@@ -762,20 +765,17 @@ textarea {
 /* Tabel jadi daftar bertumpuk di layar kecil. Label kolom diisi oleh skrip
    di layout lewat atribut data-label. */
 @media (max-width: 760px) {
-    .bk-table thead,
-    .admin-table thead {
+    .bk-table thead {
         display: none;
     }
 
-    .bk-table tbody tr,
-    .admin-table tbody tr {
+    .bk-table tbody tr {
         display: block;
         padding: 0.65rem 0;
         border-bottom: 1px solid var(--bk-sand);
     }
 
-    .bk-table tbody td,
-    .admin-table tbody td {
+    .bk-table tbody td {
         display: flex;
         gap: 1rem;
         align-items: baseline;
@@ -784,8 +784,7 @@ textarea {
         border: 0;
     }
 
-    .bk-table tbody td::before,
-    .admin-table tbody td::before {
+    .bk-table tbody td::before {
         content: attr(data-label);
         flex: none;
         color: var(--bk-ink-2);
@@ -795,8 +794,7 @@ textarea {
         text-transform: uppercase;
     }
 
-    .bk-table .r,
-    .admin-table .r {
+    .bk-table .r {
         text-align: right;
     }
 }
@@ -806,8 +804,7 @@ textarea {
    Pil warna. Satu keadaan, satu warna, konsisten di seluruh aplikasi.
    -------------------------------------------------------------------------- */
 
-.bk-tag,
-.admin-badge {
+.bk-tag {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -825,8 +822,7 @@ textarea {
 }
 
 /* Berjalan / menunggu / dalam proses */
-.bk-tag--jalan,
-.admin-badge-warning {
+.bk-tag--jalan {
     background: var(--bk-amber-soft);
     color: var(--bk-amber-700);
 }
@@ -839,14 +835,12 @@ textarea {
 }
 
 /* Netral / tutup / selesai tanpa tindakan */
-.bk-tag--diam,
-.admin-badge-muted {
+.bk-tag--diam {
     background: #efeee9;
     color: #767065;
 }
 
-.bk-tag--info,
-.admin-badge-info {
+.bk-tag--info {
     background: #e8f0f2;
     color: #2b5560;
 }
@@ -901,7 +895,14 @@ textarea {
     background: var(--bk-sage);
 }
 
+/* Kuota yang sudah penuh: terra sebagai peringatan. */
 .bk-meter > i.is-penuh {
+    background: var(--bk-terra);
+}
+
+/* Kebalikannya untuk tagihan: justru yang BELUM penuh yang perlu ditindak,
+   jadi ia butuh nama sendiri supaya penanda di view tidak terbaca terbalik. */
+.bk-meter > i.is-perlu {
     background: var(--bk-terra);
 }
 
@@ -972,8 +973,7 @@ textarea {
    12 · CATATAN & PERINGATAN
    -------------------------------------------------------------------------- */
 
-.bk-note,
-.admin-alert {
+.bk-note {
     display: flex;
     align-items: flex-start;
     gap: 0.8rem;
@@ -998,8 +998,7 @@ textarea {
     font-size: 0.8rem;
 }
 
-.bk-note--baik,
-.admin-alert-success {
+.bk-note--baik {
     border-color: #cfe0d5;
     background: var(--bk-sage-soft);
     color: var(--bk-sage-700);
@@ -1021,8 +1020,7 @@ textarea {
     color: #fff;
 }
 
-.bk-note--buruk,
-.admin-alert-danger {
+.bk-note--buruk {
     border-color: #eec8c1;
     background: var(--bk-danger-soft);
     color: var(--bk-danger-700);
@@ -1065,8 +1063,7 @@ textarea {
    13 · FORM
    -------------------------------------------------------------------------- */
 
-.bk-label,
-.admin-label {
+.bk-label {
     display: block;
     margin-bottom: 0.4rem;
     color: var(--bk-ink);
@@ -1076,9 +1073,7 @@ textarea {
 
 .bk-input,
 .bk-select,
-.bk-textarea,
-.admin-input,
-.admin-native-select {
+.bk-textarea {
     display: block;
     width: 100%;
     min-height: 2.6rem;
@@ -1093,44 +1088,47 @@ textarea {
 }
 
 .bk-input::placeholder,
-.bk-textarea::placeholder,
-.admin-input::placeholder {
+.bk-textarea::placeholder {
     color: var(--bk-ink-3);
+}
+
+/* Plugin form Tailwind memasang panah select sebagai background-image, dan
+   properti singkat `background` di atas menghapusnya — tanpa ini select
+   terlihat persis seperti kolom teks biasa. Panahnya dipasang ulang di sini. */
+.bk-select {
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b7a75' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6.5l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.8rem center;
+    background-repeat: no-repeat;
+    background-size: 0.9rem;
 }
 
 .bk-input:focus,
 .bk-select:focus,
-.bk-textarea:focus,
-.admin-input:focus,
-.admin-native-select:focus {
+.bk-textarea:focus {
     border-color: var(--bk-sage);
     outline: 0;
     box-shadow: 0 0 0 3px var(--bk-sage-soft);
 }
 
 .bk-textarea,
-textarea.bk-input,
-textarea.admin-input {
+textarea.bk-input {
     min-height: 6.5rem;
     line-height: 1.6;
     resize: vertical;
 }
 
 .bk-input[aria-invalid='true'],
-.bk-input.is-invalid,
-.admin-input[aria-invalid='true'],
-.admin-input.is-invalid {
+.bk-input.is-invalid {
     border-color: var(--bk-danger);
 }
 
 .bk-input[aria-invalid='true']:focus,
-.bk-input.is-invalid:focus,
-.admin-input.is-invalid:focus {
+.bk-input.is-invalid:focus {
     box-shadow: 0 0 0 3px var(--bk-danger-soft);
 }
 
-.bk-error,
-.admin-field-error {
+.bk-error {
     display: block;
     margin-top: 0.35rem;
     color: var(--bk-danger-700);
@@ -1143,6 +1141,69 @@ textarea.admin-input {
     margin-top: 0.35rem;
     color: var(--bk-ink-2);
     font-size: 0.775rem;
+}
+
+/* Tombol berwujud tautan untuk aksi kecil yang menempel pada kalimat,
+   misalnya "pakai angka itu" di bawah kolom nilai akhir. */
+.bk-linkbtn {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bk-terra-700);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.bk-linkbtn:hover {
+    color: var(--bk-terra-900);
+}
+
+/* Kotak centang beserta penjelasannya, dibungkus jadi satu bidang yang bisa
+   diklik penuh — sasaran kliknya jadi selebar kartu, bukan cuma kotak 1rem.
+   Warna centangnya diserahkan ke `accent-color` supaya kotaknya tetap
+   kontrol asli peramban (ikut dukungan aksesibilitas bawaan). */
+.bk-checkcard {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r-sm);
+    background: var(--bk-canvas);
+    cursor: pointer;
+}
+
+.bk-checkcard:hover {
+    border-color: var(--bk-sage);
+}
+
+.bk-checkcard input[type='checkbox'] {
+    flex: none;
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0.18rem;
+    border-radius: 0.28rem;
+    border-color: var(--bk-sand);
+    accent-color: var(--bk-terra);
+    color: var(--bk-terra);
+    cursor: pointer;
+}
+
+.bk-checkcard b {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.bk-checkcard small {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--bk-ink-2);
+    font-size: 0.8rem;
+    line-height: 1.5;
 }
 
 /* Kolom form: dua lajur di layar lebar, satu di layar sempit. */
@@ -1184,6 +1245,11 @@ textarea.admin-input {
     font: 400 0.84rem var(--bk-sans);
     outline: 0;
     box-shadow: none;
+}
+
+/* Kolom cari di kepala daftar butuh ruang lebih supaya petunjuknya utuh. */
+.bk-pillfield--cari input {
+    width: 14rem;
 }
 
 .bk-pillselect {
@@ -1236,8 +1302,7 @@ textarea.admin-input {
    14 · KEADAAN KOSONG
    -------------------------------------------------------------------------- */
 
-.bk-empty,
-.admin-empty-state {
+.bk-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1249,8 +1314,7 @@ textarea.admin-input {
     text-align: center;
 }
 
-.bk-empty__icon,
-.admin-empty-state__icon {
+.bk-empty__icon {
     display: grid;
     place-items: center;
     width: 3rem;
@@ -1262,15 +1326,13 @@ textarea.admin-input {
     font-size: 1.3rem;
 }
 
-.bk-empty h3,
-.admin-empty-state h3 {
+.bk-empty h3 {
     margin: 0.6rem 0 0;
     color: var(--bk-ink);
     font: 600 1.08rem var(--bk-display);
 }
 
-.bk-empty p,
-.admin-empty-state p {
+.bk-empty p {
     margin: 0;
     max-width: 40ch;
     color: var(--bk-ink-2);
@@ -1278,15 +1340,18 @@ textarea.admin-input {
     line-height: 1.6;
 }
 
-.bk-empty .bk-btn,
-.bk-empty .admin-btn,
-.admin-empty-state .admin-btn {
+.bk-empty .bk-btn {
     margin-top: 0.9rem;
 }
 
+/* Kotak putus-putus butuh jarak dari tepi panel yang memuatnya, kalau tidak
+   kedua garis saling menempel. */
+.bk-panel > .bk-empty {
+    margin: var(--bk-pad-y) var(--bk-pad-x);
+}
+
 /* Tabel kosong: baris tunggal yang membentang. */
-.bk-table .bk-empty,
-.admin-table .admin-empty-state {
+.bk-table .bk-empty {
     border: 0;
     background: transparent;
 }
@@ -1389,7 +1454,70 @@ textarea.admin-input {
 }
 
 /* --------------------------------------------------------------------------
-   17 · RANGKA RUANG KERJA
+   17 · JENDELA TIMPA
+   Untuk satu isian pendek yang tidak layak jadi halaman sendiri — mengisi
+   nilai seorang peserta, misalnya. Kalau isinya lebih panjang dari satu layar,
+   itu tanda halaman tersendiri lebih tepat.
+   -------------------------------------------------------------------------- */
+
+.bk-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    overflow-y: auto;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    background: rgba(31, 41, 36, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.bk-modal__box {
+    width: min(46rem, 100%);
+    overflow: hidden;
+    border: 1px solid var(--bk-sand);
+    border-radius: var(--bk-r);
+    background: var(--bk-surface);
+    box-shadow: 0 24px 60px rgba(31, 41, 36, 0.22);
+}
+
+.bk-modal__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: var(--bk-pad-y) var(--bk-pad-x);
+    border-bottom: 1px solid var(--bk-sand-100);
+}
+
+.bk-modal__body {
+    padding: var(--bk-pad-y) var(--bk-pad-x);
+}
+
+/* Isi modal ditumpuk sebagai blok tanpa margin bawaan, jadi jaraknya diatur
+   di sini. Pasangan kicker + isinya dirapatkan supaya terbaca satu kesatuan. */
+.bk-modal__body > * + * {
+    margin-top: 0.95rem;
+}
+
+.bk-modal__body > .bk-eyebrow + * {
+    margin-top: 0.3rem;
+}
+
+.bk-modal__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem var(--bk-pad-x);
+    border-top: 1px solid var(--bk-sand-100);
+    background: var(--bk-canvas);
+}
+
+/* --------------------------------------------------------------------------
+   18 · RANGKA RUANG KERJA
    Sisi kiri hijau + kepala menempel. Satu rangka dipakai bertiga: layout
    admin, instruktur, dan peserta.
    -------------------------------------------------------------------------- */
@@ -1692,7 +1820,7 @@ textarea.admin-input {
 }
 
 /* --------------------------------------------------------------------------
-   18 · GERBANG
+   19 · GERBANG
    Halaman yang dilihat sebelum masuk: login, daftar, pulih kata sandi,
    verifikasi sertifikat, papan informasi. Bukan ruang kerja, jadi tidak
    memakai .bk-shell — tapi palet, huruf, dan komponennya sama persis.

@@ -7,26 +7,19 @@
     <title>@yield('title', 'Ruang belajar') · Balai Kursus</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        /* SEMENTARA — dihapus di akhir rollout view peserta (Fase 4).
-           Sebagian view peserta masih memakai utilitas tema gelap lama.
-           Blok ini menyelaraskannya dengan palet Balai Hangat sampai tiap
-           view ditulis ulang. Cari "SEMENTARA" untuk menemukannya kembali. */
-        .bk-content .text-white,
-        .bk-content .text-slate-100, .bk-content .text-slate-200,
-        .bk-content .text-sky-100 { color: var(--bk-ink); }
-        .bk-content .text-slate-300, .bk-content .text-slate-400,
-        .bk-content .text-gray-300, .bk-content .text-gray-400 { color: var(--bk-ink-2); }
-        .bk-content .text-sky-300, .bk-content .text-sky-400,
-        .bk-content .text-yellow-300, .bk-content .text-yellow-400,
-        .bk-content .text-emerald-300 { color: var(--bk-sage-700); }
-        .bk-content .bg-white\/5, .bk-content .bg-white\/10,
-        .bk-content .bg-black\/20, .bk-content .bg-slate-900,
-        .bk-content .bg-slate-800 { background-color: var(--bk-sand-100); }
-        .bk-content [class*="bg-gradient"] { background-image: none; }
-        .bk-content .border-white\/10, .bk-content .border-white\/5 { border-color: var(--bk-sand); }
-        .bk-content .rounded-3xl, .bk-content .rounded-2xl { border-radius: var(--bk-r); }
-    </style>
+
+    {{--
+        Snap.js dulu tidak pernah dimuat di mana pun, padahal tiga halaman
+        peserta memanggil snap.pay(). Ketiganya berhenti di penjaga
+        "Midtrans Snap belum termuat", jadi pembayaran online tidak pernah
+        bisa dimulai sama sekali. Alamatnya diturunkan dari is_production di
+        config/midtrans.php supaya sandbox tidak pernah lolos ke produksi.
+    --}}
+    @if (config('midtrans.client_key'))
+        <script src="{{ config('midtrans.snap_url') }}"
+                data-client-key="{{ config('midtrans.client_key') }}"></script>
+    @endif
+
     @yield('styles')
 </head>
 <body>
@@ -93,8 +86,11 @@
                     <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <div style="min-width:0">
-                    <div class="bk-topbar__crumb">Peserta</div>
+                    <div class="bk-topbar__crumb">@yield('page-context', 'Peserta')</div>
                     <h1 class="bk-topbar__title">@yield('title', 'Ruang belajar')</h1>
+                    @hasSection('page-description')
+                        <p class="bk-topbar__note">@yield('page-description')</p>
+                    @endif
                 </div>
             </div>
             <div class="bk-tools">
@@ -111,10 +107,14 @@
         <section class="bk-content">@yield('content')</section>
     </main>
 </div>
+@include('peserta::partials.bayar')
 @yield('scripts')
 <script>
+    // Tabel berubah jadi daftar kartu di layar sempit; tiap sel butuh label
+    // judul kolomnya sendiri. Diisi di sini supaya tiap view tidak perlu
+    // menulis data-label satu per satu.
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.bk-table, .admin-table').forEach((t) => {
+        document.querySelectorAll('.bk-table').forEach((t) => {
             const heads = [...t.querySelectorAll('thead th')].map((x) => x.textContent.trim());
             if (!heads.length) return;
             t.querySelectorAll('tbody tr').forEach((r) => {
