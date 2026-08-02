@@ -26,8 +26,13 @@
                     <a href="{{ route('password.request') }}">Lupa kata sandi?</a>
                 @endif
             </div>
+            {{-- Sengaja tanpa required. LoginRequest membolehkan kata sandi kosong
+                 bila perangkat ini sudah tepercaya, dan atribut required membuat
+                 peramban menahan kiriman sehingga jalan pintas itu tak pernah
+                 tercapai. Perangkat yang belum tepercaya tetap ditolak di server
+                 dengan pesan auth.password_required. --}}
             <x-text-input id="password" type="password" name="password"
-                          required autocomplete="current-password" placeholder="Masukkan kata sandi" />
+                          autocomplete="current-password" placeholder="Masukkan kata sandi" />
             <x-input-error :messages="$errors->get('password')" />
         </div>
 

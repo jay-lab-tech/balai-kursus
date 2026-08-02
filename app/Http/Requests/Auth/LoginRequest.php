@@ -64,7 +64,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'password' => 'Password wajib diisi untuk login di perangkat ini.',
+                'password' => trans('auth.password_required'),
             ]);
         }
 
@@ -77,7 +77,7 @@ class LoginRequest extends FormRequest
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => 'Email atau password yang dimasukkan tidak sesuai.',
+            'email' => trans('auth.failed'),
         ]);
     }
 
