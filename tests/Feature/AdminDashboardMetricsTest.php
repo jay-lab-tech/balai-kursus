@@ -61,7 +61,9 @@ class AdminDashboardMetricsTest extends TestCase
         $response = $this->actingAs($admin)->get('/admin/dashboard');
 
         $response->assertOk();
-        $response->assertSee('150,000', false);
-        $response->assertDontSee('999,999', false);
+        // Angka di dasbor ditulis dengan pemisah ribuan Indonesia (150.000),
+        // bukan gaya Inggris yang dulu diharapkan test ini.
+        $response->assertSee('150.000', false);
+        $response->assertDontSee('999.999', false);
     }
 }

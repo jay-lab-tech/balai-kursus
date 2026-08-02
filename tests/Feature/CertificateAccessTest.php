@@ -18,7 +18,7 @@ class CertificateAccessTest extends TestCase
 
     public function test_certificate_download_route_requires_authentication(): void
     {
-        $response = $this->get(route('certificate.download', ['id' => 1]));
+        $response = $this->get(route('profile.certificate.download', ['id' => 1]));
 
         $response->assertRedirect(route('login'));
     }
@@ -97,11 +97,11 @@ class CertificateAccessTest extends TestCase
         ]);
 
         $this->actingAs($otherUser)
-            ->get(route('certificate.download', $certificate->id))
+            ->get(route('profile.certificate.download', $certificate->id))
             ->assertNotFound();
 
         $this->actingAs($user)
-            ->get(route('certificate.download', $certificate->id))
+            ->get(route('profile.certificate.download', $certificate->id))
             ->assertOk();
 
         $draftCertificate = Certificate::create([
@@ -127,7 +127,29 @@ class CertificateAccessTest extends TestCase
         ]);
 
         $this->actingAs($otherUser)
-            ->get(route('certificate.download', $draftCertificate->id))
+            ->get(route('profile.certificate.download', $draftCertificate->id))
             ->assertNotFound();
+    }
+
+    /**
+     * Akun tanpa baris peserta tidak boleh menembus halaman sertifikat.
+     * Sebelumnya id peserta yang null diteruskan apa adanya ke kueri, dan
+     * penjagaannya cuma bersandar pada participant_id yang kebetulan NOT NULL.
+     */
+    public function test_user_without_participant_row_gets_not_found(): void
+    {
+        $user = User::factory()->create(['role' => 'peserta']);
+
+        $this->actingAs($user)
+            ->get(route('profile.certificate.download', 1))
+            ->assertNotFound();
+
+        $this->actingAs($user)
+            ->get(route('profile.certificate.detail', 1))
+            ->assertNotFound();
+
+        $this->actingAs($user)
+            ->get(route('profile.certificates'))
+            ->assertOk();
     }
 }
