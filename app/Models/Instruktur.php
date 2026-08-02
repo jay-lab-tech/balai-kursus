@@ -18,9 +18,13 @@ class Instruktur extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Kursus tidak menyimpan instruktur_id; penugasan tersimpan di tabel
+    // pivot instruktur_kursus_levels, jadi relasinya banyak-ke-banyak.
     public function kursuses()
     {
-        return $this->hasMany(Kursus::class);
+        return $this->belongsToMany(Kursus::class, 'instruktur_kursus_levels')
+            ->withPivot('level_id', 'assigned_at')
+            ->withTimestamps();
     }
 
     // Relasi ke pivot instruktur_kursus_levels

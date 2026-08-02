@@ -3,28 +3,26 @@
 namespace Modules\Peserta\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\InstrukturKursusLevel;
 use App\Models\Kursus;
 use App\Models\Pendaftaran;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Peserta tidak pernah memilih kelas sendiri: ia mendaftar ke program, ikut
+ * tes penempatan, lalu admin yang menempatkannya. Sisa alur lama — katalog
+ * kelas, halaman show, dan aksi daftar langsung yang hanya membalas pesan
+ * "dinonaktifkan" — sudah dibuang beserta rute dan view-nya.
+ */
 class KursusController extends Controller
 {
-    public function index()
-    {
-        return redirect()->route('peserta.program.index');
-    }
-
     public function kursusSaya()
     {
-        $peserta = Auth::user()->peserta;
-
-        if (! $peserta) {
-            abort(403, 'Bukan peserta');
-        }
-
-        $pendaftarans = Pendaftaran::with(['program', 'level', 'kursus.program', 'kursus.level'])
-            ->where('peserta_id', $peserta->id)
+        $pendaftarans = Pendaftaran::query()
+            ->with(['program', 'level', 'kursus.program', 'kursus.level'])
+            ->where('peserta_id', $this->pesertaAktif()->id)
             ->whereNotNull('kursus_id')
+            ->latest('id')
             ->get();
 
         return view('peserta::kursus.kursus-saya', compact('pendaftarans'));
@@ -32,76 +30,87 @@ class KursusController extends Controller
 
     public function showDetail(Kursus $kursus)
     {
-        $peserta = Auth::user()->peserta;
+        $pendaftaran = $this->pendaftaranDiKelas($kursus);
 
-        if (! $peserta) {
-            abort(403, 'Bukan peserta');
-        }
+        $kursus->load('program', 'level');
 
-        $pendaftaran = Pendaftaran::with(['program', 'level', 'kursus.program', 'kursus.level'])
-            ->where('peserta_id', $peserta->id)
-            ->where('kursus_id', $kursus->id)
-            ->first();
+        $risalahs = $kursus->risalahs()
+            ->withCount('absensis as jumlah_hadir')
+            ->orderByDesc('pertemuan_ke')
+            ->get();
 
-        if (! $pendaftaran) {
-            abort(403, 'Anda tidak terdaftar di kelas ini');
-        }
-
-        $levelPeserta = $pendaftaran->level?->nama;
-
-        $instrukturPivot = null;
-        if ($pendaftaran->level_id) {
-            $instrukturPivot = \App\Models\InstrukturKursusLevel::where('kursus_id', $kursus->id)
-                ->where('level_id', $pendaftaran->level_id)
-                ->with('instruktur')
-                ->first();
-        }
-
-        $instrukturPeserta = $instrukturPivot?->instruktur?->nama_instr;
-        $risalahs = $kursus->risalahs()->orderBy('pertemuan_ke')->get();
-
-        return view('peserta::kursus.detail', compact('kursus', 'risalahs', 'pendaftaran', 'levelPeserta', 'instrukturPeserta'));
-    }
-
-    public function show(Kursus $kursus)
-    {
-        $kursus->load('program', 'level', 'jadwals');
-
-        return view('peserta::kursus.show', compact('kursus'));
+        return view('peserta::kursus.detail', [
+            'kursus' => $kursus,
+            'pendaftaran' => $pendaftaran,
+            'risalahs' => $risalahs,
+            'instrukturs' => $this->instrukturKelas($kursus, $pendaftaran),
+        ]);
     }
 
     public function showRisalah(Kursus $kursus)
     {
-        $peserta = Auth::user()->peserta;
+        $this->pendaftaranDiKelas($kursus);
 
-        if (! $peserta) {
-            abort(403, 'Bukan peserta');
-        }
+        $kursus->load('program', 'level');
 
-        $pendaftaran = Pendaftaran::where('peserta_id', $peserta->id)
-            ->where('kursus_id', $kursus->id)
-            ->first();
-
-        if (! $pendaftaran) {
-            abort(403, 'Anda tidak terdaftar di kelas ini');
-        }
-
-        $query = $kursus->risalahs()->latest('pertemuan_ke');
-        if ($search = request('search')) {
-            $query->where(function ($builder) use ($search) {
-                $builder->where('materi', 'like', "%{$search}%")
-                    ->orWhere('catatan', 'like', "%{$search}%");
-            });
-        }
-
-        $risalahs = $query->get();
+        $risalahs = $kursus->risalahs()
+            ->withCount('absensis as jumlah_hadir')
+            ->when(request('search'), function ($query, $cari) {
+                $query->where(function ($builder) use ($cari) {
+                    $builder->where('materi', 'like', "%{$cari}%")
+                        ->orWhere('catatan', 'like', "%{$cari}%");
+                });
+            })
+            ->orderByDesc('pertemuan_ke')
+            ->get();
 
         return view('peserta::kursus.risalah', compact('kursus', 'risalahs'));
     }
 
-    public function daftar(Kursus $kursus)
+    /**
+     * Satu level bisa diampu lebih dari satu instruktur. Dulu hanya baris
+     * pivot pertama yang dibaca, sehingga rekan pengajar tidak pernah muncul.
+     * Nama diambil dari users.name lebih dulu — instrukturs.nama_instr
+     * menyalin kolom itu dan bisa tertinggal saat pengguna ganti nama.
+     */
+    private function instrukturKelas(Kursus $kursus, Pendaftaran $pendaftaran)
     {
-        return redirect()->route('peserta.program.show', $kursus->program_id)
-            ->with('error', 'Pendaftaran langsung ke kelas dinonaktifkan. Silakan daftar ke program terlebih dahulu.');
+        if (! $pendaftaran->level_id) {
+            return collect();
+        }
+
+        return InstrukturKursusLevel::query()
+            ->where('kursus_id', $kursus->id)
+            ->where('level_id', $pendaftaran->level_id)
+            ->with('instruktur.user')
+            ->get()
+            ->map(fn ($baris) => optional(optional($baris->instruktur)->user)->name
+                ?: optional($baris->instruktur)->nama_instr)
+            ->filter()
+            ->unique()
+            ->values();
+    }
+
+    private function pesertaAktif()
+    {
+        $peserta = Auth::user()->peserta;
+
+        abort_if(! $peserta, 403, 'Akun ini belum memiliki profil peserta.');
+
+        return $peserta;
+    }
+
+    private function pendaftaranDiKelas(Kursus $kursus): Pendaftaran
+    {
+        $pendaftaran = Pendaftaran::query()
+            ->with(['program', 'level'])
+            ->where('peserta_id', $this->pesertaAktif()->id)
+            ->where('kursus_id', $kursus->id)
+            ->latest('id')
+            ->first();
+
+        abort_if(! $pendaftaran, 403, 'Anda tidak terdaftar di kelas ini.');
+
+        return $pendaftaran;
     }
 }

@@ -63,8 +63,32 @@ class Kursus extends Model
         return $this->hasMany(InstrukturKursusLevel::class);
     }
 
+    /**
+     * Status kelas yang masih menerima peserta baru. Daftar yang sama dulu
+     * ditulis ulang sebagai in_array($kursus->status, ['buka', 'berjalan'])
+     * di dalam view program — sehingga scope di bawah dan tampilannya bisa
+     * bergeser sendiri-sendiri.
+     */
+    public const STATUS_MENERIMA = ['buka', 'berjalan'];
+
     public function scopeOpenForRegistration($query)
     {
-        return $query->whereIn('status', ['buka', 'berjalan']);
+        return $query->whereIn('status', self::STATUS_MENERIMA);
+    }
+
+    /**
+     * Sisa kuota. Butuh pendaftarans_count dari withCount() — kalau tidak ada,
+     * relasinya dihitung langsung supaya pemanggil tidak diam-diam salah.
+     */
+    public function sisaKuota(): int
+    {
+        $terisi = $this->pendaftarans_count ?? $this->pendaftarans()->count();
+
+        return max(0, (int) $this->kuota - (int) $terisi);
+    }
+
+    public function masihMenerima(): bool
+    {
+        return in_array($this->status, self::STATUS_MENERIMA, true) && $this->sisaKuota() > 0;
     }
 }

@@ -3,182 +3,218 @@
 namespace Modules\Instruktur\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\InstrukturKursusLevel;
 use App\Models\Kursus;
 use App\Models\Pendaftaran;
 use App\Models\Score;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NilaiController extends Controller
 {
     /**
-     * Export nilai peserta ke CSV
+     * Komponen nilai kursus. Kolom warisan uktp/ukap/var1..4 sengaja tidak ikut:
+     * di sisi admin keempat kolom var divalidasi sebagai teks bebas sementara
+     * di sini sebagai angka 0–100, dan tidak satu pun dipakai saat menghitung
+     * rata-rata atau menyusun ekspor. Kolomnya dibiarkan utuh di basis data
+     * untuk nilai tes penempatan yang memang masih memakainya.
      */
-    public function export(Kursus $kursus)
-    {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || ! \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $kursus->id)->exists()) {
-            abort(403);
-        }
-        $pendaftarans = $kursus->pendaftarans()->with('peserta.user', 'score')->get();
-        $csv = "Nama Peserta,Listening,Speaking,Reading,Writing,Final Score\n";
-        foreach ($pendaftarans as $p) {
-            $csv .= sprintf(
-                '"%s","%s","%s","%s","%s","%s"'."\n",
-                $p->peserta->user->name,
-                $p->score->listening ?? '-',
-                $p->score->speaking ?? '-',
-                $p->score->reading ?? '-',
-                $p->score->writing ?? '-',
-                $p->score->final_score ?? '-'
-            );
-        }
+    private const KOMPONEN = [
+        'listening' => 'Listening',
+        'speaking' => 'Speaking',
+        'reading' => 'Reading',
+        'writing' => 'Writing',
+        'assignment' => 'Tugas',
+    ];
 
-        return response($csv)
-            ->header('Content-Type', 'text/csv')
-            ->header('Content-Disposition', 'attachment; filename="nilai_peserta.csv"');
+    public function export(Kursus $kursus): StreamedResponse
+    {
+        $this->pastikanDitugaskan($kursus->id);
+
+        $pendaftarans = $kursus->pendaftarans()
+            ->with('peserta.user', 'courseScore')
+            ->get();
+
+        $namaBerkas = 'nilai_'.str_replace(' ', '_', strtolower($kursus->nama)).'_'.now()->format('Ymd').'.csv';
+
+        // Dulu seluruh CSV dirangkai jadi satu string dengan sprintf berisi
+        // tanda kutip manual — nama peserta yang mengandung kutip akan merusak
+        // kolomnya. fputcsv menangani pelolosan itu sendiri.
+        return response()->streamDownload(function () use ($pendaftarans) {
+            $keluaran = fopen('php://output', 'w');
+
+            // Penanda BOM supaya Excel membaca berkas ini sebagai UTF-8.
+            fwrite($keluaran, "\xEF\xBB\xBF");
+            fputcsv($keluaran, array_merge(
+                ['Nomor Pendaftaran', 'Nama Peserta'],
+                array_values(self::KOMPONEN),
+                ['Nilai Akhir', 'Keterangan']
+            ));
+
+            foreach ($pendaftarans as $p) {
+                $nilai = $p->courseScore;
+                $baris = [$p->nomor, optional(optional($p->peserta)->user)->name];
+
+                foreach (array_keys(self::KOMPONEN) as $kolom) {
+                    $baris[] = $nilai->{$kolom} ?? '';
+                }
+
+                $baris[] = $nilai->final_score ?? '';
+                $baris[] = $nilai ? ($nilai->isLulus() ? 'Lulus' : 'Belum lulus') : 'Belum dinilai';
+
+                fputcsv($keluaran, $baris);
+            }
+
+            fclose($keluaran);
+        }, $namaBerkas, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
-    public function index(Kursus $kursus)
+    public function index(Request $request, Kursus $kursus)
     {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || ! \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $kursus->id)->exists()) {
-            abort(403);
+        $this->pastikanDitugaskan($kursus->id);
+
+        $query = $kursus->pendaftarans()->with('peserta.user', 'courseScore');
+
+        if ($cari = $request->get('search')) {
+            $query->whereHas('peserta.user', fn ($q) => $q->where('name', 'like', "%{$cari}%"));
         }
-        $query = $kursus->pendaftarans()->with('peserta.user', 'score');
-        if ($search = request('search')) {
-            $query->whereHas('peserta.user', function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%");
-            });
-        }
-        if ($filter = request('filter')) {
-            if ($filter == 'lulus') {
-                $query->whereHas('score', function ($q) {
-                    $q->where('final_score', '>=', 60);
-                });
-            } elseif ($filter == 'tidak_lulus') {
-                $query->whereHas('score', function ($q) {
-                    $q->where('final_score', '<', 60);
-                });
+
+        if ($saring = $request->get('filter')) {
+            if ($saring === 'lulus') {
+                $query->whereHas('courseScore', fn ($q) => $q->where('final_score', '>=', Score::NILAI_LULUS));
+            } elseif ($saring === 'tidak_lulus') {
+                $query->whereHas('courseScore', fn ($q) => $q->where('final_score', '<', Score::NILAI_LULUS));
+            } elseif ($saring === 'belum') {
+                $query->whereDoesntHave('courseScore');
             }
         }
+
         $pendaftarans = $query->get();
 
-        return view('instruktur::instruktur.nilai.index', compact('kursus', 'pendaftarans'));
-    }
-
-    public function create(Pendaftaran $pendaftaran)
-    {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || ! \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $pendaftaran->kursus_id)->exists()) {
-            abort(403);
-        }
-
-        return view('instruktur::instruktur.nilai.create', compact('pendaftaran'));
+        return view('instruktur::instruktur.nilai.index', [
+            'kursus' => $kursus,
+            'pendaftarans' => $pendaftarans,
+            'komponen' => self::KOMPONEN,
+        ]);
     }
 
     public function store(Request $request)
     {
-        $pendaftaran_id = $request->input('pendaftaran_id');
-        $pendaftaran = Pendaftaran::findOrFail($pendaftaran_id);
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || ! \App\Models\InstrukturKursusLevel::where('instruktur_id', $instruktur->id)->where('kursus_id', $pendaftaran->kursus_id)->exists()) {
-            abort(403);
-        }
-        $request->validate([
-            'listening' => 'nullable|numeric|min:0|max:100',
-            'speaking' => 'nullable|numeric|min:0|max:100',
-            'reading' => 'nullable|numeric|min:0|max:100',
-            'writing' => 'nullable|numeric|min:0|max:100',
-            'assignment' => 'nullable|numeric|min:0|max:100',
-            'uktp' => 'nullable|numeric|min:0|max:100',
-            'ukap' => 'nullable|numeric|min:0|max:100',
-            'var1' => 'nullable|numeric|min:0|max:100',
-            'var2' => 'nullable|numeric|min:0|max:100',
-            'var3' => 'nullable|numeric|min:0|max:100',
-            'var4' => 'nullable|numeric|min:0|max:100',
-            'keterangan' => 'nullable|string',
+        $data = $this->validasi($request, [
+            'pendaftaran_id' => ['required', 'exists:pendaftarans,id'],
         ]);
-        $data = $request->only(['listening', 'speaking', 'reading', 'writing', 'assignment', 'uktp', 'ukap', 'var1', 'var2', 'var3', 'var4', 'keterangan']);
-        $data['pendaftaran_id'] = $pendaftaran_id;
-        $data['jenis'] = \App\Models\Score::TYPE_COURSE;
-        $data['evaluated_by'] = $instruktur->id;
+
+        $pendaftaran = Pendaftaran::findOrFail($data['pendaftaran_id']);
+        $this->pastikanDitugaskan($pendaftaran->kursus_id);
+
+        $data['jenis'] = Score::TYPE_COURSE;
+        $data['evaluated_by'] = Auth::user()->instruktur->id;
         $data['evaluated_at'] = now();
-        $scores = array_filter([$data['listening'], $data['speaking'], $data['reading'], $data['writing'], $data['assignment'], $data['uktp'], $data['ukap'], $data['var1'], $data['var2'], $data['var3'], $data['var4']]);
-        if (count($scores) > 0) {
-            $data['final_score'] = array_sum($scores) / count($scores);
-        }
+        $data = $this->lengkapiNilaiAkhir($data);
+
         Score::updateOrCreate(
             [
-                'pendaftaran_id' => $pendaftaran_id,
-                'jenis' => \App\Models\Score::TYPE_COURSE,
+                'pendaftaran_id' => $pendaftaran->id,
+                'jenis' => Score::TYPE_COURSE,
             ],
             $data
         );
 
-        return redirect()->route('instruktur.nilai.index', $pendaftaran->kursus_id)->with('success', 'Nilai berhasil disimpan');
-    }
-
-    public function edit(Score $nilai)
-    {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || $nilai->evaluated_by !== $instruktur->id) {
-            abort(403);
-        }
-
-        return view('instruktur::instruktur.nilai.edit', compact('nilai'));
+        return redirect()
+            ->route('instruktur.nilai.index', $pendaftaran->kursus_id)
+            ->with('success', 'Nilai berhasil disimpan');
     }
 
     public function show(Score $nilai)
     {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || $nilai->evaluated_by !== $instruktur->id) {
-            abort(403);
-        }
+        $this->pastikanBolehMengelola($nilai);
 
-        return response()->json($nilai);
+        return response()->json($nilai->only(array_merge(
+            ['id', 'pendaftaran_id', 'final_score', 'keterangan'],
+            array_keys(self::KOMPONEN)
+        )));
     }
 
     public function update(Request $request, Score $nilai)
     {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || $nilai->evaluated_by !== $instruktur->id) {
-            abort(403);
-        }
-        $request->validate([
-            'listening' => 'nullable|numeric|min:0|max:100',
-            'speaking' => 'nullable|numeric|min:0|max:100',
-            'reading' => 'nullable|numeric|min:0|max:100',
-            'writing' => 'nullable|numeric|min:0|max:100',
-            'assignment' => 'nullable|numeric|min:0|max:100',
-            'uktp' => 'nullable|numeric|min:0|max:100',
-            'ukap' => 'nullable|numeric|min:0|max:100',
-            'var1' => 'nullable|numeric|min:0|max:100',
-            'var2' => 'nullable|numeric|min:0|max:100',
-            'var3' => 'nullable|numeric|min:0|max:100',
-            'var4' => 'nullable|numeric|min:0|max:100',
-            'keterangan' => 'nullable|string',
-        ]);
-        $data = $request->only(['listening', 'speaking', 'reading', 'writing', 'assignment', 'uktp', 'ukap', 'var1', 'var2', 'var3', 'var4', 'keterangan']);
-        $data['jenis'] = \App\Models\Score::TYPE_COURSE;
-        $scores = array_filter([$data['listening'], $data['speaking'], $data['reading'], $data['writing'], $data['assignment'], $data['uktp'], $data['ukap'], $data['var1'], $data['var2'], $data['var3'], $data['var4']]);
-        if (count($scores) > 0) {
-            $data['final_score'] = array_sum($scores) / count($scores);
-        }
+        $this->pastikanBolehMengelola($nilai);
+
+        $data = $this->lengkapiNilaiAkhir($this->validasi($request));
+        $data['jenis'] = Score::TYPE_COURSE;
         $nilai->update($data);
 
-        return redirect()->route('instruktur.nilai.index', $nilai->pendaftaran->kursus_id)->with('success', 'Nilai berhasil diperbarui');
+        return redirect()
+            ->route('instruktur.nilai.index', $nilai->pendaftaran->kursus_id)
+            ->with('success', 'Nilai berhasil diperbarui');
     }
 
     public function destroy(Score $nilai)
     {
-        $instruktur = Auth::user()->instruktur;
-        if (! $instruktur || $nilai->evaluated_by !== $instruktur->id) {
-            abort(403);
-        }
-        $kursus_id = $nilai->pendaftaran->kursus_id;
+        $this->pastikanBolehMengelola($nilai);
+
+        $kursusId = $nilai->pendaftaran->kursus_id;
         $nilai->delete();
 
-        return redirect()->route('instruktur.nilai.index', $kursus_id)->with('success', 'Nilai berhasil dihapus');
+        return redirect()
+            ->route('instruktur.nilai.index', $kursusId)
+            ->with('success', 'Nilai berhasil dihapus');
+    }
+
+    private function validasi(Request $request, array $tambahan = []): array
+    {
+        $aturan = $tambahan;
+
+        foreach (array_keys(self::KOMPONEN) as $kolom) {
+            $aturan[$kolom] = ['nullable', 'numeric', 'min:0', 'max:100'];
+        }
+
+        $aturan['keterangan'] = ['nullable', 'string', 'max:1000'];
+
+        return $request->validate($aturan);
+    }
+
+    /**
+     * Nilai akhir hanya dihitung ulang bila ada komponen yang terisi, sehingga
+     * baris yang seluruh komponennya dikosongkan tidak menyimpan angka lama
+     * yang menyesatkan.
+     */
+    private function lengkapiNilaiAkhir(array $data): array
+    {
+        $data['final_score'] = Score::hitungRataRata(
+            array_map(fn ($kolom) => $data[$kolom] ?? null, array_keys(self::KOMPONEN))
+        );
+
+        $data['status'] = is_null($data['final_score'])
+            ? 'pending'
+            : ($data['final_score'] >= Score::NILAI_LULUS ? 'pass' : 'fail');
+
+        return $data;
+    }
+
+    /**
+     * Wewenang dulu diukur dari `evaluated_by === instruktur->id`, sehingga
+     * instruktur tidak bisa menyentuh nilai kelasnya sendiri kalau baris itu
+     * diisi admin atau rekan pengajarnya — dan modal ubah di halaman nilai
+     * gagal diam-diam dengan 403. Batas yang benar adalah penugasan kelas,
+     * sama seperti yang dipakai index().
+     */
+    private function pastikanBolehMengelola(Score $nilai): void
+    {
+        abort_unless($nilai->jenis === Score::TYPE_COURSE, 404);
+        $this->pastikanDitugaskan(optional($nilai->pendaftaran)->kursus_id);
+    }
+
+    private function pastikanDitugaskan(?int $kursusId): void
+    {
+        $instruktur = Auth::user()->instruktur;
+
+        $boleh = $instruktur
+            && $kursusId
+            && InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
+                ->where('kursus_id', $kursusId)
+                ->exists();
+
+        abort_unless($boleh, 403);
     }
 }

@@ -23,26 +23,24 @@ class PesertaController extends Controller
 
     public function index()
     {
-        $query = Peserta::with('user');
-        if ($search = request('search')) {
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                    ->orWhere('email', 'like', "%$search%");
-            });
-            $query->orWhere('nomor_peserta', 'like', "%$search%")
-                ->orWhere('no_hp', 'like', "%$search%")
-                ->orWhere('instansi', 'like', "%$search%");
-        }
-        if ($filter = request('filter')) {
-            if ($filter == 'aktif') {
-                $query->where('status', 1);
-            } elseif ($filter == 'nonaktif') {
-                $query->where('status', 0);
-            }
-        }
-        $pesertas = $query->get();
+        $search = trim((string) request('search'));
 
-        return view('peserta::admin.peserta.index', compact('pesertas'));
+        $pesertas = Peserta::with('user')
+            // Seluruh kondisi pencarian dibungkus satu grup supaya `or` di
+            // dalamnya tidak melebar ke kondisi lain di query.
+            ->when($search !== '', fn ($query) => $query->where(function ($group) use ($search) {
+                $group->whereHas('user', fn ($u) => $u
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%"))
+                    ->orWhere('nomor_peserta', 'like', "%{$search}%")
+                    ->orWhere('no_hp', 'like', "%{$search}%")
+                    ->orWhere('instansi', 'like', "%{$search}%");
+            }))
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('peserta::admin.peserta.index', compact('pesertas', 'search'));
     }
 
     public function create()
@@ -89,20 +87,33 @@ class PesertaController extends Controller
 
     public function update(Request $request, $id)
     {
-        $peserta = Peserta::findOrFail($id);
+        $peserta = Peserta::with('user')->findOrFail($id);
 
-        $peserta->user->update([
-            'name' => $request->nama,
-            'email' => $request->email,
+        // Tanpa validasi, email atau nomor peserta ganda baru ketahuan sebagai
+        // galat basis data. Keunikan diperiksa dengan mengecualikan baris ini.
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$peserta->user_id,
+            'nomor_peserta' => 'required|string|max:255|unique:pesertas,nomor_peserta,'.$peserta->id,
+            'no_hp' => 'required|string|max:30',
+            'instansi' => 'nullable|string|max:255',
         ]);
 
-        $peserta->update([
-            'nomor_peserta' => $request->nomor_peserta,
-            'no_hp' => $request->no_hp,
-            'instansi' => $request->instansi,
-        ]);
+        DB::transaction(function () use ($peserta, $data) {
+            $peserta->user->update([
+                'name' => $data['nama'],
+                'email' => $data['email'],
+            ]);
 
-        return redirect('/admin/peserta');
+            $peserta->update([
+                'nomor_peserta' => $data['nomor_peserta'],
+                'no_hp' => $data['no_hp'],
+                'instansi' => $data['instansi'] ?? null,
+            ]);
+        });
+
+        return redirect()->route('admin.peserta.index')
+            ->with('success', 'Data peserta berhasil diperbarui.');
     }
 
     public function destroy($id)

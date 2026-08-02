@@ -14,7 +14,12 @@ class InstrukturController extends Controller
 {
     public function index()
     {
-        $instrukturs = Instruktur::with('user')->get();
+        // Jumlah kelas diampu ikut ditarik supaya daftar tidak memicu kueri
+        // tambahan per baris. Dihitung unik karena satu kursus bisa muncul
+        // lebih dari sekali di pivot bila ditugaskan pada beberapa level.
+        $instrukturs = Instruktur::with('user')
+            ->withCount(['kursuses' => fn ($query) => $query->select(DB::raw('count(distinct kursuses.id)'))])
+            ->get();
 
         return view('instruktur::admin.instruktur.index', compact('instrukturs'));
     }

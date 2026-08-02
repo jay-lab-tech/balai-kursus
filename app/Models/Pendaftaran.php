@@ -29,6 +29,28 @@ class Pendaftaran extends Model
 
     public const PAYMENT_LUNAS = 'lunas';
 
+    /**
+     * Status disimpan sebagai kode bergaris bawah. Sebelumnya tiap view
+     * merapikannya sendiri dengan str_replace('_', ' ', ucfirst(...)) —
+     * lima salinan yang menghasilkan "Menunggu tes" tanpa penjelasan apa pun.
+     * Peta ini jadi satu-satunya sumber label.
+     */
+    public const LABEL_STATUS = [
+        self::STATUS_MENUNGGU_TES => 'Menunggu tes penempatan',
+        self::STATUS_MENUNGGU_PENEMPATAN => 'Menunggu penempatan kelas',
+        self::STATUS_MENUNGGU_PEMBAYARAN => 'Menunggu pembayaran',
+        self::STATUS_AKTIF => 'Aktif',
+        self::STATUS_SELESAI => 'Selesai',
+        self::STATUS_DIBATALKAN => 'Dibatalkan',
+    ];
+
+    public const LABEL_PEMBAYARAN = [
+        self::PAYMENT_PENDING => 'Belum dibayar',
+        self::PAYMENT_DP => 'Uang muka',
+        self::PAYMENT_CICIL => 'Dicicil',
+        self::PAYMENT_LUNAS => 'Lunas',
+    ];
+
     protected $fillable = [
         'nomor',
         'peserta_id',
@@ -127,6 +149,54 @@ class Pendaftaran extends Model
     public function score()
     {
         return $this->courseScore();
+    }
+
+    public function getLabelStatusAttribute(): string
+    {
+        return self::LABEL_STATUS[$this->status_pendaftaran] ?? $this->status_pendaftaran;
+    }
+
+    public function getLabelPembayaranAttribute(): string
+    {
+        return self::LABEL_PEMBAYARAN[$this->status_pembayaran] ?? $this->status_pembayaran;
+    }
+
+    /**
+     * Langkah nyata yang perlu dilakukan peserta pada status ini. Kalimatnya
+     * dulu ditulis di dalam rantai @if di dua view yang berbeda dan sudah
+     * mulai berbeda bunyi antara keduanya.
+     */
+    public function getPetunjukAttribute(): string
+    {
+        return match ($this->status_pendaftaran) {
+            self::STATUS_MENUNGGU_TES => 'Ikuti tes penempatan, lalu admin memasukkan hasilnya ke sistem.',
+            self::STATUS_MENUNGGU_PENEMPATAN => 'Hasil tes sudah masuk. Kelas yang cocok sedang disiapkan atau kuotanya masih penuh.',
+            self::STATUS_MENUNGGU_PEMBAYARAN => 'Kelas sudah ditentukan. Selesaikan pembayaran untuk mulai mengikuti kelas.',
+            self::STATUS_AKTIF => 'Pendaftaran aktif. Kelas sudah bisa Anda ikuti.',
+            self::STATUS_SELESAI => 'Kursus sudah selesai. Sertifikat dapat diunduh bila sudah diterbitkan.',
+            self::STATUS_DIBATALKAN => 'Pendaftaran ini dibatalkan. Hubungi admin bila menurut Anda keliru.',
+            default => 'Status pendaftaran: '.$this->status_pendaftaran.'.',
+        };
+    }
+
+    /**
+     * Urutan tahap yang dilalui satu pendaftaran, dipakai untuk menggambar
+     * penunjuk alur di ruang peserta. Dibatasi pada jalur normal: dibatalkan
+     * bukan tahap lanjutan, jadi tidak punya nomor urut di sini.
+     */
+    public const ALUR = [
+        self::STATUS_MENUNGGU_TES,
+        self::STATUS_MENUNGGU_PENEMPATAN,
+        self::STATUS_MENUNGGU_PEMBAYARAN,
+        self::STATUS_AKTIF,
+        self::STATUS_SELESAI,
+    ];
+
+    public function urutanAlur(): ?int
+    {
+        $urutan = array_search($this->status_pendaftaran, self::ALUR, true);
+
+        return $urutan === false ? null : $urutan;
     }
 
     public function isLunas()

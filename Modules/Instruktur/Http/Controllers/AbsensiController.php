@@ -14,13 +14,11 @@ class AbsensiController extends Controller
 {
     public function index()
     {
-        $instruktur = auth()->user()->instruktur;
-
-        $kursusIds = InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
-            ->pluck('kursus_id');
-        $kursus = Kursus::whereIn('id', $kursusIds)
+        $kursus = Kursus::query()
+            ->whereIn('id', $this->kursusDitugaskan())
             ->with('program')
             ->withCount(['pendaftarans as peserta_count', 'risalahs as risalah_count'])
+            ->orderBy('nama')
             ->get();
 
         return view('instruktur::instruktur.absensi.index', compact('kursus'));
@@ -28,43 +26,43 @@ class AbsensiController extends Controller
 
     public function show(Kursus $kursus)
     {
-        $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || ! InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
-            ->where('kursus_id', $kursus->id)
-            ->exists()) {
-            abort(403);
-        }
+        $this->pastikanDitugaskan($kursus->id);
 
-        $risalah = $kursus->risalahs()->latest()->get();
+        // Jumlah absensi per pertemuan dulunya dihitung di dalam view dengan
+        // `$r->absensis()->count()` — satu kueri per baris. Sekarang ikut
+        // dalam kueri daftar risalah.
+        $risalah = $kursus->risalahs()
+            ->withCount('absensis as jumlah_absensi')
+            ->latest()
+            ->get();
+
+        $kursus->loadCount('pendaftarans as jumlah_peserta');
 
         return view('instruktur::instruktur.absensi.show', compact('kursus', 'risalah'));
     }
 
     public function absensi(Risalah $risalah)
     {
-        $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || ! InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
-            ->where('kursus_id', $risalah->kursus_id)
-            ->exists()) {
-            abort(403);
-        }
+        $this->pastikanDitugaskan($risalah->kursus_id);
 
         $pendaftaran = $risalah->kursus
             ->pendaftarans()
             ->with('peserta.user')
             ->get();
 
-        return view('instruktur::instruktur.absensi.form', compact('risalah', 'pendaftaran'));
+        // Status yang sudah tersimpan diambil sekali lalu dipetakan per
+        // pendaftaran. Sebelumnya form memanggil
+        // `$risalah->absensis()->where(...)->value('status')` di setiap baris.
+        $statusTersimpan = $risalah->absensis()
+            ->pluck('status', 'pendaftaran_id');
+
+        return view('instruktur::instruktur.absensi.form', compact('risalah', 'pendaftaran', 'statusTersimpan'));
     }
 
     public function jadwal()
     {
-        $instruktur = auth()->user()->instruktur;
-
-        $kursusIds = InstrukturKursusLevel::where('instruktur_id', optional($instruktur)->id)
-            ->pluck('kursus_id');
-
-        $jadwals = Jadwal::whereIn('kursus_id', $kursusIds)
+        $jadwals = Jadwal::query()
+            ->whereIn('kursus_id', $this->kursusDitugaskan())
             ->with(['kursus.program', 'lokasi', 'kela', 'hari'])
             ->orderBy('tgl_pertemuan')
             ->orderBy('jam_mulai')
@@ -75,19 +73,32 @@ class AbsensiController extends Controller
 
     public function store(Request $request, Risalah $risalah)
     {
-        $instruktur = auth()->user()->instruktur;
-        if (! $instruktur || ! InstrukturKursusLevel::where('instruktur_id', $instruktur->id)
-            ->where('kursus_id', $risalah->kursus_id)
-            ->exists()) {
-            abort(403);
-        }
+        $this->pastikanDitugaskan($risalah->kursus_id);
 
         $validated = $request->validate([
             'absen' => ['required', 'array'],
             'absen.*' => ['required', 'in:H,S,I,A'],
         ]);
 
-        foreach ($validated['absen'] as $pendaftaranId => $status) {
+        // Kunci array `absen` adalah pendaftaran_id yang datang dari form, dan
+        // dulunya ditulis apa adanya. Tanpa pemeriksaan ini seorang instruktur
+        // bisa mengirim id peserta kelas lain dan membuat baris absensi di
+        // sana. Hanya peserta kelas milik risalah ini yang diterima.
+        $pendaftaranSah = $risalah->kursus
+            ->pendaftarans()
+            ->pluck('id')
+            ->all();
+
+        $absen = array_intersect_key(
+            $validated['absen'],
+            array_flip($pendaftaranSah)
+        );
+
+        if (! $absen) {
+            return back()->with('error', 'Tidak ada peserta yang cocok dengan kelas pertemuan ini.');
+        }
+
+        foreach ($absen as $pendaftaranId => $status) {
             Absensi::updateOrCreate(
                 [
                     'risalah_id' => $risalah->id,
@@ -101,5 +112,23 @@ class AbsensiController extends Controller
         }
 
         return back()->with('success', 'Absensi tersimpan');
+    }
+
+    /**
+     * Id kelas yang ditugaskan ke instruktur yang sedang masuk.
+     */
+    private function kursusDitugaskan()
+    {
+        return InstrukturKursusLevel::query()
+            ->where('instruktur_id', optional(auth()->user()->instruktur)->id)
+            ->pluck('kursus_id')
+            ->unique();
+    }
+
+    private function pastikanDitugaskan(int $kursusId): void
+    {
+        if (! $this->kursusDitugaskan()->contains($kursusId)) {
+            abort(403);
+        }
     }
 }

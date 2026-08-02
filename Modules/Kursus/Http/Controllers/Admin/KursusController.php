@@ -3,10 +3,12 @@
 namespace Modules\Kursus\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use App\Models\Kursus;
 use App\Models\Level;
 use App\Models\Pendaftaran;
 use App\Models\Program;
+use App\Models\Risalah;
 use Illuminate\Http\Request;
 
 class KursusController extends Controller
@@ -19,8 +21,11 @@ class KursusController extends Controller
 
     public function index()
     {
+        // Keterisian dihitung sama seperti penjagaan kuota di update() dan
+        // pencarian kelas di PendaftaranPlacementService: pendaftaran yang
+        // sudah dibatalkan membebaskan kursinya kembali.
         $kursus = Kursus::with(['program', 'level'])
-            ->withCount('pendaftarans')
+            ->withCount(['pendaftarans' => fn ($query) => $query->where('status_pendaftaran', '!=', Pendaftaran::STATUS_DIBATALKAN)])
             ->latest('id')
             ->paginate(15);
 
@@ -89,6 +94,18 @@ class KursusController extends Controller
             'status' => 'required|in:buka,tutup,berjalan',
         ]);
 
+        // Kuota tidak boleh turun di bawah kursi yang sudah terisi. Tanpa
+        // penjagaan ini kelas jadi kelebihan peserta tanpa jejak apa pun.
+        $terisi = $kursus->pendaftarans()
+            ->where('status_pendaftaran', '!=', Pendaftaran::STATUS_DIBATALKAN)
+            ->count();
+
+        if ($request->integer('kuota') < $terisi) {
+            return back()->withInput()->withErrors([
+                'kuota' => "Kuota tidak boleh kurang dari {$terisi} peserta yang sudah terdaftar di kelas ini.",
+            ]);
+        }
+
         $kursus->update($request->only([
             'program_id',
             'level_id',
@@ -124,35 +141,59 @@ class KursusController extends Controller
 
     public function risalahs(Kursus $kursus)
     {
-        $risalahs = $kursus->risalahs()->with('instruktur', 'absensis')->get();
+        // Judul halaman menyebut program dan level kelasnya.
+        $kursus->loadMissing('program', 'level');
+
+        // Risalah dibaca berurutan pertemuan, dan jumlah absensinya dihitung
+        // lewat withCount supaya tidak menarik seluruh baris kehadiran.
+        $risalahs = $kursus->risalahs()
+            ->with('instruktur')
+            ->withCount('absensis')
+            ->orderBy('pertemuan_ke')
+            ->orderBy('tgl_pertemuan')
+            ->paginate(15);
 
         return view('kursus::admin.kursus.risalah', compact('kursus', 'risalahs'));
     }
 
     public function absensi(Kursus $kursus)
     {
-        $absensis = $kursus->risalahs()->with('absensis.pendaftaran.peserta.user')->get()->pluck('absensis')->flatten();
+        $kursus->loadMissing('program', 'level');
+
+        // Sebelumnya seluruh risalah beserta absensinya ditarik ke memori lalu
+        // diratakan — tidak bisa dipaginasi dan berat begitu kelas berjalan
+        // lama. Sekarang absensi dikueri langsung lewat risalah kelas ini.
+        $absensis = Absensi::whereHas('risalah', fn ($query) => $query->where('kursus_id', $kursus->id))
+            ->with('risalah', 'pendaftaran.peserta.user')
+            ->latest('id')
+            ->paginate(20);
 
         return view('kursus::admin.kursus.absensi', compact('kursus', 'absensis'));
     }
 
     public function allRisalahs()
     {
-        $risalahs = \App\Models\Risalah::with('kursus', 'instruktur')->latest()->get();
+        $risalahs = Risalah::with('kursus.program', 'instruktur')
+            ->latest('tgl_pertemuan')
+            ->latest('id')
+            ->paginate(20);
 
         return view('kursus::admin.kursus.all_risalah', compact('risalahs'));
     }
 
     public function allAbsensis()
     {
-        $absensis = \App\Models\Absensi::with('risalah', 'pendaftaran.peserta.user')->latest()->get();
+        $absensis = Absensi::with('risalah.kursus', 'pendaftaran.peserta.user')
+            ->latest('id')
+            ->paginate(20);
 
         return view('kursus::admin.kursus.all_absensi', compact('absensis'));
     }
 
     public function assignLevelForm(Kursus $kursus, $pendaftaranId)
     {
-        $pendaftaran = Pendaftaran::with('peserta.user')->findOrFail($pendaftaranId);
+        // Nilai tes ikut ditampilkan sebagai dasar penempatan, jadi ikut ditarik.
+        $pendaftaran = Pendaftaran::with('peserta.user', 'placementScore')->findOrFail($pendaftaranId);
         $levels = Level::ordered()->get();
 
         return view('kursus::admin.kursus.assign-level', compact('kursus', 'pendaftaran', 'levels'));

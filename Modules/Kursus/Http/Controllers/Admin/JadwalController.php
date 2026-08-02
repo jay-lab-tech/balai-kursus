@@ -26,9 +26,15 @@ class JadwalController extends Controller
 
     public function index(Kursus $kursus)
     {
+        // Judul halaman menyebut program dan level, jadi keduanya ikut ditarik
+        // supaya tidak memicu kueri tambahan saat dirender.
+        $kursus->loadMissing('program', 'level');
+
+        // Daftar pertemuan dibaca berurutan waktu, bukan urutan penginputan.
         $jadwals = $kursus->jadwals()
             ->with('lokasi', 'kela', 'hari')
-            ->latest('id')
+            ->orderBy('tgl_pertemuan')
+            ->orderBy('jam_mulai')
             ->paginate(15);
 
         return view('kursus::admin.jadwal.index', compact('kursus', 'jadwals'));
@@ -38,7 +44,8 @@ class JadwalController extends Controller
     public function indexAll()
     {
         $jadwals = Jadwal::with('kursus.program', 'lokasi', 'kela', 'hari')
-            ->latest('id')
+            ->orderByDesc('tgl_pertemuan')
+            ->orderByDesc('jam_mulai')
             ->paginate(15);
 
         return view('kursus::admin.jadwal.all', compact('jadwals'));
