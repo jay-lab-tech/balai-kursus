@@ -38,6 +38,10 @@ Route::middleware(['auth', 'role:instruktur'])
         // Nilai Routes
         Route::prefix('kursus/{kursus}')->name('nilai.')->group(function () {
             Route::get('/nilai', 'NilaiController@index')->name('index');
+            // Ekspor dulunya didaftarkan di routes/web.php tanpa middleware apa
+            // pun, sehingga permintaan tanpa login jatuh ke 500 di controller,
+            // bukan dialihkan ke halaman masuk. Sekarang ikut grup ini.
+            Route::get('/nilai/export', 'NilaiController@export')->name('export');
         });
         Route::resource('nilai', 'NilaiController')->except(['index', 'create', 'edit']);
 

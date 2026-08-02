@@ -18,9 +18,6 @@ Route::get('/papan-informasi', InformationBoardController::class)->name('informa
 // tautan atau bookmark lama tidak berujung 404.
 Route::redirect('/pendaftaran', '/peserta/pendaftaran');
 
-// Export nilai peserta instruktur
-Route::get('/instruktur/kursus/{kursus}/nilai/export', [\Modules\Instruktur\Http\Controllers\NilaiController::class, 'export'])->name('instruktur.nilai.export');
-
 /*
 |--------------------------------------------------------------------------
 | AUTH DEFAULT (BREEZE)
@@ -34,8 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/certificates', [\App\Http\Controllers\UserCertificateController::class, 'index'])->name('profile.certificates');
     Route::get('/profile/certificates/{id}', [\App\Http\Controllers\UserCertificateController::class, 'detail'])->name('profile.certificate.detail');
     Route::get('/profile/certificates/{id}/download', [\App\Http\Controllers\UserCertificateController::class, 'download'])->name('profile.certificate.download');
-    Route::get('/certificate/{id}/download', [\App\Http\Controllers\UserCertificateController::class, 'download'])
-        ->name('certificate.download');
 });
 
 require __DIR__.'/auth.php';
@@ -80,6 +75,23 @@ Route::middleware('auth')->get('/redirect', function () {
 Route::post('/peserta/pendaftaran/{pendaftaran}/create-payment', [\App\Http\Controllers\PaymentController::class, 'createPaymentForPendaftaran'])
     ->middleware('auth')
     ->name('peserta.pendaftaran.create-payment');
+
+/*
+ * Bantuan dokumentasi, hanya hidup di lingkungan lokal.
+ *
+ * Keadaan "pembayaran berhasil" tidak punya halaman sendiri: paymentSuccess()
+ * selalu mengalihkan ke daftar pendaftaran sambil menitipkan pesan kilat.
+ * Pesan itu baru muncul setelah Midtrans benar-benar menyelesaikan transaksi,
+ * jadi tidak bisa ditangkap ulang oleh capture.mjs tanpa pemicu seperti ini.
+ * Rute ini hanya menitipkan pesan yang sama persis lalu mengalihkan; tidak ada
+ * data yang disentuh, dan di produksi rute ini tidak pernah terdaftar.
+ */
+if (app()->environment('local')) {
+    Route::get('/dokumentasi/pembayaran-berhasil', function () {
+        return redirect()->route('peserta.pendaftaran.index')
+            ->with('success', 'Pembayaran berhasil! Terima kasih.');
+    })->middleware(['auth', 'role:peserta'])->name('dokumentasi.pembayaran-berhasil');
+}
 
 if (method_exists(\App\Http\Controllers\CertificateController::class, 'verify')) {
     Route::get('/verify/{code}', [\App\Http\Controllers\CertificateController::class, 'verify'])->name('certificate.verify');
