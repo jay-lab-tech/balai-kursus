@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="id">
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;background:white} svg{font-family:Arial,sans-serif}
+  .lane{fill:#f4f7fb;stroke:#d6dde6;stroke-width:2}
+  .lanehead{fill:#1f4e79}
+  .lanetitle{fill:white;font-weight:700;font-size:21px}
+  .box{fill:#f8fbff;stroke:#1f4e79;stroke-width:3;rx:10}
+  .term{fill:#1f4e79;stroke:#1f4e79;stroke-width:3;rx:26}
+  .termtext{fill:white;font-size:17px;font-weight:700}
+  .dec{fill:#fff6e8;stroke:#b5730f;stroke-width:3}
+  .step{fill:#17324d;font-size:17px}
+  .decstep{fill:#7a4c05;font-size:16px;font-weight:700}
+  .rel{stroke:#5b6570;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+  .back{stroke:#b5730f;stroke-width:2.5;fill:none;stroke-dasharray:8 6;marker-end:url(#arrowb)}
+  .label{fill:#5b6570;font-size:14px;font-weight:700}
+  .backlabel{fill:#b5730f;font-size:14px;font-weight:700}
+</style>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1620" viewBox="0 0 1600 1620">
+ <defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 z" fill="#5b6570"/></marker>
+  <marker id="arrowb" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 z" fill="#b5730f"/></marker>
+ </defs>
+
+ <text x="800" y="40" text-anchor="middle" fill="#17324d" font-size="27" font-weight="700">Alur Proses Utama Aplikasi Balai Kursus</text>
+
+ <!-- jalur peran -->
+ <rect class="lane" x="20"   y="66" width="385" height="1530"/>
+ <rect class="lane" x="405"  y="66" width="385" height="1530"/>
+ <rect class="lane" x="790"  y="66" width="385" height="1530"/>
+ <rect class="lane" x="1175" y="66" width="385" height="1530"/>
+ <rect class="lanehead" x="20"   y="66" width="385" height="44"/>
+ <rect class="lanehead" x="405"  y="66" width="385" height="44"/>
+ <rect class="lanehead" x="790"  y="66" width="385" height="44"/>
+ <rect class="lanehead" x="1175" y="66" width="385" height="44"/>
+ <text class="lanetitle" x="212"  y="96" text-anchor="middle">Peserta</text>
+ <text class="lanetitle" x="597"  y="96" text-anchor="middle">Sistem</text>
+ <text class="lanetitle" x="982"  y="96" text-anchor="middle">Admin</text>
+ <text class="lanetitle" x="1367" y="96" text-anchor="middle">Instruktur</text>
+
+ <!-- 1 mulai -->
+ <rect class="term" x="72" y="140" width="280" height="56"/>
+ <text class="termtext" x="212" y="175" text-anchor="middle">Mulai</text>
+
+ <!-- 2 pendaftaran -->
+ <rect class="box" x="52" y="240" width="320" height="76"/>
+ <text class="step" x="212" y="272" text-anchor="middle">Memilih program dan mengisi</text>
+ <text class="step" x="212" y="296" text-anchor="middle">formulir pendaftaran</text>
+
+ <!-- 3 tagihan -->
+ <rect class="box" x="437" y="360" width="320" height="76"/>
+ <text class="step" x="597" y="392" text-anchor="middle">Menyimpan pendaftaran dan</text>
+ <text class="step" x="597" y="416" text-anchor="middle">membuat tagihan pembayaran</text>
+
+ <!-- 4 bayar -->
+ <rect class="box" x="52" y="480" width="320" height="76"/>
+ <text class="step" x="212" y="512" text-anchor="middle">Membayar melalui</text>
+ <text class="step" x="212" y="536" text-anchor="middle">payment gateway Midtrans</text>
+
+ <!-- 5 keputusan pembayaran -->
+ <polygon class="dec" points="597,590 787,655 597,720 407,655"/>
+ <text class="decstep" x="597" y="650" text-anchor="middle">Notifikasi Midtrans:</text>
+ <text class="decstep" x="597" y="672" text-anchor="middle">pembayaran berhasil?</text>
+
+ <!-- 6 tes penempatan -->
+ <rect class="box" x="52" y="760" width="320" height="76"/>
+ <text class="step" x="212" y="792" text-anchor="middle">Mengikuti tes penempatan</text>
+ <text class="step" x="212" y="816" text-anchor="middle">(placement)</text>
+
+ <!-- 7 tentukan level -->
+ <rect class="box" x="437" y="860" width="320" height="76"/>
+ <text class="step" x="597" y="892" text-anchor="middle">Mencocokkan nilai dengan</text>
+ <text class="step" x="597" y="916" text-anchor="middle">rentang level</text>
+
+ <!-- 8 penempatan kursus -->
+ <rect class="box" x="822" y="960" width="320" height="76"/>
+ <text class="step" x="982" y="992" text-anchor="middle">Menempatkan peserta ke kursus</text>
+ <text class="step" x="982" y="1016" text-anchor="middle">sesuai level dan sisa kuota</text>
+
+ <!-- 9 jadwal -->
+ <rect class="box" x="822" y="1060" width="320" height="76"/>
+ <text class="step" x="982" y="1092" text-anchor="middle">Menyusun jadwal dengan</text>
+ <text class="step" x="982" y="1116" text-anchor="middle">validasi konflik ruang dan waktu</text>
+
+ <!-- 10 kelas berjalan: peserta + instruktur -->
+ <rect class="box" x="52" y="1160" width="320" height="76"/>
+ <text class="step" x="212" y="1192" text-anchor="middle">Mengikuti pertemuan kelas</text>
+ <text class="step" x="212" y="1216" text-anchor="middle">sesuai jadwal</text>
+ <rect class="box" x="1207" y="1160" width="320" height="76"/>
+ <text class="step" x="1367" y="1192" text-anchor="middle">Mengisi risalah pertemuan</text>
+ <text class="step" x="1367" y="1216" text-anchor="middle">dan absensi peserta</text>
+
+ <!-- 11 nilai akhir -->
+ <rect class="box" x="1207" y="1260" width="320" height="76"/>
+ <text class="step" x="1367" y="1292" text-anchor="middle">Memasukkan nilai akhir</text>
+ <text class="step" x="1367" y="1316" text-anchor="middle">peserta</text>
+
+ <!-- 12 keputusan lulus -->
+ <polygon class="dec" points="597,1200 787,1265 597,1330 407,1265"/>
+ <text class="decstep" x="597" y="1260" text-anchor="middle">Nilai memenuhi</text>
+ <text class="decstep" x="597" y="1282" text-anchor="middle">syarat kelulusan?</text>
+
+ <!-- 13 terbitkan sertifikat -->
+ <rect class="box" x="822" y="1370" width="320" height="76"/>
+ <text class="step" x="982" y="1402" text-anchor="middle">Menerbitkan sertifikat dari</text>
+ <text class="step" x="982" y="1426" text-anchor="middle">template beserta kode verifikasi</text>
+
+ <!-- 14 selesai -->
+ <rect class="term" x="52" y="1480" width="320" height="76"/>
+ <text class="termtext" x="212" y="1512" text-anchor="middle">Mengunduh sertifikat;</text>
+ <text class="termtext" x="212" y="1536" text-anchor="middle">publik dapat memverifikasi</text>
+
+ <!-- panah alur -->
+ <path class="rel" d="M212,196 L212,240"/>
+ <path class="rel" d="M372,278 L437,390"/>
+ <path class="rel" d="M437,412 L212,480"/>
+ <path class="rel" d="M212,556 L212,590 L407,655"/>
+ <path class="rel" d="M597,720 L597,742 L212,760"/>
+ <text class="label" x="330" y="748">Ya</text>
+ <path class="rel" d="M372,798 L437,890"/>
+ <path class="rel" d="M757,912 L822,990"/>
+ <path class="rel" d="M982,1036 L982,1060"/>
+ <path class="rel" d="M1142,1108 L1367,1160"/>
+ <path class="rel" d="M982,1136 L372,1190"/>
+ <path class="rel" d="M1367,1236 L1367,1260"/>
+ <path class="rel" d="M1207,1298 L787,1272"/>
+ <path class="rel" d="M597,1330 L597,1352 L822,1400"/>
+ <text class="label" x="660" y="1372">Ya</text>
+ <path class="rel" d="M822,1420 L372,1500"/>
+
+ <!-- panah kembali -->
+ <path class="back" d="M407,690 L300,700 L300,560"/>
+ <text class="backlabel" x="240" y="712">Tidak: tagihan tetap terbuka</text>
+ <path class="back" d="M407,1290 L340,1290 L340,1400 L212,1400 L212,1242"/>
+ <text class="backlabel" x="228" y="1422">Tidak: mengulang kelas</text>
+</svg>
+</html>
